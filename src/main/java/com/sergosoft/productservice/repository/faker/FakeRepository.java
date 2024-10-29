@@ -1,5 +1,6 @@
 package com.sergosoft.productservice.repository.faker;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -12,9 +13,9 @@ import java.util.Optional;
  * @param <ID> Data identifier type.
  */
 //@Deprecated(forRemoval = true)
-public abstract class FakeRepository <T, ID extends Number> {
+public abstract class FakeRepository <T, ID extends Serializable> {
 
-    protected ID lastId = (ID) (Number) 0;
+    protected ID lastId;
     protected final Map<ID, T> database = new HashMap<>();
 
     protected abstract ID nextId();

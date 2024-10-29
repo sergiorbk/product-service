@@ -2,11 +2,12 @@ package com.sergosoft.productservice.repository.faker.impl;
 
 import java.util.Optional;
 
+import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Repository;
+
 import com.sergosoft.productservice.domain.Product;
 import com.sergosoft.productservice.repository.ProductRepository;
 import com.sergosoft.productservice.repository.faker.FakeRepository;
-import org.springframework.context.annotation.Profile;
-import org.springframework.stereotype.Repository;
 
 /**
  * Fake repository of Product. Simulates CRUD operations on Product domains.<br>
