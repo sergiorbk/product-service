@@ -3,7 +3,9 @@ package com.sergosoft.productservice.repository.faker.impl;
 import java.util.Optional;
 
 import com.sergosoft.productservice.domain.Order;
+import com.sergosoft.productservice.repository.OrderRepository;
 import com.sergosoft.productservice.repository.faker.FakeRepository;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -11,8 +13,9 @@ import org.springframework.stereotype.Repository;
  * Created for demo and test purposes only and will be removed after implementing JPA repositories.
  */
 @Repository
+@Profile("fakeRepository")
 //@Deprecated(forRemoval = true)
-public class OrderFakeRepository extends FakeRepository<Order, Long> {
+public class OrderFakeRepository extends FakeRepository<Order, Long> implements OrderRepository {
 
     @Override
     protected Long nextId() {

@@ -3,7 +3,10 @@ package com.sergosoft.productservice.repository.faker.impl;
 import java.util.Optional;
 
 import com.sergosoft.productservice.domain.Category;
+import com.sergosoft.productservice.repository.CategoryRepository;
+import com.sergosoft.productservice.repository.ProductRepository;
 import com.sergosoft.productservice.repository.faker.FakeRepository;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -11,8 +14,9 @@ import org.springframework.stereotype.Repository;
  * Created for demo and test purposes only and will be removed after implementing JPA repositories.
  */
 @Repository
+@Profile("fakeRepository")
 //@Deprecated(forRemoval = true)
-public class CategoryFakeRepository extends FakeRepository<Category, Integer> {
+public class CategoryFakeRepository extends FakeRepository<Category, Integer> implements CategoryRepository {
 
     @Override
     protected Integer nextId() {
