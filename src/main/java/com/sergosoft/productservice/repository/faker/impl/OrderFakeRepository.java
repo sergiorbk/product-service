@@ -18,10 +18,13 @@ import com.sergosoft.productservice.repository.faker.FakeRepository;
 //@Deprecated(forRemoval = true)
 public class OrderFakeRepository extends FakeRepository<Order, Long> implements OrderRepository {
 
+    public OrderFakeRepository() {
+        lastId = 0L;
+    }
+
     @Override
-    protected Long nextId() {
+    protected void nextId() {
         lastId = lastId + 1;
-        return lastId;
     }
 
     @Override

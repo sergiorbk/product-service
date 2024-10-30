@@ -1,11 +1,12 @@
 package com.sergosoft.productservice.dto.category;
 
-import com.sergosoft.productservice.domain.Category;
 import lombok.Builder;
 import lombok.Value;
+import lombok.extern.jackson.Jacksonized;
 
 @Value
 @Builder
+@Jacksonized
 public class CategoryResponseDto {
 
     Integer id;

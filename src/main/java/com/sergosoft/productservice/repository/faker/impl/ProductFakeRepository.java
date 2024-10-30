@@ -1,12 +1,13 @@
 package com.sergosoft.productservice.repository.faker.impl;
 
 import java.util.Optional;
+import java.util.UUID;
 
+import com.sergosoft.productservice.repository.ProductRepository;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
 
 import com.sergosoft.productservice.domain.Product;
-import com.sergosoft.productservice.repository.ProductRepository;
 import com.sergosoft.productservice.repository.faker.FakeRepository;
 
 /**
@@ -16,12 +17,15 @@ import com.sergosoft.productservice.repository.faker.FakeRepository;
 @Repository
 @Profile("fakeRepository")
 //@Deprecated(forRemoval = true)
-public class ProductFakeRepository extends FakeRepository<Product, Long> implements ProductRepository {
+public class ProductFakeRepository extends FakeRepository<Product, UUID> implements ProductRepository {
+
+    public ProductFakeRepository() {
+        lastId = UUID.randomUUID();
+    }
 
     @Override
-    protected Long nextId() {
-        lastId = lastId + 1;
-        return lastId;
+    protected void nextId() {
+        lastId = UUID.randomUUID();
     }
 
     @Override
@@ -31,13 +35,13 @@ public class ProductFakeRepository extends FakeRepository<Product, Long> impleme
     }
 
     @Override
-    public Optional<Product> findById(Long primaryKey) {
+    public Optional<Product> findById(UUID primaryKey) {
         // todo implement
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public void delete(Long id) {
+    public void delete(UUID id) {
         // todo implement
         throw new UnsupportedOperationException();
     }

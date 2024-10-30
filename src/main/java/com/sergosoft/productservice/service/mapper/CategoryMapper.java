@@ -1,5 +1,6 @@
 package com.sergosoft.productservice.service.mapper;
 
+import com.sergosoft.productservice.dto.category.CategoryCreateDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
@@ -21,4 +22,8 @@ public interface CategoryMapper {
     @Mapping(target = "title", source = "title")
     @Mapping(target = "parent.id", source = "parentId")
     Category toEntity(CategoryResponseDto dto);
+
+    @Mapping(target = "title", source = "title")
+    @Mapping(target = "parent.id", source = "parentId")
+    Category toEntity(CategoryCreateDto dto);
 }

@@ -5,6 +5,7 @@ import jakarta.validation.constraints.Positive;
 
 import lombok.Builder;
 import lombok.Value;
+import lombok.extern.jackson.Jacksonized;
 
 /**
  * Data Transfer Object for creating a new category of product.
@@ -16,6 +17,7 @@ import lombok.Value;
  */
 @Value
 @Builder
+@Jacksonized
 public class CategoryCreateDto {
 
     /**
