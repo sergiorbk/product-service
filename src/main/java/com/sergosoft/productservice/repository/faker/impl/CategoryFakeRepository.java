@@ -28,13 +28,8 @@ public class CategoryFakeRepository extends FakeRepository<Category, Integer> im
     @Override
     public Category save(Category entity) {
         Integer id = entity.getId() == null ? nextId() : entity.getId();
-        database.put(id,
-                Category.builder()
-                        .id(id)
-                        .title(entity.getTitle())
-                        .parent(entity.getParent())
-                        .build()
-        );
+        Category categoryToSave = new Category(id, entity.getTitle(), entity.getParent());
+        database.put(id, categoryToSave);
         return database.get(id);
     }
 }

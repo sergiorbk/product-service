@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
 
 import com.sergosoft.productservice.domain.Category;
 import com.sergosoft.productservice.service.CategoryService;
@@ -21,11 +20,15 @@ import com.sergosoft.productservice.dto.category.CategoryResponseDto;
 @RestController
 @RequestMapping("/api/v1/categories")
 @Validated
-@RequiredArgsConstructor
 public class CategoryController {
 
     private final CategoryService categoryService;
     private final CategoryMapper categoryMapper;
+
+    public CategoryController(CategoryService categoryService, CategoryMapper categoryMapper) {
+        this.categoryService = categoryService;
+        this.categoryMapper = categoryMapper;
+    }
 
     @GetMapping("/{id}")
     public ResponseEntity<CategoryResponseDto> getCategoryById(@PathVariable Integer id) {
