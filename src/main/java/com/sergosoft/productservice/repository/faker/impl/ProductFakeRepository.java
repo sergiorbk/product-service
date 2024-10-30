@@ -2,11 +2,11 @@ package com.sergosoft.productservice.repository.faker.impl;
 
 import java.util.UUID;
 
-import com.sergosoft.productservice.repository.ProductRepository;
-import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
+import org.springframework.context.annotation.Profile;
 
 import com.sergosoft.productservice.domain.Product;
+import com.sergosoft.productservice.repository.ProductRepository;
 import com.sergosoft.productservice.repository.faker.FakeRepository;
 
 /**
@@ -30,7 +30,13 @@ public class ProductFakeRepository extends FakeRepository<Product, UUID> impleme
 
     @Override
     public Product save(Product entity) {
-        // todo implement
-        throw new UnsupportedOperationException();
+       UUID id = entity.getId() == null ? nextId() : entity.getId();
+        database.put(id,
+                Product.builder()
+                        .id(id)
+                        .build()
+                // todo implement other Product fields
+        );
+        return database.get(id);
     }
 }

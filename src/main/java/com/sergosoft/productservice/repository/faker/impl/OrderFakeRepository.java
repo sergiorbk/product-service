@@ -22,13 +22,22 @@ public class OrderFakeRepository extends FakeRepository<Order, Long> implements 
 
     @Override
     protected Long nextId() {
+        if(lastId == null) {
+            lastId = 0L;
+        }
         lastId = lastId + 1;
         return lastId;
     }
 
     @Override
     public Order save(Order entity) {
-        // todo implement
-        throw new UnsupportedOperationException();
+        Long id = entity.getId() == null ? nextId() : entity.getId();
+        database.put(id,
+                Order.builder()
+                        .id(id)
+                        .build()
+                // todo implement other Order fields
+        );
+        return database.get(id);
     }
 }
