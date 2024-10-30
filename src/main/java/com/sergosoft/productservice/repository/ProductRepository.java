@@ -1,6 +1,6 @@
 package com.sergosoft.productservice.repository;
 
-import com.sergosoft.productservice.domain.Product;
+import com.sergosoft.productservice.domain.product.Product;
 import com.sergosoft.productservice.repository.faker.FakeCrudRepository;
 
 import java.util.UUID;

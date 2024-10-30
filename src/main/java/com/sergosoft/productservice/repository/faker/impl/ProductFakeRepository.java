@@ -5,7 +5,7 @@ import java.util.UUID;
 import org.springframework.stereotype.Repository;
 import org.springframework.context.annotation.Profile;
 
-import com.sergosoft.productservice.domain.Product;
+import com.sergosoft.productservice.domain.product.Product;
 import com.sergosoft.productservice.repository.ProductRepository;
 import com.sergosoft.productservice.repository.faker.FakeRepository;
 

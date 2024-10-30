@@ -9,7 +9,9 @@ import java.util.UUID;
 @Value
 @Builder
 @AllArgsConstructor
-public class Product {
+public class Person {
 
     UUID id;
+    String username;
+    String email;
 }

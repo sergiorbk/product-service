@@ -1,5 +1,6 @@
 package com.sergosoft.productservice.domain;
 
+import com.sergosoft.productservice.domain.product.Product;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Value;
