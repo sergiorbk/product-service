@@ -1,9 +1,10 @@
 package com.sergosoft.productservice.service.mapper;
 
+import org.springframework.stereotype.Component;
+
 import com.sergosoft.productservice.domain.Category;
 import com.sergosoft.productservice.dto.category.CategoryCreateDto;
 import com.sergosoft.productservice.dto.category.CategoryResponseDto;
-import org.springframework.stereotype.Component;
 
 @Component
 public class CategoryMapper {

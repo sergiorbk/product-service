@@ -1,7 +1,7 @@
 package com.sergosoft.productservice.dto.order;
 
-import lombok.Builder;
 import lombok.Value;
+import lombok.Builder;
 
 @Value
 @Builder

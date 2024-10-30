@@ -1,11 +1,9 @@
 package com.sergosoft.productservice.repository.faker;
 
-import com.sergosoft.productservice.domain.Category;
-
-import java.io.Serializable;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.HashMap;
 import java.util.Optional;
+import java.io.Serializable;
 
 /**
  * Represents a data repository of type T and id-type ID.<br>

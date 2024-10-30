@@ -1,7 +1,7 @@
 package com.sergosoft.productservice.dto.category;
 
-import lombok.Builder;
 import lombok.Value;
+import lombok.Builder;
 import lombok.extern.jackson.Jacksonized;
 
 @Value

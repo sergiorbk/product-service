@@ -3,8 +3,8 @@ package com.sergosoft.productservice.dto.category;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
 
-import lombok.Builder;
 import lombok.Value;
+import lombok.Builder;
 import lombok.extern.jackson.Jacksonized;
 
 /**
