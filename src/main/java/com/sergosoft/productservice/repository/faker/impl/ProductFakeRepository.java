@@ -1,6 +1,5 @@
 package com.sergosoft.productservice.repository.faker.impl;
 
-import java.util.Optional;
 import java.util.UUID;
 
 import com.sergosoft.productservice.repository.ProductRepository;
@@ -24,24 +23,13 @@ public class ProductFakeRepository extends FakeRepository<Product, UUID> impleme
     }
 
     @Override
-    protected void nextId() {
+    protected UUID nextId() {
         lastId = UUID.randomUUID();
+        return lastId;
     }
 
     @Override
     public Product save(Product entity) {
-        // todo implement
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public Optional<Product> findById(UUID primaryKey) {
-        // todo implement
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void delete(UUID id) {
         // todo implement
         throw new UnsupportedOperationException();
     }

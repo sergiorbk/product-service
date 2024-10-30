@@ -1,9 +1,7 @@
 package com.sergosoft.productservice.repository.faker.impl;
 
-import java.util.Optional;
-
-import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
+import org.springframework.context.annotation.Profile;
 
 import com.sergosoft.productservice.domain.Order;
 import com.sergosoft.productservice.repository.OrderRepository;
@@ -23,24 +21,13 @@ public class OrderFakeRepository extends FakeRepository<Order, Long> implements 
     }
 
     @Override
-    protected void nextId() {
+    protected Long nextId() {
         lastId = lastId + 1;
+        return lastId;
     }
 
     @Override
     public Order save(Order entity) {
-        // todo implement
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public Optional<Order> findById(Long primaryKey) {
-        // todo implement
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void delete(Long id) {
         // todo implement
         throw new UnsupportedOperationException();
     }

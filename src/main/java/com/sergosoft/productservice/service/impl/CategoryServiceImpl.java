@@ -8,7 +8,9 @@ import lombok.RequiredArgsConstructor;
 import com.sergosoft.productservice.domain.Category;
 import com.sergosoft.productservice.service.CategoryService;
 import com.sergosoft.productservice.repository.CategoryRepository;
+import com.sergosoft.productservice.dto.category.CategoryCreateDto;
 import com.sergosoft.productservice.service.exception.CategoryNotFoundException;
+import com.sergosoft.productservice.service.exception.ParentCategoryNotFoundException;
 
 @Service
 @Slf4j
@@ -24,9 +26,41 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public Category createCategory(Category category) {
-        log.info("Creating new product category: {}", category);
-        return categoryRepository.save(category);
+    public Category createCategory(CategoryCreateDto categoryCreateDto) {
+        log.info("Creating new product category: {}", categoryCreateDto);
+        Integer parentId = categoryCreateDto.getParentId();
+        Category parentCategory = null;
+        // if parent category id was specified
+        if(parentId != null) {
+            log.debug("Getting parent category with id: {}", categoryCreateDto.getParentId());
+            parentCategory = categoryRepository.findById(categoryCreateDto.getParentId())
+                    .orElseThrow(() -> new ParentCategoryNotFoundException(categoryCreateDto.getParentId()));
+            log.debug("Retrieved parent category with id {}: {}", parentId, parentCategory);
+        }
+        Category categoryToSave = Category.builder()
+                .title(categoryCreateDto.getTitle())
+                .parent(parentCategory)
+                .build();
+        log.debug("Saving new category: {}", categoryToSave);
+        return categoryRepository.save(categoryToSave);
+    }
+
+    @Override
+    public Category updateCategory(Integer id, CategoryCreateDto categoryDto) {
+        log.info("Updating category with id: {}", id);
+        log.debug("Retrieving category to update by id: {}", id);
+        Category existingCategory = categoryRepository.findById(id)
+                .orElseThrow(() -> new CategoryNotFoundException(id));
+        log.debug("Retrieved category to update with id{}: {}", id, existingCategory);
+        Integer dtoParentId = categoryDto.getParentId();
+
+        Category updatedCategory = Category.builder()
+                .id(existingCategory.getId())
+                .title(categoryDto.getTitle())
+                .parent(dtoParentId == null ? null : getCategoryById(dtoParentId))
+                .build();
+        log.info("Saving updated category with id {}: {}", id, updatedCategory);
+        return categoryRepository.save(updatedCategory);
     }
 
     @Override
