@@ -18,19 +18,24 @@ import com.sergosoft.productservice.repository.faker.FakeRepository;
 //@Deprecated(forRemoval = true)
 public class CategoryFakeRepository extends FakeRepository<Category, Integer> implements CategoryRepository {
 
-    public CategoryFakeRepository() {
-        lastId = 0;
-    }
-
     @Override
     protected void nextId() {
+        if(lastId == null) {
+            lastId = 0;
+        }
         lastId = lastId + 1;
     }
 
     @Override
     public Category save(Category entity) {
         nextId();
-        return database.put(lastId, new Category(lastId, entity.getTitle(), entity.getParent()));
+        database.put(lastId, Category.builder()
+                .id(lastId)
+                .title(entity.getTitle())
+                .parent(entity.getParent())
+                .build()
+        );
+        return database.get(lastId);
     }
 
     @Override

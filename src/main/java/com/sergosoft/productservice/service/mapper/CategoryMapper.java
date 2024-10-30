@@ -1,29 +1,53 @@
 package com.sergosoft.productservice.service.mapper;
 
-import com.sergosoft.productservice.dto.category.CategoryCreateDto;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.factory.Mappers;
-
 import com.sergosoft.productservice.domain.Category;
+import com.sergosoft.productservice.dto.category.CategoryCreateDto;
 import com.sergosoft.productservice.dto.category.CategoryResponseDto;
+import org.springframework.stereotype.Component;
 
-@Mapper(componentModel = "spring")
-public interface CategoryMapper {
+@Component
+public class CategoryMapper {
 
-    CategoryMapper INSTANCE = Mappers.getMapper(CategoryMapper.class);
+    public CategoryResponseDto toDto(Category entity) {
+        if (entity == null) {
+            return null;
+        }
 
-    @Mapping(target = "id", source = "id")
-    @Mapping(target = "title", source = "title")
-    @Mapping(target = "parentId", source = "parent.id")
-    CategoryResponseDto toDto(Category entity);
+        return CategoryResponseDto.builder()
+                .id(entity.getId())
+                .title(entity.getTitle())
+                .parentId(entity.getParent() != null ? entity.getParent().getId() : null)
+                .build();
+    }
 
-    @Mapping(target = "id", source = "id")
-    @Mapping(target = "title", source = "title")
-    @Mapping(target = "parent.id", source = "parentId")
-    Category toEntity(CategoryResponseDto dto);
+    public Category toEntity(CategoryResponseDto dto) {
+        if (dto == null) {
+            return null;
+        }
 
-    @Mapping(target = "title", source = "title")
-    @Mapping(target = "parent.id", source = "parentId")
-    Category toEntity(CategoryCreateDto dto);
+        Category.CategoryBuilder builder = Category.builder()
+                .id(dto.getId())
+                .title(dto.getTitle());
+
+        if (dto.getParentId() != null) {
+            builder.parent(Category.builder().id(dto.getParentId()).build());
+        }
+
+        return builder.build();
+    }
+
+    public Category toEntity(CategoryCreateDto dto) {
+        if (dto == null) {
+            return null;
+        }
+
+        Category.CategoryBuilder builder = Category.builder()
+                .title(dto.getTitle());
+
+        if (dto.getParentId() != null) {
+            builder.parent(Category.builder().id(dto.getParentId()).build());
+        }
+
+        return builder.build();
+    }
 }
