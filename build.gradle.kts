@@ -2,6 +2,7 @@ plugins {
 	java
 	id("org.springframework.boot") version "3.3.5"
 	id("io.spring.dependency-management") version "1.1.6"
+	id("org.barfuin.gradle.jacocolog") version "3.1.0" // for labs
 }
 
 group = "com.sergosoft"
@@ -9,9 +10,16 @@ version = "0.0.1"
 
 java {
 	toolchain {
-		languageVersion = JavaLanguageVersion.of(17)
+		languageVersion.set(JavaLanguageVersion.of(17))
 	}
 }
+
+// Minimum coverage for labs
+extra["minimumCoveragePerFile"] = 0.8
+extra["filesExcludedFromCoverage"] = listOf(
+	"**/*MarketApplication.*",
+	"**/config/*Configuration.*"
+)
 
 configurations {
 	compileOnly {
@@ -23,8 +31,11 @@ repositories {
 	mavenCentral()
 }
 
+// for labs
+apply(from = "${rootProject.projectDir}/gradle/test.gradle")
+apply(from = "${rootProject.projectDir}/gradle/jacoco.gradle")
+
 dependencies {
-//	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	implementation("org.springframework.boot:spring-boot-starter-validation")
 	implementation("org.springframework.boot:spring-boot-starter-web")
 	implementation("org.projectlombok:lombok-mapstruct-binding:0.2.0")
