@@ -1,12 +1,14 @@
 package com.sergosoft.productservice.service.impl;
 
-import com.sergosoft.productservice.domain.Category;
-import com.sergosoft.productservice.repository.CategoryRepository;
-import com.sergosoft.productservice.service.CategoryService;
-import com.sergosoft.productservice.service.exception.CategoryNotFoundException;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+
+import lombok.extern.slf4j.Slf4j;
+import lombok.RequiredArgsConstructor;
+
+import com.sergosoft.productservice.domain.Category;
+import com.sergosoft.productservice.service.CategoryService;
+import com.sergosoft.productservice.repository.CategoryRepository;
+import com.sergosoft.productservice.service.exception.CategoryNotFoundException;
 
 @Service
 @Slf4j
@@ -17,22 +19,19 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public Category getCategoryById(Integer id) {
-        return categoryRepository.findById(id)
-                .orElseThrow(() -> new CategoryNotFoundException(id));
-        // todo
+        log.info("Getting product category by id: {}", id);
+        return categoryRepository.findById(id).orElseThrow(() -> new CategoryNotFoundException(id));
     }
 
     @Override
     public Category createCategory(Category category) {
+        log.info("Creating new product category: {}", category);
         return categoryRepository.save(category);
-        // todo logging
     }
 
     @Override
-    public void deleteCategoryById(Integer categoryId) {
-        categoryRepository.delete(categoryId);
-        // todo logging
+    public void deleteCategoryById(Integer id) {
+        log.info("Deleting category with id: {}", id);
+        categoryRepository.delete(id);
     }
-
-    // todo
 }
