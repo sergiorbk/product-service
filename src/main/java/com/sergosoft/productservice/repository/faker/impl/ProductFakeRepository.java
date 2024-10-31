@@ -18,10 +18,6 @@ import com.sergosoft.productservice.repository.faker.FakeRepository;
 //@Deprecated(forRemoval = true)
 public class ProductFakeRepository extends FakeRepository<Product, UUID> implements ProductRepository {
 
-    public ProductFakeRepository() {
-        lastId = UUID.randomUUID();
-    }
-
     @Override
     protected UUID nextId() {
         lastId = UUID.randomUUID();
@@ -31,11 +27,8 @@ public class ProductFakeRepository extends FakeRepository<Product, UUID> impleme
     @Override
     public Product save(Product entity) {
        UUID id = entity.getId() == null ? nextId() : entity.getId();
-        database.put(id,
-                Product.builder()
-                        .id(id)
-                        .build()
-                // todo implement other Product fields
+        database.put(id, new Product(id, entity.getOwnerId(), entity.getTitle(), entity.getDescription(),
+                entity.getCategories(), entity.getPrice())
         );
         return database.get(id);
     }
