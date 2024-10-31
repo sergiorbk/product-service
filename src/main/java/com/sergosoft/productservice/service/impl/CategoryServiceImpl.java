@@ -9,8 +9,8 @@ import com.sergosoft.productservice.domain.Category;
 import com.sergosoft.productservice.service.CategoryService;
 import com.sergosoft.productservice.repository.CategoryRepository;
 import com.sergosoft.productservice.dto.category.CategoryCreateDto;
-import com.sergosoft.productservice.service.exception.CategoryNotFoundException;
-import com.sergosoft.productservice.service.exception.ParentCategoryNotFoundException;
+import com.sergosoft.productservice.service.exception.category.CategoryNotFoundException;
+import com.sergosoft.productservice.service.exception.category.ParentCategoryNotFoundException;
 
 @Service
 @Slf4j
@@ -22,7 +22,9 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public Category getCategoryById(Integer id) {
         log.info("Getting product category by id: {}", id);
-        return categoryRepository.findById(id).orElseThrow(() -> new CategoryNotFoundException(id));
+        Category retrievedCategory = categoryRepository.findById(id).orElseThrow(() -> new CategoryNotFoundException(id));
+        log.info("Category was retrieved successfully: {}", retrievedCategory);
+        return retrievedCategory;
     }
 
     @Override
@@ -39,7 +41,10 @@ public class CategoryServiceImpl implements CategoryService {
         }
         Category categoryToSave = new Category(null, categoryCreateDto.getTitle(), parentCategory);
         log.debug("Saving new category: {}", categoryToSave);
-        return categoryRepository.save(categoryToSave);
+
+        Category savedCategory = categoryRepository.save(categoryToSave);
+        log.info("New category was saved successfully: {}", savedCategory);
+        return savedCategory;
     }
 
     @Override
@@ -55,12 +60,26 @@ public class CategoryServiceImpl implements CategoryService {
                 dtoParentId == null ? null : getCategoryById(dtoParentId));
 
         log.info("Saving updated category with id {}: {}", id, updatedCategory);
-        return categoryRepository.save(updatedCategory);
+
+        Category savedCategory = categoryRepository.save(updatedCategory);
+        log.info("Updated category was saved successfully: {}", savedCategory);
+        return savedCategory;
     }
 
     @Override
     public void deleteCategoryById(Integer id) {
-        log.info("Deleting category with id: {}", id);
-        categoryRepository.delete(id);
+        log.info("Truing to delete a category with id: {}", id);
+        if(categoryRepository.existsById(id)) {
+            log.info("Deleting existent category with id: {}", id);
+            categoryRepository.delete(id);
+            // check does category with such id still exist after deletion
+            if(categoryRepository.existsById(id)) {
+                log.info("Category with id {} was deleted successfully.", id);
+            } else {
+                log.error("Unable to Delete Category with id {}.", id);
+            }
+        } else {
+            log.error("Unable to Delete non-existent Category with id {}.", id);
+        }
     }
 }
