@@ -9,12 +9,14 @@ import com.sergosoft.productservice.service.OrderItemService;
 import com.sergosoft.productservice.service.ProductService;
 import com.sergosoft.productservice.service.exception.OrderItemNotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.List;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class OrderItemServiceImpl implements OrderItemService {
 
@@ -67,11 +69,14 @@ public class OrderItemServiceImpl implements OrderItemService {
     }
 
     @Override
-    public void deleteAllByOrderId(Long id) {
-        if (itemRepository.existsById(id)) {
-            itemRepository.deleteById(id);
+    public void deleteAllByOrderId(Long orderId) {
+        List<OrderItem> orderItems = itemRepository.findByOrderId(orderId);
+
+        if (!orderItems.isEmpty()) {
+            itemRepository.deleteAll(orderItems);
+            log.info("Deleted {} items for order ID: {}", orderItems.size(), orderId);
         } else {
-            throw new OrderItemNotFoundException(id);
+            log.warn("No items found for order ID: {}", orderId);
         }
     }
 }

@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
 
@@ -46,8 +47,14 @@ public class OrderServiceImpl implements OrderService {
         Order savedOrder = orderRepository.save(orderToSave);
 
         List<OrderItem> orderItems = orderItemService.createOrderItems(savedOrder, orderCreationDto.getItems());
+        BigDecimal totalPrice = orderItems.stream()
+                .map(OrderItem::getPrice)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        savedOrder = savedOrder.toBuilder().items(orderItems).build();
+        savedOrder = savedOrder.toBuilder()
+                .items(orderItems)
+                .totalPrice(totalPrice)
+                .build();
         savedOrder = orderRepository.save(savedOrder);
 
         log.info("New order created successfully: {}", savedOrder);
@@ -63,11 +70,15 @@ public class OrderServiceImpl implements OrderService {
         orderItemService.deleteAllByOrderId(id);
 
         List<OrderItem> updatedItems = orderItemService.createOrderItems(existingOrder, orderCreationDto.getItems());
+        BigDecimal totalPrice = updatedItems.stream()
+                .map(OrderItem::getPrice)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
 
         Order updatedOrder = existingOrder.toBuilder()
                 .sellerId(orderCreationDto.getSellerId())
                 .buyerId(orderCreationDto.getBuyerId())
                 .items(updatedItems)
+                .totalPrice(totalPrice)
                 .build();
 
         updatedOrder = orderRepository.save(updatedOrder);

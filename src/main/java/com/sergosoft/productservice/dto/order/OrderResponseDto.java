@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
@@ -18,6 +19,6 @@ public class OrderResponseDto {
     UUID sellerId;
     UUID buyerId;
     List<OrderItemResponseDto> items;
-    Double totalPrice;
+    BigDecimal totalPrice;
     Instant createdAt;
 }
