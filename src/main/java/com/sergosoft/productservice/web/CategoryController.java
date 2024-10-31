@@ -13,7 +13,7 @@ import jakarta.validation.Valid;
 import com.sergosoft.productservice.domain.Category;
 import com.sergosoft.productservice.service.CategoryService;
 import com.sergosoft.productservice.service.mapper.CategoryMapper;
-import com.sergosoft.productservice.dto.category.CategoryCreateDto;
+import com.sergosoft.productservice.dto.category.CategoryCreationDto;
 import com.sergosoft.productservice.dto.category.CategoryResponseDto;
 
 @Slf4j
@@ -38,7 +38,7 @@ public class CategoryController {
     }
 
     @PostMapping
-    public ResponseEntity<CategoryResponseDto> createCategory(@RequestBody @Valid CategoryCreateDto categoryDto) {
+    public ResponseEntity<CategoryResponseDto> createCategory(@RequestBody @Valid CategoryCreationDto categoryDto) {
         Category createdCategory = categoryService.createCategory(categoryDto);
         CategoryResponseDto createdCategoryResponseDto = categoryMapper.toDto(createdCategory);
         URI location = ServletUriComponentsBuilder
@@ -51,7 +51,7 @@ public class CategoryController {
 
     @PutMapping("/{categoryId}")
     public ResponseEntity<CategoryResponseDto> updateCategory(@PathVariable Integer categoryId,
-                                                              @RequestBody @Valid CategoryCreateDto categoryDto) {
+                                                              @RequestBody @Valid CategoryCreationDto categoryDto) {
         Category updatedCategory = categoryService.updateCategory(categoryId, categoryDto);
         return ResponseEntity.ok(categoryMapper.toDto(updatedCategory));
     }

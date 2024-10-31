@@ -16,10 +16,6 @@ import com.sergosoft.productservice.repository.faker.FakeRepository;
 //@Deprecated(forRemoval = true)
 public class OrderFakeRepository extends FakeRepository<Order, Long> implements OrderRepository {
 
-    public OrderFakeRepository() {
-        lastId = 0L;
-    }
-
     @Override
     protected Long nextId() {
         if(lastId == null) {
@@ -32,7 +28,7 @@ public class OrderFakeRepository extends FakeRepository<Order, Long> implements 
     @Override
     public Order save(Order entity) {
         Long id = entity.getId() == null ? nextId() : entity.getId();
-        database.put(id, new Order(id, entity.getOrderItems(), entity.getSellerId(), entity.getBuyerId(),
+        database.put(id, new Order(id, entity.getItems(), entity.getSellerId(), entity.getBuyerId(),
                 entity.getTotalPrice(), entity.getCreatedAt()));
         return database.get(id);
     }

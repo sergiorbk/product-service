@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 import com.sergosoft.productservice.domain.Category;
 import com.sergosoft.productservice.service.CategoryService;
 import com.sergosoft.productservice.repository.CategoryRepository;
-import com.sergosoft.productservice.dto.category.CategoryCreateDto;
+import com.sergosoft.productservice.dto.category.CategoryCreationDto;
 import com.sergosoft.productservice.service.exception.category.CategoryNotFoundException;
 import com.sergosoft.productservice.service.exception.category.ParentCategoryNotFoundException;
 
@@ -28,18 +28,18 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public Category createCategory(CategoryCreateDto categoryCreateDto) {
-        log.info("Creating new product category: {}", categoryCreateDto);
-        Integer parentId = categoryCreateDto.getParentId();
+    public Category createCategory(CategoryCreationDto categoryCreationDto) {
+        log.info("Creating new product category: {}", categoryCreationDto);
+        Integer parentId = categoryCreationDto.getParentId();
         Category parentCategory = null;
         // if parent category id was specified
         if(parentId != null) {
-            log.debug("Getting parent category with id: {}", categoryCreateDto.getParentId());
-            parentCategory = categoryRepository.findById(categoryCreateDto.getParentId())
-                    .orElseThrow(() -> new ParentCategoryNotFoundException(categoryCreateDto.getParentId()));
+            log.debug("Getting parent category with id: {}", categoryCreationDto.getParentId());
+            parentCategory = categoryRepository.findById(categoryCreationDto.getParentId())
+                    .orElseThrow(() -> new ParentCategoryNotFoundException(categoryCreationDto.getParentId()));
             log.debug("Retrieved parent category with id {}: {}", parentId, parentCategory);
         }
-        Category categoryToSave = new Category(null, categoryCreateDto.getTitle(), parentCategory);
+        Category categoryToSave = new Category(null, categoryCreationDto.getTitle(), parentCategory);
         log.debug("Saving new category: {}", categoryToSave);
 
         Category savedCategory = categoryRepository.save(categoryToSave);
@@ -48,7 +48,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public Category updateCategory(Integer id, CategoryCreateDto categoryDto) {
+    public Category updateCategory(Integer id, CategoryCreationDto categoryDto) {
         log.info("Updating category with id: {}", id);
         log.debug("Retrieving category to update by id: {}", id);
         Category existingCategory = categoryRepository.findById(id)
@@ -71,7 +71,7 @@ public class CategoryServiceImpl implements CategoryService {
         log.info("Truing to delete a category with id: {}", id);
         if(categoryRepository.existsById(id)) {
             log.info("Deleting existent category with id: {}", id);
-            categoryRepository.delete(id);
+            categoryRepository.deleteById(id);
             // check does category with such id still exist after deletion
             if(categoryRepository.existsById(id)) {
                 log.info("Category with id {} was deleted successfully.", id);

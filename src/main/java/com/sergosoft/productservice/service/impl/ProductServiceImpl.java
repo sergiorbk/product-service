@@ -2,7 +2,7 @@ package com.sergosoft.productservice.service.impl;
 
 import com.sergosoft.productservice.domain.Category;
 import com.sergosoft.productservice.domain.Product;
-import com.sergosoft.productservice.dto.product.ProductCreateDto;
+import com.sergosoft.productservice.dto.product.ProductCreationDto;
 import com.sergosoft.productservice.service.CategoryService;
 import com.sergosoft.productservice.service.exception.ProductNotFoundException;
 import org.springframework.stereotype.Service;
@@ -35,7 +35,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Product createProduct(ProductCreateDto dto) {
+    public Product createProduct(ProductCreationDto dto) {
         log.info("Creating new product: {}", dto);
         List<Category> categories = dto.getCategoriesIds().stream().map(categoryService::getCategoryById).toList();
         // todo implement getting ownerUUID from SecurityContextHolder
@@ -47,7 +47,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Product updateProduct(UUID id, ProductCreateDto dto) {
+    public Product updateProduct(UUID id, ProductCreationDto dto) {
         log.info("Updating product with id: {}", id);
 
         log.debug("Retrieving a product to update by id: {}", id);
@@ -69,7 +69,7 @@ public class ProductServiceImpl implements ProductService {
         log.info("Truing to delete product with id: {}", id);
         if(productRepository.existsById(id)) {
             log.info("Deleting existent product with id: {}", id);
-            productRepository.delete(id);
+            productRepository.deleteById(id);
             // check does product with such id still exist after deletion
             if(productRepository.existsById(id)) {
                 log.info("Product with id {} was deleted successfully.", id);

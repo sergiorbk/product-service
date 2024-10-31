@@ -12,7 +12,7 @@ import lombok.Builder;
 
 @Value
 @Builder
-public class ProductCreateDto {
+public class ProductCreationDto {
 
     @NotBlank(message = "Title is mandatory.")
     String title;

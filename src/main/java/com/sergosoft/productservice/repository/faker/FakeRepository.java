@@ -26,7 +26,7 @@ public abstract class FakeRepository <T, ID extends Serializable> implements Fak
     }
 
     @Override
-    public void delete(ID id) {
+    public void deleteById(ID id) {
         database.remove(id);
     }
 

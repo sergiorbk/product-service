@@ -9,12 +9,12 @@ import java.util.List;
 import java.util.UUID;
 
 @Value
-@Builder
+@Builder(toBuilder = true)
 @AllArgsConstructor
 public class Order {
 
     Long id;
-    List<OrderItem> orderItems;
+    List<OrderItem> items;
 
     // this microservice is going to keep the conception of P2P trading
     UUID sellerId;

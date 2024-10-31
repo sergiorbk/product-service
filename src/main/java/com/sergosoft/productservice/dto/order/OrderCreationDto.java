@@ -1,5 +1,6 @@
 package com.sergosoft.productservice.dto.order;
 
+import com.sergosoft.productservice.dto.order.item.OrderItemCreationDto;
 import lombok.Value;
 import lombok.Builder;
 
@@ -8,10 +9,10 @@ import java.util.UUID;
 
 @Value
 @Builder
-public class OrderCreateDto {
+public class OrderCreationDto {
 
     UUID sellerId;
     UUID buyerId;
-    List<OrderItemDto> items;
+    List<OrderItemCreationDto> items;
     Double totalPrice;
 }
