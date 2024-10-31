@@ -3,7 +3,7 @@ package com.sergosoft.productservice.repository.faker.impl;
 import org.springframework.stereotype.Repository;
 import org.springframework.context.annotation.Profile;
 
-import com.sergosoft.productservice.domain.Order;
+import com.sergosoft.productservice.domain.order.Order;
 import com.sergosoft.productservice.repository.OrderRepository;
 import com.sergosoft.productservice.repository.faker.FakeRepository;
 
@@ -32,12 +32,8 @@ public class OrderFakeRepository extends FakeRepository<Order, Long> implements 
     @Override
     public Order save(Order entity) {
         Long id = entity.getId() == null ? nextId() : entity.getId();
-        database.put(id,
-                Order.builder()
-                        .id(id)
-                        .build()
-                // todo implement other Order fields
-        );
+        database.put(id, new Order(id, entity.getOrderItems(), entity.getSellerId(), entity.getBuyerId(),
+                entity.getTotalPrice(), entity.getCreatedAt()));
         return database.get(id);
     }
 }

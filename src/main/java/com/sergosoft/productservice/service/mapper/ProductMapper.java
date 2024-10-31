@@ -17,6 +17,7 @@ public interface ProductMapper {
     @Mapping(target = "description", source = "description")
     @Mapping(target = "categoriesIds", source = "categories")
     @Mapping(target = "price", source = "price")
+    @Mapping(target = "createdAt", source = "createdAt")
     ProductResponseDto toDto(Product product);
 
     default List<Integer> map(List<Category> categories) {

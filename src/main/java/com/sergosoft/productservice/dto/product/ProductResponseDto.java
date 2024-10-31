@@ -4,6 +4,7 @@ import lombok.Builder;
 import lombok.Value;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.List;
 
 @Value
@@ -16,5 +17,6 @@ public class ProductResponseDto {
     String description;
     List<Integer> categoriesIds;
     BigDecimal price;
+    Instant createdAt;
 //    String currencyCode;
 }
