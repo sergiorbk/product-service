@@ -1,5 +1,6 @@
 package com.sergosoft.productservice.repository.faker.impl;
 
+import java.time.Instant;
 import java.util.UUID;
 
 import org.springframework.stereotype.Repository;
@@ -28,7 +29,7 @@ public class ProductFakeRepository extends FakeRepository<Product, UUID> impleme
     public Product save(Product entity) {
        UUID id = entity.getId() == null ? nextId() : entity.getId();
         database.put(id, new Product(id, entity.getOwnerId(), entity.getTitle(), entity.getDescription(),
-                entity.getCategories(), entity.getPrice())
+                entity.getCategories(), entity.getPrice(), Instant.now())
         );
         return database.get(id);
     }

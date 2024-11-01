@@ -1,7 +1,7 @@
 package com.sergosoft.productservice.web;
 
 import com.sergosoft.productservice.domain.Product;
-import com.sergosoft.productservice.dto.product.ProductCreateDto;
+import com.sergosoft.productservice.dto.product.ProductCreationDto;
 import com.sergosoft.productservice.dto.product.ProductResponseDto;
 import com.sergosoft.productservice.service.mapper.ProductMapper;
 import jakarta.validation.Valid;
@@ -36,7 +36,7 @@ public class ProductController {
     }
 
     @PostMapping
-    public ResponseEntity<ProductResponseDto> createProduct(@RequestBody @Valid ProductCreateDto categoryDto) {
+    public ResponseEntity<ProductResponseDto> createProduct(@RequestBody @Valid ProductCreationDto categoryDto) {
         Product createdProduct = productService.createProduct(categoryDto);
         ProductResponseDto createdProductResponseDto = productMapper.toDto(createdProduct);
         URI location = ServletUriComponentsBuilder
@@ -49,7 +49,7 @@ public class ProductController {
 
     @PutMapping("/{id}")
     public ResponseEntity<ProductResponseDto> updateProduct(@PathVariable UUID id,
-                                                              @RequestBody @Valid ProductCreateDto productDto) {
+                                                              @RequestBody @Valid ProductCreationDto productDto) {
         Product updatedProduct = productService.updateProduct(id, productDto);
         return ResponseEntity.ok(productMapper.toDto(updatedProduct));
     }

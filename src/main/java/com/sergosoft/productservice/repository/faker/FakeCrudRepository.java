@@ -7,6 +7,6 @@ public interface FakeCrudRepository <T, ID extends Serializable> {
 
     T save(T entity);
     Optional<T> findById(ID primaryKey);
-    void delete(ID id);
+    void deleteById(ID id);
     boolean existsById(ID id);
 }

@@ -1,6 +1,7 @@
 package com.sergosoft.productservice.domain;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
@@ -19,5 +20,6 @@ public class Product {
     String description;
     List<Category> categories;
     BigDecimal price;
+    Instant createdAt;
 //    CurrencyRate currency;
 }
