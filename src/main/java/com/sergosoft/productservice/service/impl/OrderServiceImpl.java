@@ -1,21 +1,22 @@
 package com.sergosoft.productservice.service.impl;
 
-import com.sergosoft.productservice.domain.order.Order;
-import com.sergosoft.productservice.domain.order.OrderItem;
-import com.sergosoft.productservice.repository.OrderRepository;
-import com.sergosoft.productservice.service.OrderItemService;
-import com.sergosoft.productservice.service.OrderService;
-import com.sergosoft.productservice.service.exception.OrderNotFoundException;
-import com.sergosoft.productservice.dto.order.OrderCreationDto;
+import java.util.List;
+import java.time.Instant;
+import java.math.BigDecimal;
 
 import lombok.RequiredArgsConstructor;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
-import java.time.Instant;
-import java.util.List;
+import com.sergosoft.productservice.domain.order.Order;
+import com.sergosoft.productservice.service.OrderService;
+import com.sergosoft.productservice.domain.order.OrderItem;
+import com.sergosoft.productservice.service.OrderItemService;
+import com.sergosoft.productservice.dto.order.OrderCreationDto;
+import com.sergosoft.productservice.repository.OrderRepository;
+import com.sergosoft.productservice.service.exception.OrderNotFoundException;
 
 @Service
 @RequiredArgsConstructor
@@ -25,6 +26,12 @@ public class OrderServiceImpl implements OrderService {
 
     private final OrderRepository orderRepository;
     private final OrderItemService orderItemService;
+
+    private BigDecimal calculateTotalPrice(List<OrderItem> items) {
+        return items.stream()
+                .map(OrderItem::getPrice)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
 
     @Override
     public Order getOrderById(Long id) {
@@ -45,18 +52,13 @@ public class OrderServiceImpl implements OrderService {
                 .build();
 
         Order savedOrder = orderRepository.save(orderToSave);
-
         List<OrderItem> orderItems = orderItemService.createOrderItems(savedOrder, orderCreationDto.getItems());
-        BigDecimal totalPrice = orderItems.stream()
-                .map(OrderItem::getPrice)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-
         savedOrder = savedOrder.toBuilder()
                 .items(orderItems)
-                .totalPrice(totalPrice)
+                .totalPrice(calculateTotalPrice(orderItems))
                 .build();
-        savedOrder = orderRepository.save(savedOrder);
 
+        savedOrder = orderRepository.save(savedOrder);
         log.info("New order created successfully: {}", savedOrder);
         return savedOrder;
     }
@@ -68,17 +70,12 @@ public class OrderServiceImpl implements OrderService {
                 .orElseThrow(() -> new OrderNotFoundException(id));
 
         orderItemService.deleteAllByOrderId(id);
-
         List<OrderItem> updatedItems = orderItemService.createOrderItems(existingOrder, orderCreationDto.getItems());
-        BigDecimal totalPrice = updatedItems.stream()
-                .map(OrderItem::getPrice)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-
         Order updatedOrder = existingOrder.toBuilder()
                 .sellerId(orderCreationDto.getSellerId())
                 .buyerId(orderCreationDto.getBuyerId())
                 .items(updatedItems)
-                .totalPrice(totalPrice)
+                .totalPrice(calculateTotalPrice(updatedItems))
                 .build();
 
         updatedOrder = orderRepository.save(updatedOrder);

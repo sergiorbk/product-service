@@ -1,19 +1,22 @@
 package com.sergosoft.productservice.service.impl;
 
+import java.util.List;
+import java.math.BigDecimal;
+
+import org.springframework.stereotype.Service;
+
+import lombok.extern.slf4j.Slf4j;
+import lombok.RequiredArgsConstructor;
+
 import com.sergosoft.productservice.domain.Product;
 import com.sergosoft.productservice.domain.order.Order;
 import com.sergosoft.productservice.domain.order.OrderItem;
-import com.sergosoft.productservice.dto.order.item.OrderItemCreationDto;
-import com.sergosoft.productservice.repository.OrderItemRepository;
-import com.sergosoft.productservice.service.OrderItemService;
 import com.sergosoft.productservice.service.ProductService;
+import com.sergosoft.productservice.service.OrderItemService;
+import com.sergosoft.productservice.repository.OrderItemRepository;
+import com.sergosoft.productservice.dto.order.item.OrderItemCreationDto;
 import com.sergosoft.productservice.service.exception.OrderItemNotFoundException;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
-import java.util.List;
 
 @Service
 @Slf4j
@@ -40,17 +43,14 @@ public class OrderItemServiceImpl implements OrderItemService {
     public OrderItem createOrderItem(Order order, OrderItemCreationDto dto) {
         Product product = productService.getProductById(dto.getProductId());
         BigDecimal totalPrice = product.getPrice().multiply(BigDecimal.valueOf(dto.getQuantity()));
-
         OrderItem orderItem = OrderItem.builder()
                 .order(order)
                 .product(product)
                 .quantity(dto.getQuantity())
                 .price(totalPrice)
                 .build();
-
         return itemRepository.save(orderItem);
     }
-
 
     @Override
     public OrderItem updateOrderItem(Long id, OrderItemCreationDto dto) {
@@ -64,7 +64,6 @@ public class OrderItemServiceImpl implements OrderItemService {
                 .quantity(dto.getQuantity())
                 .price(totalPrice)
                 .build();
-
         return itemRepository.save(updatedOrderItem);
     }
 
