@@ -1,0 +1,233 @@
+openapi: 3.0.0
+info:
+  title: Product API
+  description: API for managing product data
+  version: 1.0.0
+
+paths:
+  /api/v1/products:
+    get:
+      summary: Get all products
+      tags:
+        - Products
+      responses:
+        '200':
+          description: List of all products
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductResponseListDto'
+    post:
+      summary: Create a new product
+      tags:
+        - Products
+      requestBody:
+        description: Product data to create a new product
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductCreationDto'
+      responses:
+        '201':
+          description: Product created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductResponseDto'
+        '400':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+
+  /api/v1/products/{id}:
+    get:
+      summary: Get product by ID
+      tags:
+        - Products
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: ID of the product to retrieve
+      responses:
+        '200':
+          description: Product found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductResponseDto'
+        '404':
+          description: Product not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    put:
+      summary: Update product by ID
+      tags:
+        - Products
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: ID of the product to update
+      requestBody:
+        description: Updated product data
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductCreationDto'
+      responses:
+        '200':
+          description: Product updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductResponseDto'
+        '400':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+        '404':
+          description: Product not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    delete:
+      summary: Delete product by ID
+      tags:
+        - Products
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: ID of the product to delete
+      responses:
+        '204':
+          description: Product deleted successfully
+          content:
+            application/json:
+              schema:
+                type: null
+        '404':
+          description: Product not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  schemas:
+    ProductCreationDto:
+      type: object
+      properties:
+        title:
+          type: string
+          maxLength: 100
+          description: Title of the product
+        description:
+          type: string
+          maxLength: 500
+          description: Description of the product
+        categoriesIds:
+          type: array
+          items:
+            type: integer
+          description: List of category IDs for the product
+        price:
+          type: number
+          format: double
+          minimum: 0
+          description: Price of the product (must be positive)
+
+    ProductResponseDto:
+      type: object
+      properties:
+        productId:
+          type: string
+          format: uuid
+          description: Unique identifier of the product
+        ownerId:
+          type: string
+          format: uuid
+          description: ID of the owner of the product
+        title:
+          type: string
+          description: Title of the product
+        description:
+          type: string
+          description: Description of the product
+        categoriesIds:
+          type: array
+          items:
+            type: integer
+          description: List of category IDs for the product
+        price:
+          type: number
+          format: double
+          description: Price of the product
+        createdAt:
+          type: string
+          format: date-time
+          description: Creation timestamp of the product
+
+    ProductResponseListDto:
+      type: object
+      properties:
+        products:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProductResponseDto'
+
+    ValidationError:
+      type: object
+      properties:
+        status:
+          type: string
+          example: "400"
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ParamsViolationDetails'
+
+    ErrorResponse:
+      type: object
+      properties:
+        type:
+          type: string
+          description: URI reference identifying the error type
+        title:
+          type: string
+          description: A short description of the error
+        status:
+          type: integer
+          description: HTTP status code
+        detail:
+          type: string
+          description: Detailed description of the error
+
+    ParamsViolationDetails:
+      type: object
+      properties:
+        fieldName:
+          type: string
+          description: Field where validation error occurred
+        reason:
+          type: string
+          description: Reason for the validation error
