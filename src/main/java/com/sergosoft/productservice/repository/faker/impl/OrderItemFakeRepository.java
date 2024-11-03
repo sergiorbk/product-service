@@ -1,14 +1,17 @@
 package com.sergosoft.productservice.repository.faker.impl;
 
+import java.util.List;
+
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
 
 import com.sergosoft.productservice.domain.order.OrderItem;
 import com.sergosoft.productservice.repository.OrderItemRepository;
 import com.sergosoft.productservice.repository.faker.FakeRepository;
 
-import java.util.List;
-
 @Repository
+@Profile("fakeRepository")
+//@Deprecated(forRemoval = true)
 public class OrderItemFakeRepository extends FakeRepository<OrderItem, Long> implements OrderItemRepository {
 
     @Override
