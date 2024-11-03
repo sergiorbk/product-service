@@ -31,6 +31,9 @@ public abstract class FakeRepository <T, ID extends Serializable> implements Fak
     }
 
     @Override
+    public void deleteAll() { database.clear(); }
+
+    @Override
     public boolean existsById(ID id) {
         return database.containsKey(id);
     }
