@@ -13,5 +13,5 @@ import org.springframework.context.annotation.Import;
 @DisplayName("Product Service Tests")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class ProductServiceTests {
-    // todo
+    // todo Implement after connect JPA Repos
 }
