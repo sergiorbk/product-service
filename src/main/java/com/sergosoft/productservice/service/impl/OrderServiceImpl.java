@@ -6,8 +6,7 @@ import java.math.BigDecimal;
 
 import lombok.RequiredArgsConstructor;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import com.sergosoft.productservice.domain.order.Order;
@@ -20,9 +19,8 @@ import com.sergosoft.productservice.service.exception.OrderNotFoundException;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class OrderServiceImpl implements OrderService {
-
-    private static final Logger log = LoggerFactory.getLogger(OrderServiceImpl.class);
 
     private final OrderRepository orderRepository;
     private final OrderItemService orderItemService;
