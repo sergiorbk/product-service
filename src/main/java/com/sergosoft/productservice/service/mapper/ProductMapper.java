@@ -1,6 +1,7 @@
 package com.sergosoft.productservice.service.mapper;
 
-import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.sergosoft.productservice.domain.Category;
 import com.sergosoft.productservice.domain.Product;
@@ -20,12 +21,12 @@ public interface ProductMapper {
     @Mapping(target = "createdAt", source = "createdAt")
     ProductResponseDto toDto(Product product);
 
-    default List<Integer> map(List<Category> categories) {
+    default Set<Integer> map(Set<Category> categories) {
         if(categories == null) {
             return null;
         }
         return categories.stream()
                 .map(Category::getId)
-                .toList();
+                .collect(Collectors.toSet());
     }
 }

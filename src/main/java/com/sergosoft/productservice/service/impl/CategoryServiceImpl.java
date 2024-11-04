@@ -39,7 +39,11 @@ public class CategoryServiceImpl implements CategoryService {
                     .orElseThrow(() -> new ParentCategoryNotFoundException(categoryCreationDto.getParentId()));
             log.debug("Retrieved parent category with id {}: {}", parentId, parentCategory);
         }
-        Category categoryToSave = new Category(null, categoryCreationDto.getTitle(), parentCategory);
+        Category categoryToSave = Category.builder()
+                .id(null)
+                .title(categoryCreationDto.getTitle())
+                .parent(parentCategory)
+                .build();
         log.debug("Saving new category: {}", categoryToSave);
 
         Category savedCategory = categoryRepository.save(categoryToSave);
@@ -56,9 +60,11 @@ public class CategoryServiceImpl implements CategoryService {
         log.debug("Retrieved category to update with id{}: {}", id, existingCategory);
         Integer dtoParentId = categoryDto.getParentId();
 
-        Category updatedCategory = new Category(existingCategory.getId(), categoryDto.getTitle(),
-                dtoParentId == null ? null : getCategoryById(dtoParentId));
-
+        Category updatedCategory = Category.builder()
+                .id(existingCategory.getId())
+                .title(categoryDto.getTitle())
+                .parent(dtoParentId == null ? null : getCategoryById(dtoParentId))
+                .build();
         log.info("Saving updated category with id {}: {}", id, updatedCategory);
 
         Category savedCategory = categoryRepository.save(updatedCategory);

@@ -1,8 +1,9 @@
 package com.sergosoft.productservice.domain;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Value;
+import jakarta.persistence.*;
+import lombok.*;
+
+import java.util.Set;
 
 /**
  * Represents a category of {@link Product}s.
@@ -13,14 +14,18 @@ import lombok.Value;
  * Root categories do not have a parent, while subcategories
  * can have multiple levels of parent-child relationships.</p>
  */
-@Value
-@Builder
+@Entity
+@Builder(toBuilder = true)
+@Getter
 @AllArgsConstructor
+@NoArgsConstructor
 public class Category {
 
     /**
      * Unique identifier of the product category.
      */
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     Integer id;
 
     /**
@@ -28,9 +33,16 @@ public class Category {
      */
     String title;
 
-    /**
-     * <p>Parent category of this category.</p>
-     * <p>Contains null if this category is a root category.</p>
-     */
+    @ManyToOne
+    @JoinColumn(name = "parent_id")
     Category parent;
+
+    /**
+     * List of subcategories of this category.
+     */
+    @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = true)
+    Set<Category> subcategories;
+
+    @ManyToMany(mappedBy = "categories")
+    Set<Product> products;
 }

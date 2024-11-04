@@ -6,7 +6,7 @@ import lombok.Value;
 
 import java.math.BigDecimal;
 import java.time.Instant;
-import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Value
@@ -18,7 +18,7 @@ public class ProductResponseDto {
     UUID ownerId;
     String title;
     String description;
-    List<Integer> categoriesIds;
+    Set<Integer> categoriesIds;
     BigDecimal price;
     Instant createdAt;
 //    String currencyCode;

@@ -13,9 +13,9 @@ import lombok.RequiredArgsConstructor;
 import com.sergosoft.productservice.service.ProductService;
 import com.sergosoft.productservice.repository.ProductRepository;
 
-import java.time.Instant;
-import java.util.List;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -37,10 +37,14 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public Product createProduct(ProductCreationDto dto) {
         log.info("Creating new product: {}", dto);
-        List<Category> categories = dto.getCategoriesIds().stream().map(categoryService::getCategoryById).toList();
+        Set<Category> categories = dto.getCategoriesIds().stream().map(categoryService::getCategoryById).collect(Collectors.toSet());
         // todo implement getting ownerUUID from SecurityContextHolder
-        Product productToSave = new Product(null, null, dto.getTitle(), dto.getDescription(), categories,
-                dto.getPrice(), Instant.now());
+        Product productToSave = Product.builder()
+                .title(dto.getTitle())
+                .description(dto.getDescription())
+                .categories(categories)
+                .price(dto.getPrice())
+                .build();
         Product savedProduct = productRepository.save(productToSave);
         log.info("New Product was created successfully: {}", savedProduct);
         return savedProduct;
@@ -54,9 +58,15 @@ public class ProductServiceImpl implements ProductService {
         Product productToUpdate = productRepository.findById(id).orElseThrow(() -> new ProductNotFoundException(id));
         log.info("Retrieved product to update with id {}: {}", id, productToUpdate);
 
-        List<Category> categories = dto.getCategoriesIds().stream().map(categoryService::getCategoryById).toList();
-        Product updatedProduct = new Product(id, productToUpdate.getOwnerId(), dto.getTitle(), dto.getDescription(),
-                categories, dto.getPrice(), Instant.now());
+        Set<Category> categories = dto.getCategoriesIds().stream().map(categoryService::getCategoryById).collect(Collectors.toSet());
+        Product updatedProduct = Product.builder()
+                .id(id)
+                .ownerId(productToUpdate.getOwnerId())
+                .title(dto.getTitle())
+                .description(dto.getDescription())
+                .categories(categories)
+                .price(dto.getPrice())
+                .build();
 
         log.info("Saving updated product with id {}: {}", id, updatedProduct);
         Product savedProduct = productRepository.save(updatedProduct);

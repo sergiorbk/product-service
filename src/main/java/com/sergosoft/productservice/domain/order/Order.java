@@ -1,21 +1,27 @@
 package com.sergosoft.productservice.domain.order;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Value;
+import jakarta.persistence.*;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.Instant;
-import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
-@Value
+@Entity
+@Table(name = "orders")
 @Builder(toBuilder = true)
+@Getter
 @AllArgsConstructor
+@NoArgsConstructor
 public class Order {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
-    List<OrderItem> items;
+
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    Set<OrderItem> items;
 
     // this microservice is going to keep the conception of P2P trading
     UUID sellerId;
@@ -23,4 +29,9 @@ public class Order {
 
     BigDecimal totalPrice;
     Instant createdAt;
+
+    @PrePersist
+    public void prePersist() {
+        this.createdAt = Instant.now();
+    }
 }

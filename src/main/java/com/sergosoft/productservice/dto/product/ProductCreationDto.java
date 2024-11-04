@@ -1,9 +1,8 @@
 package com.sergosoft.productservice.dto.product;
 
-import java.util.List;
 import java.math.BigDecimal;
+import java.util.Set;
 
-import com.sergosoft.productservice.annotation.ValidCategoryIds;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Positive;
@@ -22,8 +21,7 @@ public class ProductCreationDto {
     String description;
 
     @NotEmpty(message = "Categories ids list must contain at least 1 category id.")
-    @ValidCategoryIds
-    List<Integer> categoriesIds;
+    Set<Integer> categoriesIds;
 
     @Positive(message = "Price must be a positive number.")
     BigDecimal price;

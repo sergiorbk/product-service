@@ -2,6 +2,8 @@ package com.sergosoft.productservice.service.impl;
 
 import java.util.List;
 import java.math.BigDecimal;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
@@ -36,11 +38,11 @@ public class OrderItemServiceImpl implements OrderItemService {
     }
 
     @Override
-    public List<OrderItem> createOrderItems(Order order, List<OrderItemCreationDto> dtoList) {
+    public Set<OrderItem> createOrderItems(Order order, List<OrderItemCreationDto> dtoList) {
         log.info("Creating order items for order ID: {}", order.getId());
-        List<OrderItem> orderItems = dtoList.stream()
+        Set<OrderItem> orderItems = dtoList.stream()
                 .map(dto -> createOrderItem(order, dto))
-                .toList();
+                .collect(Collectors.toSet());
         log.info("Created {} order items for order ID: {}", orderItems.size(), order.getId());
         return orderItems;
     }

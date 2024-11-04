@@ -1,8 +1,8 @@
 package com.sergosoft.productservice.service.impl;
 
-import java.util.List;
-import java.time.Instant;
+import java.util.Collection;
 import java.math.BigDecimal;
+import java.util.Set;
 
 import lombok.RequiredArgsConstructor;
 
@@ -27,7 +27,7 @@ public class OrderServiceImpl implements OrderService {
     private final OrderRepository orderRepository;
     private final OrderItemService orderItemService;
 
-    private BigDecimal calculateTotalPrice(List<OrderItem> items) {
+    private BigDecimal calculateTotalPrice(Collection<OrderItem> items) {
         return items.stream()
                 .map(OrderItem::getPrice)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
@@ -47,12 +47,11 @@ public class OrderServiceImpl implements OrderService {
         Order orderToSave = Order.builder()
                 .sellerId(orderCreationDto.getSellerId())
                 .buyerId(orderCreationDto.getBuyerId())
-                .createdAt(Instant.now())
-                .items(List.of())
+                .items(Set.of())
                 .build();
 
         Order savedOrder = orderRepository.save(orderToSave);
-        List<OrderItem> orderItems = orderItemService.createOrderItems(savedOrder, orderCreationDto.getItems());
+        Set<OrderItem> orderItems = orderItemService.createOrderItems(savedOrder, orderCreationDto.getItems());
         savedOrder = savedOrder.toBuilder()
                 .items(orderItems)
                 .totalPrice(calculateTotalPrice(orderItems))
@@ -70,7 +69,7 @@ public class OrderServiceImpl implements OrderService {
                 .orElseThrow(() -> new OrderNotFoundException(id));
 
         orderItemService.deleteAllByOrderId(id);
-        List<OrderItem> updatedItems = orderItemService.createOrderItems(existingOrder, orderCreationDto.getItems());
+        Set<OrderItem> updatedItems = orderItemService.createOrderItems(existingOrder, orderCreationDto.getItems());
         Order updatedOrder = existingOrder.toBuilder()
                 .sellerId(orderCreationDto.getSellerId())
                 .buyerId(orderCreationDto.getBuyerId())

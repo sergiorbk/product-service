@@ -1,12 +1,19 @@
 package com.sergosoft.productservice.domain;
 
-import lombok.Value;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import lombok.*;
 
 import java.math.BigDecimal;
 
-@Value
+@Entity
+@Builder(toBuilder = true)
+@Getter
+@AllArgsConstructor
+@NoArgsConstructor
 public class CurrencyRate {
 
+    @Id
     String currencyCode;
     BigDecimal exchangeRate;
 }

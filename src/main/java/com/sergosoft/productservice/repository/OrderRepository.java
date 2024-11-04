@@ -1,8 +1,10 @@
 package com.sergosoft.productservice.repository;
 
 import com.sergosoft.productservice.domain.order.Order;
-import com.sergosoft.productservice.repository.faker.FakeCrudRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
-public interface OrderRepository extends FakeCrudRepository<Order, Long> {
-    // todo implement as a JPA repository
+@Repository
+public interface OrderRepository extends JpaRepository<Order, Long> {
+
 }
