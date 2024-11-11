@@ -1,4 +1,4 @@
-package com.sergosoft.productservice.service.exception;
+package com.sergosoft.productservice.featuretoggle.exception;
 
 public class FeatureNotAvailableException extends RuntimeException {
 

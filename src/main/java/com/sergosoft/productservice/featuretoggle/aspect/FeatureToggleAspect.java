@@ -1,7 +1,7 @@
-package com.sergosoft.productservice.service.aspect;
+package com.sergosoft.productservice.featuretoggle.aspect;
 
-import com.sergosoft.productservice.service.FeatureToggleService;
-import com.sergosoft.productservice.service.exception.FeatureNotAvailableException;
+import com.sergosoft.productservice.featuretoggle.FeatureToggleService;
+import com.sergosoft.productservice.featuretoggle.exception.FeatureNotAvailableException;
 import lombok.RequiredArgsConstructor;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;

@@ -4,10 +4,11 @@ spring:
   profiles:
     active: fakeRepository
 
-feature:
-  cosmoCats:
-    enabled: true
-  kittyProducts:
-    enabled: false
-  currencyRates:
-    enabled: false
+application:
+  feature:
+    cosmoCats:
+      enabled: false
+    kittyProducts:
+      enabled: false
+    currencyRates:
+      enabled: false

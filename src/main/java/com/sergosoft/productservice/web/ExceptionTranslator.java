@@ -3,6 +3,7 @@ package com.sergosoft.productservice.web;
 import java.net.URI;
 import java.util.List;
 
+import com.sergosoft.productservice.featuretoggle.exception.FeatureNotAvailableException;
 import com.sergosoft.productservice.service.exception.*;
 import lombok.NonNull;
 import org.springframework.http.*;
