@@ -16,7 +16,7 @@ public class FeatureToggleProperties {
 
     Map<String, Boolean> toggles = new ConcurrentHashMap<>();
 
-    public boolean check(String featureToggle){
+    public boolean check(String featureToggle) {
         return toggles.getOrDefault(featureToggle, false);
     }
 
