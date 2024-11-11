@@ -9,4 +9,3 @@ application:
     toggles:
       cosmoCats: true
       kittyProducts: false
-      currencyRates: false

@@ -3,6 +3,8 @@ package com.sergosoft.productservice.web;
 import com.sergosoft.productservice.domain.Product;
 import com.sergosoft.productservice.dto.product.ProductCreationDto;
 import com.sergosoft.productservice.dto.product.ProductResponseDto;
+import com.sergosoft.productservice.featuretoggle.FeatureToggles;
+import com.sergosoft.productservice.featuretoggle.annotation.FeatureToggle;
 import com.sergosoft.productservice.service.mapper.ProductMapper;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -29,6 +31,7 @@ public class ProductController {
     }
 
     @GetMapping("/{id}")
+    @FeatureToggle(FeatureToggles.KITTY_PRODUCTS)
     public ResponseEntity<ProductResponseDto> getProductById(@PathVariable UUID id) {
         Product retrievedProduct = productService.getProductById(id);
         ProductResponseDto productResponseDto = productMapper.toDto(retrievedProduct);

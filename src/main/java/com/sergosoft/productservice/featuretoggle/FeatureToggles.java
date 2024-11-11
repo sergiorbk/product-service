@@ -2,8 +2,7 @@ package com.sergosoft.productservice.featuretoggle;
 
 public enum FeatureToggles {
     COSMO_CATS("cosmoCats"),
-    KITTY_PRODUCTS("kittyProducts"),
-    CURRENCY_RATES("kurrencyRates");
+    KITTY_PRODUCTS("kittyProducts");
 
     private final String toggleName;
 
