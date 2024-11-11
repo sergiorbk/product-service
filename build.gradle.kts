@@ -36,8 +36,9 @@ apply(from = "${rootProject.projectDir}/gradle/test.gradle")
 apply(from = "${rootProject.projectDir}/gradle/jacoco.gradle")
 
 dependencies {
-	implementation("org.springframework.boot:spring-boot-starter-validation")
 	implementation("org.springframework.boot:spring-boot-starter-web")
+	implementation("org.springframework.boot:spring-boot-starter-aop")
+	implementation("org.springframework.boot:spring-boot-starter-validation")
 	implementation("org.projectlombok:lombok-mapstruct-binding:0.2.0")
 	implementation("org.mapstruct:mapstruct:1.6.2")
 
