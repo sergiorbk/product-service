@@ -1,8 +1,5 @@
 package com.sergosoft.productservice.featuretoggle;
 
-import lombok.Getter;
-
-@Getter
 public enum FeatureToggles {
     COSMO_CATS("cosmoCats"),
     KITTY_PRODUCTS("kittyProducts"),
@@ -12,5 +9,9 @@ public enum FeatureToggles {
 
     FeatureToggles(String toggleName) {
         this.toggleName = toggleName;
+    }
+
+    public String getFeatureName() {
+        return toggleName;
     }
 }

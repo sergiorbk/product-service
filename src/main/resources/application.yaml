@@ -6,9 +6,7 @@ spring:
 
 application:
   feature:
-    cosmoCats:
-      enabled: false
-    kittyProducts:
-      enabled: false
-    currencyRates:
-      enabled: false
+    toggles:
+      cosmoCats: true
+      kittyProducts: false
+      currencyRates: false

@@ -1,19 +1,27 @@
 package com.sergosoft.productservice.featuretoggle;
 
-import lombok.Getter;
-import org.springframework.beans.factory.annotation.Value;
+import com.sergosoft.productservice.config.FeatureToggleProperties;
 import org.springframework.stereotype.Service;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Service
-@Getter
 public class FeatureToggleService {
 
-   @Value("${application.feature.cosmoCats.enabled}")
-    private boolean cosmoCatsEnabled;
+    private final ConcurrentHashMap<String, Boolean> featureToggles;
 
-    @Value("${application.feature.kittyProducts.enabled}")
-    private boolean kittyProductsEnabled;
+    public FeatureToggleService(FeatureToggleProperties featureToggleProperties) {
+        featureToggles = new ConcurrentHashMap<>(featureToggleProperties.getToggles());
+    }
 
-    @Value("${application.feature.currencyRates.enabled}")
-    private boolean currencyRatesEnabled;
+    public boolean check(String featureName) {
+        return featureToggles.getOrDefault(featureName, false);
+    }
+
+    public void enable(String featureName) {
+        featureToggles.put(featureName, true);
+    }
+
+    public void disable(String featureName) {
+        featureToggles.put(featureName, false);
+    }
 }
