@@ -3,6 +3,7 @@ package com.sergosoft.productservice.web;
 import java.net.URI;
 import java.util.List;
 
+import com.sergosoft.productservice.service.exception.*;
 import lombok.NonNull;
 import org.springframework.http.*;
 import org.springframework.validation.FieldError;
@@ -14,10 +15,6 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 import lombok.extern.slf4j.Slf4j;
 
-import com.sergosoft.productservice.service.exception.OrderNotFoundException;
-import com.sergosoft.productservice.service.exception.ParamsViolationDetails;
-import com.sergosoft.productservice.service.exception.ProductNotFoundException;
-import com.sergosoft.productservice.service.exception.OrderItemNotFoundException;
 import com.sergosoft.productservice.service.exception.category.CategoryNotFoundException;
 import com.sergosoft.productservice.service.exception.category.ParentCategoryNotFoundException;
 
@@ -75,6 +72,15 @@ public class ExceptionTranslator extends ResponseEntityExceptionHandler {
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, ex.getMessage());
         problemDetail.setType(URI.create("product-not-found"));
         problemDetail.setTitle("Product Not Found");
+        return problemDetail;
+    }
+
+    @ExceptionHandler(FeatureNotAvailableException.class)
+    ProblemDetail handleFeatureNotAvailableException(FeatureNotAvailableException ex) {
+        log.info("Feature Not Available exception raised.");
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.SERVICE_UNAVAILABLE, ex.getMessage());
+        problemDetail.setType(URI.create("feature-not-available"));
+        problemDetail.setTitle("Feature Not Available");
         return problemDetail;
     }
 

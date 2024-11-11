@@ -9,3 +9,5 @@ feature:
     enabled: true
   kittyProducts:
     enabled: false
+  currencyRates:
+    enabled: false
