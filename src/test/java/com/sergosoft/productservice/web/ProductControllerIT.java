@@ -1,5 +1,6 @@
 package com.sergosoft.productservice.web;
 
+import com.sergosoft.productservice.IntegrationTest;
 import com.sergosoft.productservice.domain.Category;
 import com.sergosoft.productservice.domain.Product;
 import com.sergosoft.productservice.dto.product.ProductCreationDto;
@@ -37,7 +38,7 @@ import static org.mockito.Mockito.when;
 @AutoConfigureMockMvc
 @DisplayName("Product Controller IT")
 @Tag("product-service")
-class ProductControllerIT {
+class ProductControllerIT extends IntegrationTest {
 
     @Autowired
     private MockMvc mockMvc;

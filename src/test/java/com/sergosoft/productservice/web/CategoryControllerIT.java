@@ -2,6 +2,7 @@ package com.sergosoft.productservice.web;
 
 import java.util.Optional;
 
+import com.sergosoft.productservice.IntegrationTest;
 import com.sergosoft.productservice.domain.Category;
 import com.sergosoft.productservice.service.CategoryService;
 import com.sergosoft.productservice.repository.CategoryRepository;
@@ -28,7 +29,7 @@ import static org.hamcrest.Matchers.is;
 @AutoConfigureMockMvc
 @DisplayName("Category Controller IT")
 @Tag("category-service")
-class CategoryControllerIT {
+class CategoryControllerIT extends IntegrationTest {
 
     @Autowired
     private MockMvc mockMvc;
