@@ -5,6 +5,10 @@ import com.sergosoft.productservice.domain.Category;
 import com.sergosoft.productservice.domain.Product;
 import com.sergosoft.productservice.dto.product.ProductCreationDto;
 import com.sergosoft.productservice.dto.product.ProductResponseDto;
+import com.sergosoft.productservice.featuretoggle.FeatureToggleExtension;
+import com.sergosoft.productservice.featuretoggle.FeatureToggles;
+import com.sergosoft.productservice.featuretoggle.annotation.DisabledFeatureToggle;
+import com.sergosoft.productservice.featuretoggle.annotation.EnabledFeatureToggle;
 import com.sergosoft.productservice.service.CategoryService;
 import com.sergosoft.productservice.service.ProductService;
 import com.sergosoft.productservice.service.mapper.ProductMapper;
@@ -14,6 +18,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -38,6 +43,7 @@ import static org.mockito.Mockito.when;
 @AutoConfigureMockMvc
 @DisplayName("Product Controller IT")
 @Tag("product-service")
+@ExtendWith(FeatureToggleExtension.class)
 class ProductControllerIT extends IntegrationTest {
 
     @Autowired
@@ -77,6 +83,18 @@ class ProductControllerIT extends IntegrationTest {
                 .build();
 
         productResponseDto = new ProductResponseDto(productId, null, "Product Title", "Product Description", List.of(), BigDecimal.valueOf(100), product.getCreatedAt());
+    }
+
+    @Test
+    @DisabledFeatureToggle(FeatureToggles.KITTY_PRODUCTS)
+    void shouldGet404FeatureDisabled() throws Exception {
+        mockMvc.perform(get("/api/v1/products/217da666-2bbd-45b5-bce4-17d4ebc7abec")).andExpect(status().isServiceUnavailable());
+    }
+
+    @Test
+    @EnabledFeatureToggle(FeatureToggles.KITTY_PRODUCTS)
+    void shouldGet200() throws Exception {
+        mockMvc.perform(get("/api/v1/products/217da666-2bbd-45b5-bce4-17d4ebc7abec")).andExpect(status().isOk());
     }
 
     @Test
