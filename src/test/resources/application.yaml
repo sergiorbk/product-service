@@ -1,0 +1,11 @@
+spring:
+  application:
+    name: product-service
+  profiles:
+    active: fakeRepository
+
+application:
+  feature:
+    toggles:
+      cosmoCats: true
+      kittyProducts: false
