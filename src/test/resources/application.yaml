@@ -8,4 +8,4 @@ application:
   feature:
     toggles:
       cosmoCats: true
-      kittyProducts: false
+      kittyProducts: true

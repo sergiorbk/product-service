@@ -1,6 +1,7 @@
 package com.sergosoft.productservice.web;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sergosoft.productservice.IntegrationTest;
 import com.sergosoft.productservice.domain.order.Order;
 import com.sergosoft.productservice.dto.order.OrderCreationDto;
 import com.sergosoft.productservice.dto.order.OrderResponseDto;
@@ -32,7 +33,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @DisplayName("Order Controller IT")
 @Tag("order-service")
-class OrderControllerIT {
+class OrderControllerIT extends IntegrationTest {
 
     @Autowired
     private MockMvc mockMvc;
