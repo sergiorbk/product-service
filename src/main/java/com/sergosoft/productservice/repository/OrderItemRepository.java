@@ -1,12 +1,10 @@
 package com.sergosoft.productservice.repository;
 
 import com.sergosoft.productservice.domain.order.OrderItem;
-import com.sergosoft.productservice.repository.faker.FakeCrudRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
-import java.util.List;
-
-public interface OrderItemRepository extends FakeCrudRepository<OrderItem, Long> {
-    void deleteAll(List<OrderItem> items);
-    List<OrderItem> findByOrderId(Long orderId);
-    // todo implement as JPA repository
+@Repository
+public interface OrderItemRepository extends JpaRepository<OrderItem, Long> {
+    void deleteByOrderId(Long orderId);
 }

@@ -21,7 +21,7 @@ public class Category {
     /**
      * Unique identifier of the product category.
      */
-    Integer id;
+    Long id;
 
     /**
      * Title or name of the product category.

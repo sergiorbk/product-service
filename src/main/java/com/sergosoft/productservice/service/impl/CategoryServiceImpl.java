@@ -20,7 +20,7 @@ public class CategoryServiceImpl implements CategoryService {
     private final CategoryRepository categoryRepository;
 
     @Override
-    public Category getCategoryById(Integer id) {
+    public Category getCategoryById(Long id) {
         log.info("Getting product category by id: {}", id);
         Category retrievedCategory = categoryRepository.findById(id).orElseThrow(() -> new CategoryNotFoundException(id));
         log.info("Category was retrieved successfully: {}", retrievedCategory);
@@ -30,7 +30,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public Category createCategory(CategoryCreationDto categoryCreationDto) {
         log.info("Creating new product category: {}", categoryCreationDto);
-        Integer parentId = categoryCreationDto.getParentId();
+        Long parentId = categoryCreationDto.getParentId();
         Category parentCategory = null;
         // if parent category id was specified
         if(parentId != null) {
@@ -48,13 +48,13 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public Category updateCategory(Integer id, CategoryCreationDto categoryDto) {
+    public Category updateCategory(Long id, CategoryCreationDto categoryDto) {
         log.info("Updating category with id: {}", id);
         log.debug("Retrieving category to update by id: {}", id);
         Category existingCategory = categoryRepository.findById(id)
                 .orElseThrow(() -> new CategoryNotFoundException(id));
         log.debug("Retrieved category to update with id{}: {}", id, existingCategory);
-        Integer dtoParentId = categoryDto.getParentId();
+        Long dtoParentId = categoryDto.getParentId();
 
         Category updatedCategory = new Category(existingCategory.getId(), categoryDto.getTitle(),
                 dtoParentId == null ? null : getCategoryById(dtoParentId));
@@ -67,7 +67,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public void deleteCategoryById(Integer id) {
+    public void deleteCategoryById(Long id) {
         log.info("Truing to delete a category with id: {}", id);
         if(categoryRepository.existsById(id)) {
             log.info("Deleting existent category with id: {}", id);

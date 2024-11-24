@@ -15,7 +15,6 @@ import com.sergosoft.productservice.service.ProductService;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/products")
@@ -32,7 +31,7 @@ public class ProductController {
 
     @GetMapping("/{id}")
     @FeatureToggle(FeatureToggles.KITTY_PRODUCTS)
-    public ResponseEntity<ProductResponseDto> getProductById(@PathVariable UUID id) {
+    public ResponseEntity<ProductResponseDto> getProductById(@PathVariable Long id) {
         Product retrievedProduct = productService.getProductById(id);
         ProductResponseDto productResponseDto = productMapper.toDto(retrievedProduct);
         return ResponseEntity.ok(productResponseDto);
@@ -51,14 +50,14 @@ public class ProductController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ProductResponseDto> updateProduct(@PathVariable UUID id,
+    public ResponseEntity<ProductResponseDto> updateProduct(@PathVariable Long id,
                                                               @RequestBody @Valid ProductCreationDto productDto) {
         Product updatedProduct = productService.updateProduct(id, productDto);
         return ResponseEntity.ok(productMapper.toDto(updatedProduct));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteProduct(@PathVariable UUID id) {
+    public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
         productService.deleteProductById(id);
         return ResponseEntity.noContent().build();
     }

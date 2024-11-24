@@ -1,8 +1,6 @@
 package com.sergosoft.productservice.dto.order.item;
 
 import java.math.BigDecimal;
-import java.util.UUID;
-
 import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
@@ -14,7 +12,7 @@ public class OrderItemResponseDto {
 
     Long id;
     Long orderId;
-    UUID productId;
+    Long productId;
     Integer quantity;
     BigDecimal price;
 }

@@ -14,11 +14,11 @@ import java.util.UUID;
 @AllArgsConstructor
 public class ProductResponseDto {
 
-    UUID productId;
+    Long productId;
     UUID ownerId;
     String title;
     String description;
-    List<Integer> categoriesIds;
+    List<Long> categoriesIds;
     BigDecimal price;
     Instant createdAt;
 //    String currencyCode;

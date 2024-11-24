@@ -14,7 +14,7 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class Product {
 
-    UUID id;
+    Long id;
     UUID ownerId;
     String title;
     String description;

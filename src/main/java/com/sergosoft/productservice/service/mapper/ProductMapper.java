@@ -20,7 +20,7 @@ public interface ProductMapper {
     @Mapping(target = "createdAt", source = "createdAt")
     ProductResponseDto toDto(Product product);
 
-    default List<Integer> map(List<Category> categories) {
+    default List<Long> map(List<Category> categories) {
         if(categories == null) {
             return null;
         }

@@ -15,7 +15,6 @@ import com.sergosoft.productservice.repository.ProductRepository;
 
 import java.time.Instant;
 import java.util.List;
-import java.util.UUID;
 
 @Service
 @Slf4j
@@ -27,7 +26,7 @@ public class ProductServiceImpl implements ProductService {
 
 
     @Override
-    public Product getProductById(UUID id) {
+    public Product getProductById(Long id) {
         log.info("Getting product by id: {}", id);
         Product retrievedProduct = productRepository.findById(id).orElseThrow(() -> new ProductNotFoundException(id));
         log.info("Product was retrieved successfully: {}", retrievedProduct);
@@ -47,7 +46,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Product updateProduct(UUID id, ProductCreationDto dto) {
+    public Product updateProduct(Long id, ProductCreationDto dto) {
         log.info("Updating product with id: {}", id);
 
         log.debug("Retrieving a product to update by id: {}", id);
@@ -65,7 +64,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public void deleteProductById(UUID id) {
+    public void deleteProductById(Long id) {
         log.info("Truing to delete product with id: {}", id);
         if(productRepository.existsById(id)) {
             log.info("Deleting existent product with id: {}", id);

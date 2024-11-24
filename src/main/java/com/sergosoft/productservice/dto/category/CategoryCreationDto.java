@@ -39,5 +39,5 @@ public class CategoryCreationDto {
      * @implNote This field is optional.
      */
     @Positive(message = "Category parent id must be positive.")
-    Integer parentId;
+    Long parentId;
 }

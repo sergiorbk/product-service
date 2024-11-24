@@ -1,7 +1,5 @@
 package com.sergosoft.productservice.dto.order.item;
 
-import java.util.UUID;
-
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 
@@ -18,7 +16,7 @@ public class OrderItemCreationDto {
     Long orderId;
 
     @NotNull(message = "Product Id is mandatory.")
-    UUID productId;
+    Long productId;
 
     @Positive(message = "Quantity must be a positive number.")
     Integer quantity;

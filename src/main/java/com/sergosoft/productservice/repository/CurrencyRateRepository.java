@@ -1,5 +1,10 @@
 package com.sergosoft.productservice.repository;
 
-public interface CurrencyRateRepository {
-    // todo implement as a JPA repository
+import com.sergosoft.productservice.domain.CurrencyRate;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public interface CurrencyRateRepository extends JpaRepository<CurrencyRate, Integer> {
+
 }

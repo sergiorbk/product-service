@@ -23,7 +23,7 @@ public class ProductCreationDto {
 
     @NotEmpty(message = "Categories ids list must contain at least 1 category id.")
     @ValidCategoryIds
-    List<Integer> categoriesIds;
+    List<Long> categoriesIds;
 
     @Positive(message = "Price must be a positive number.")
     BigDecimal price;

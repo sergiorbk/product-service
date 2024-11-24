@@ -9,7 +9,7 @@ import lombok.extern.jackson.Jacksonized;
 @Jacksonized
 public class CategoryResponseDto {
 
-    Integer id;
+    Long id;
     String title;
-    Integer parentId;
+    Long parentId;
 }
