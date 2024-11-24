@@ -5,8 +5,8 @@ import com.sergosoft.productservice.dto.category.CategoryCreationDto;
 
 public interface CategoryService {
 
-    Category getCategoryById(Integer id);
+    Category getCategoryById(Long id);
     Category createCategory(CategoryCreationDto dto);
-    Category updateCategory(Integer id, CategoryCreationDto dto);
-    void deleteCategoryById(Integer categoryId);
+    Category updateCategory(Long id, CategoryCreationDto dto);
+    void deleteCategoryById(Long categoryId);
 }

@@ -85,13 +85,6 @@ public class OrderItemServiceImpl implements OrderItemService {
     @Override
     public void deleteAllByOrderId(Long orderId) {
         log.info("Deleting all items for order ID: {}", orderId);
-        List<OrderItem> orderItems = itemRepository.findByOrderId(orderId);
-
-        if (!orderItems.isEmpty()) {
-            itemRepository.deleteAll(orderItems);
-            log.info("Deleted {} items for order ID: {}", orderItems.size(), orderId);
-        } else {
-            log.warn("No items found for order ID: {}", orderId);
-        }
+        itemRepository.deleteByOrderId(orderId);
     }
 }
