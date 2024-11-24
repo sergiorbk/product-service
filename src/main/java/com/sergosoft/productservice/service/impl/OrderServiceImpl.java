@@ -1,93 +1,87 @@
 package com.sergosoft.productservice.service.impl;
 
-import java.util.List;
+import java.util.Collection;
 import java.time.Instant;
 import java.math.BigDecimal;
+import java.util.stream.Collectors;
 
+import com.sergosoft.productservice.repository.entity.OrderEntity;
+import com.sergosoft.productservice.repository.entity.OrderItemEntity;
+import com.sergosoft.productservice.service.CustomerService;
+import com.sergosoft.productservice.service.mapper.OrderItemsMapper;
+import com.sergosoft.productservice.service.mapper.OrderMapper;
 import lombok.RequiredArgsConstructor;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import com.sergosoft.productservice.domain.order.Order;
 import com.sergosoft.productservice.service.OrderService;
-import com.sergosoft.productservice.domain.order.OrderItem;
-import com.sergosoft.productservice.service.OrderItemService;
 import com.sergosoft.productservice.dto.order.OrderCreationDto;
 import com.sergosoft.productservice.repository.OrderRepository;
 import com.sergosoft.productservice.service.exception.OrderNotFoundException;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class OrderServiceImpl implements OrderService {
 
-    private static final Logger log = LoggerFactory.getLogger(OrderServiceImpl.class);
-
     private final OrderRepository orderRepository;
-    private final OrderItemService orderItemService;
+    private final CustomerService customerService;
+    private final OrderMapper orderMapper;
+    private final OrderItemsMapper orderItemsMapper;
 
-    private BigDecimal calculateTotalPrice(List<OrderItem> items) {
+    private BigDecimal calculateTotalPrice(Collection<OrderItemEntity> items) {
         return items.stream()
-                .map(OrderItem::getPrice)
+                .map(OrderItemEntity::getPrice)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
     @Override
     public Order getOrderById(Long id) {
         log.info("Retrieving order by ID: {}", id);
-        return orderRepository.findById(id)
-                .orElseThrow(() -> new OrderNotFoundException(id));
+        OrderEntity orderEntity = orderRepository.findById(id).orElse(null);
+        log.info("Retrieved order entity: {}", orderEntity);
+        return orderMapper.toOrder(orderEntity);
     }
 
     @Override
     public Order createOrder(OrderCreationDto orderCreationDto) {
         log.info("Creating new order: {}", orderCreationDto);
 
-        Order orderToSave = Order.builder()
-                .sellerId(orderCreationDto.getSellerId())
-                .buyerId(orderCreationDto.getBuyerId())
-                .createdAt(Instant.now())
-                .items(List.of())
-                .build();
+        OrderEntity orderToSave = new OrderEntity();
+        orderToSave.setSeller(customerService.getCustomerById(orderCreationDto.getSellerId()));
+        orderToSave.setBuyer(customerService.getCustomerById(orderCreationDto.getBuyerId()));
+        orderToSave.setCreatedAt(Instant.now());
 
-        Order savedOrder = orderRepository.save(orderToSave);
-        List<OrderItem> orderItems = orderItemService.createOrderItems(savedOrder, orderCreationDto.getItems());
-        savedOrder = savedOrder.toBuilder()
-                .items(orderItems)
-                .totalPrice(calculateTotalPrice(orderItems))
-                .build();
+        orderToSave.setItems(orderCreationDto.getItems().stream().map(orderItemsMapper::toEntity).collect(Collectors.toSet()));
+        orderToSave.setTotalPrice(calculateTotalPrice(orderToSave.getItems()));
 
-        savedOrder = orderRepository.save(savedOrder);
+        OrderEntity savedOrder = orderRepository.save(orderToSave);
         log.info("New order created successfully: {}", savedOrder);
-        return savedOrder;
+        return orderMapper.toOrder(savedOrder);
     }
 
     @Override
     public Order updateOrder(Long id, OrderCreationDto orderCreationDto) {
         log.info("Updating order with ID: {}", id);
-        Order existingOrder = orderRepository.findById(id)
+        OrderEntity existingOrder = orderRepository.findById(id)
                 .orElseThrow(() -> new OrderNotFoundException(id));
 
-        orderItemService.deleteAllByOrderId(id);
-        List<OrderItem> updatedItems = orderItemService.createOrderItems(existingOrder, orderCreationDto.getItems());
-        Order updatedOrder = existingOrder.toBuilder()
-                .sellerId(orderCreationDto.getSellerId())
-                .buyerId(orderCreationDto.getBuyerId())
-                .items(updatedItems)
-                .totalPrice(calculateTotalPrice(updatedItems))
-                .build();
+        existingOrder.setBuyer(customerService.getCustomerById(orderCreationDto.getBuyerId()));
+        existingOrder.setSeller(customerService.getCustomerById(orderCreationDto.getSellerId()));
+        existingOrder.setItems(orderCreationDto.getItems().stream().map(orderItemsMapper::toEntity).collect(Collectors.toSet()));
+        existingOrder.setTotalPrice(calculateTotalPrice(existingOrder.getItems()));
 
-        updatedOrder = orderRepository.save(updatedOrder);
+        OrderEntity updatedOrder = orderRepository.save(existingOrder);
         log.info("Order updated successfully: {}", updatedOrder);
-        return updatedOrder;
+        return orderMapper.toOrder(updatedOrder);
     }
 
     @Override
     public void deleteOrderById(Long id) {
         log.info("Attempting to delete order with ID: {}", id);
         if (orderRepository.existsById(id)) {
-            orderItemService.deleteAllByOrderId(id);
             orderRepository.deleteById(id);
             log.info("Order with ID {} was deleted successfully.", id);
         } else {

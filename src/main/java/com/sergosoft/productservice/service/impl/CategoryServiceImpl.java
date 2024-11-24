@@ -1,5 +1,7 @@
 package com.sergosoft.productservice.service.impl;
 
+import com.sergosoft.productservice.repository.entity.CategoryEntity;
+import com.sergosoft.productservice.service.mapper.CategoryMapper;
 import org.springframework.stereotype.Service;
 
 import lombok.extern.slf4j.Slf4j;
@@ -12,26 +14,29 @@ import com.sergosoft.productservice.dto.category.CategoryCreationDto;
 import com.sergosoft.productservice.service.exception.category.CategoryNotFoundException;
 import com.sergosoft.productservice.service.exception.category.ParentCategoryNotFoundException;
 
-@Service
+import java.util.Optional;
+
 @Slf4j
+@Service
 @RequiredArgsConstructor
 public class CategoryServiceImpl implements CategoryService {
 
     private final CategoryRepository categoryRepository;
+    private final CategoryMapper categoryMapper;
 
     @Override
     public Category getCategoryById(Long id) {
         log.info("Getting product category by id: {}", id);
-        Category retrievedCategory = categoryRepository.findById(id).orElseThrow(() -> new CategoryNotFoundException(id));
+        CategoryEntity retrievedCategory = categoryRepository.findById(id).orElseThrow(() -> new CategoryNotFoundException(id));
         log.info("Category was retrieved successfully: {}", retrievedCategory);
-        return retrievedCategory;
+        return categoryMapper.toCategory(retrievedCategory);
     }
 
     @Override
     public Category createCategory(CategoryCreationDto categoryCreationDto) {
         log.info("Creating new product category: {}", categoryCreationDto);
         Long parentId = categoryCreationDto.getParentId();
-        Category parentCategory = null;
+        CategoryEntity parentCategory = null;
         // if parent category id was specified
         if(parentId != null) {
             log.debug("Getting parent category with id: {}", categoryCreationDto.getParentId());
@@ -39,31 +44,34 @@ public class CategoryServiceImpl implements CategoryService {
                     .orElseThrow(() -> new ParentCategoryNotFoundException(categoryCreationDto.getParentId()));
             log.debug("Retrieved parent category with id {}: {}", parentId, parentCategory);
         }
-        Category categoryToSave = new Category(null, categoryCreationDto.getTitle(), parentCategory);
+        CategoryEntity categoryToSave = new CategoryEntity(null, categoryCreationDto.getTitle(), parentCategory);
         log.debug("Saving new category: {}", categoryToSave);
 
-        Category savedCategory = categoryRepository.save(categoryToSave);
+        CategoryEntity savedCategory = categoryRepository.save(categoryToSave);
         log.info("New category was saved successfully: {}", savedCategory);
-        return savedCategory;
+        return categoryMapper.toCategory(savedCategory);
     }
 
     @Override
     public Category updateCategory(Long id, CategoryCreationDto categoryDto) {
         log.info("Updating category with id: {}", id);
         log.debug("Retrieving category to update by id: {}", id);
-        Category existingCategory = categoryRepository.findById(id)
+        CategoryEntity existingCategory = categoryRepository.findById(id)
                 .orElseThrow(() -> new CategoryNotFoundException(id));
         log.debug("Retrieved category to update with id{}: {}", id, existingCategory);
-        Long dtoParentId = categoryDto.getParentId();
+        Optional<CategoryEntity> parent = categoryRepository.findById(categoryDto.getParentId());
 
-        Category updatedCategory = new Category(existingCategory.getId(), categoryDto.getTitle(),
-                dtoParentId == null ? null : getCategoryById(dtoParentId));
+        CategoryEntity updatedCategory = new CategoryEntity(
+                existingCategory.getId(),
+                categoryDto.getTitle(),
+                parent.orElse(null)
+        );
 
         log.info("Saving updated category with id {}: {}", id, updatedCategory);
 
-        Category savedCategory = categoryRepository.save(updatedCategory);
+        CategoryEntity savedCategory = categoryRepository.save(updatedCategory);
         log.info("Updated category was saved successfully: {}", savedCategory);
-        return savedCategory;
+        return categoryMapper.toCategory(savedCategory);
     }
 
     @Override

@@ -5,6 +5,7 @@ import java.util.List;
 import com.sergosoft.productservice.domain.Category;
 import com.sergosoft.productservice.domain.Product;
 import com.sergosoft.productservice.dto.product.ProductResponseDto;
+import com.sergosoft.productservice.repository.entity.ProductEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
@@ -19,6 +20,8 @@ public interface ProductMapper {
     @Mapping(target = "price", source = "price")
     @Mapping(target = "createdAt", source = "createdAt")
     ProductResponseDto toDto(Product product);
+
+    Product toProduct(ProductEntity productEntity);
 
     default List<Long> map(List<Category> categories) {
         if(categories == null) {

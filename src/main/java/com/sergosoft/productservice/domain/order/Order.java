@@ -6,8 +6,7 @@ import lombok.Value;
 
 import java.math.BigDecimal;
 import java.time.Instant;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Value
 @Builder(toBuilder = true)
@@ -15,7 +14,7 @@ import java.util.UUID;
 public class Order {
 
     Long id;
-    List<OrderItem> items;
+    Set<OrderItem> items = new HashSet<>();
 
     // this microservice is going to keep the conception of P2P trading
     UUID sellerId;

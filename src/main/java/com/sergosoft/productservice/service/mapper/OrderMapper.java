@@ -4,6 +4,7 @@ import com.sergosoft.productservice.domain.order.Order;
 import com.sergosoft.productservice.domain.order.OrderItem;
 import com.sergosoft.productservice.dto.order.OrderResponseDto;
 import com.sergosoft.productservice.dto.order.item.OrderItemResponseDto;
+import com.sergosoft.productservice.repository.entity.OrderEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
@@ -26,6 +27,8 @@ public interface OrderMapper {
     @Mapping(target = "quantity", source = "quantity")
     @Mapping(target = "price", source = "price")
     OrderItemResponseDto toDto(OrderItem item);
+
+    Order toOrder(OrderEntity orderEntity);
 
     List<OrderItemResponseDto> mapItems(List<OrderItem> items);
 }

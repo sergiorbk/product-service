@@ -21,5 +21,4 @@ public class Product {
     List<Category> categories;
     BigDecimal price;
     Instant createdAt;
-//    CurrencyRate currency;
 }

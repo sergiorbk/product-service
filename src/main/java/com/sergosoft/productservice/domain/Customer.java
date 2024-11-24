@@ -6,11 +6,10 @@ import java.time.LocalDate;
 
 @Value
 @Builder
-public class CosmoCat {
+public class Customer {
 
     Long id;
     String email;
     String name;
-    String password;
     LocalDate registrationDate;
 }
