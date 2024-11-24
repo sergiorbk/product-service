@@ -6,6 +6,8 @@ import com.sergosoft.productservice.service.CustomerService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.UUID;
 
 @Slf4j
@@ -16,6 +18,7 @@ public class CustomerServiceImpl implements CustomerService {
     private final CustomerRepository customerRepository;
 
     @Override
+    @Transactional(readOnly = true)
     public CustomerEntity getCustomerById(UUID id) {
         log.info("Retrieving the customer with id {}", id);
         CustomerEntity retrievedCustomer = customerRepository.getReferenceById(id);

@@ -13,6 +13,7 @@ import com.sergosoft.productservice.repository.CategoryRepository;
 import com.sergosoft.productservice.dto.category.CategoryCreationDto;
 import com.sergosoft.productservice.service.exception.category.CategoryNotFoundException;
 import com.sergosoft.productservice.service.exception.category.ParentCategoryNotFoundException;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -25,6 +26,7 @@ public class CategoryServiceImpl implements CategoryService {
     private final CategoryMapper categoryMapper;
 
     @Override
+    @Transactional(readOnly = true)
     public Category getCategoryById(Long id) {
         log.info("Getting product category by id: {}", id);
         CategoryEntity retrievedCategory = categoryRepository.findById(id).orElseThrow(() -> new CategoryNotFoundException(id));
@@ -66,9 +68,7 @@ public class CategoryServiceImpl implements CategoryService {
                 categoryDto.getTitle(),
                 parent.orElse(null)
         );
-
         log.info("Saving updated category with id {}: {}", id, updatedCategory);
-
         CategoryEntity savedCategory = categoryRepository.save(updatedCategory);
         log.info("Updated category was saved successfully: {}", savedCategory);
         return categoryMapper.toCategory(savedCategory);

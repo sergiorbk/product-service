@@ -20,6 +20,7 @@ import com.sergosoft.productservice.service.OrderService;
 import com.sergosoft.productservice.dto.order.OrderCreationDto;
 import com.sergosoft.productservice.repository.OrderRepository;
 import com.sergosoft.productservice.service.exception.OrderNotFoundException;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
@@ -38,6 +39,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Order getOrderById(Long id) {
         log.info("Retrieving order by ID: {}", id);
         OrderEntity orderEntity = orderRepository.findById(id).orElse(null);

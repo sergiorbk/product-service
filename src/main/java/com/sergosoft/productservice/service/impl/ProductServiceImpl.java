@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 
 import com.sergosoft.productservice.service.ProductService;
 import com.sergosoft.productservice.repository.ProductRepository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.util.HashSet;
@@ -32,6 +33,7 @@ public class ProductServiceImpl implements ProductService {
     private final ProductMapper productMapper;
 
     @Override
+    @Transactional(readOnly = true)
     public Product getProductById(Long id) {
         log.info("Getting product by id: {}", id);
         ProductEntity retrievedProduct = productRepository.findById(id).orElseThrow(() -> new ProductNotFoundException(id));
