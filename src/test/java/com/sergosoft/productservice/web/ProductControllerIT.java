@@ -9,8 +9,11 @@ import com.sergosoft.productservice.featuretoggle.FeatureToggleExtension;
 import com.sergosoft.productservice.featuretoggle.FeatureToggles;
 import com.sergosoft.productservice.featuretoggle.annotation.DisabledFeatureToggle;
 import com.sergosoft.productservice.featuretoggle.annotation.EnabledFeatureToggle;
+import com.sergosoft.productservice.repository.entity.CategoryEntity;
+import com.sergosoft.productservice.repository.entity.ProductEntity;
 import com.sergosoft.productservice.service.CategoryService;
 import com.sergosoft.productservice.service.ProductService;
+import com.sergosoft.productservice.service.mapper.CategoryMapper;
 import com.sergosoft.productservice.service.mapper.ProductMapper;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -28,9 +31,8 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.math.BigDecimal;
 import java.time.Instant;
-import java.util.UUID;
+import java.util.HashSet;
 import java.util.List;
-import java.util.ArrayList;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -58,22 +60,31 @@ class ProductControllerIT extends IntegrationTest {
     @MockBean
     private ProductMapper productMapper;
 
+    @MockBean
+    private CategoryMapper categoryMapper;
+
     @Autowired
     private ObjectMapper objectMapper;
 
+    private ProductEntity productEntity;
+    private CategoryEntity categoryEntity;
     private Product product;
     private Category category;
     private ProductCreationDto productCreationDto;
     private ProductResponseDto productResponseDto;
-    private UUID productId;
+    private Long productId;
 
     @BeforeEach
     void setUp() {
-        Category createdCategory = new Category(1, "Category1", null);
-        when(categoryService.createCategory(any())).thenReturn(createdCategory);
-
-        productId = UUID.randomUUID();
-        product = new Product(productId, UUID.randomUUID(), "Product Title", "Product Description", new ArrayList<>(), BigDecimal.valueOf(100), Instant.now());
+        CategoryEntity createdCategory = new CategoryEntity(1L, "Category1", null);
+        when(categoryService.createCategory(any())).thenReturn(category);
+        categoryMapper.toCategory(createdCategory);
+        productEntity = new ProductEntity(productId, "Product Title",
+                "Product Description",
+                new HashSet<>(),
+                BigDecimal.valueOf(100),
+                Instant.now()
+        );
 
         productCreationDto = ProductCreationDto.builder()
                 .title("Product Title")
@@ -125,7 +136,7 @@ class ProductControllerIT extends IntegrationTest {
 
     @Test
     void updateProduct_ShouldReturnUpdatedProduct() throws Exception {
-        when(productService.updateProduct(any(UUID.class), any(ProductCreationDto.class))).thenReturn(product);
+        when(productService.updateProduct(any(Long.class), any(ProductCreationDto.class))).thenReturn(product);
         when(productMapper.toDto(product)).thenReturn(productResponseDto);
 
         mockMvc.perform(put("/api/v1/products/{id}", productId)

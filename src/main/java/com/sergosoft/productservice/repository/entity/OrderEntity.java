@@ -3,6 +3,7 @@ package com.sergosoft.productservice.repository.entity;
 import jakarta.persistence.*;
 import jdk.jfr.Timestamp;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -14,6 +15,7 @@ import java.util.Set;
 @Data
 @Entity
 @Table(name = "orders")
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class OrderEntity {

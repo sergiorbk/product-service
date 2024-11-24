@@ -5,6 +5,7 @@ import com.sergosoft.productservice.IntegrationTest;
 import com.sergosoft.productservice.domain.order.Order;
 import com.sergosoft.productservice.dto.order.OrderCreationDto;
 import com.sergosoft.productservice.dto.order.OrderResponseDto;
+import com.sergosoft.productservice.repository.entity.OrderEntity;
 import com.sergosoft.productservice.service.OrderService;
 import com.sergosoft.productservice.service.mapper.OrderMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -22,6 +23,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -47,6 +49,7 @@ class OrderControllerIT extends IntegrationTest {
     @MockBean
     private OrderMapper orderMapper;
 
+    private OrderEntity orderEntity;
     private Order order;
     private OrderCreationDto orderCreationDto;
     private OrderResponseDto orderResponseDto;
@@ -57,12 +60,12 @@ class OrderControllerIT extends IntegrationTest {
         UUID buyerId = UUID.randomUUID();
         Long orderId = 1L;
 
-        order = Order.builder()
+        orderEntity = OrderEntity.builder()
                 .id(orderId)
-                .sellerId(sellerId)
-                .buyerId(buyerId)
+//                .sellerId(sellerId)
+//                .buyerId(buyerId)
                 .createdAt(Instant.now())
-                .items(List.of())
+                .items(Set.of())
                 .totalPrice(BigDecimal.valueOf(500))
                 .build();
 
@@ -73,19 +76,21 @@ class OrderControllerIT extends IntegrationTest {
                 .build();
 
         orderResponseDto = OrderResponseDto.builder()
-                .id(order.getId())
-                .sellerId(order.getSellerId())
-                .buyerId(order.getBuyerId())
-                .totalPrice(order.getTotalPrice())
-                .createdAt(order.getCreatedAt())
+                .id(orderEntity.getId())
+//                .sellerId(order.getSellerId())
+//                .buyerId(order.getBuyerId())
+                .totalPrice(orderEntity.getTotalPrice())
+                .createdAt(orderEntity.getCreatedAt())
                 .items(List.of())
                 .build();
+
+        order = orderMapper.toOrder(orderEntity);
     }
 
     @Test
     @DisplayName("GET /api/v1/orders/{id} - Success")
     void getOrderById_ShouldReturnOrder() throws Exception {
-        when(orderService.getOrderById(order.getId())).thenReturn(order);
+        when(orderService.getOrderById(orderEntity.getId())).thenReturn(order);
         when(orderMapper.toDto(order)).thenReturn(orderResponseDto);
 
         mockMvc.perform(get("/api/v1/orders/{id}", order.getId()))

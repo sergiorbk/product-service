@@ -3,7 +3,7 @@ package com.sergosoft.productservice.web;
 import java.util.Optional;
 
 import com.sergosoft.productservice.IntegrationTest;
-import com.sergosoft.productservice.domain.Category;
+import com.sergosoft.productservice.repository.entity.CategoryEntity;
 import com.sergosoft.productservice.service.CategoryService;
 import com.sergosoft.productservice.repository.CategoryRepository;
 import com.sergosoft.productservice.dto.category.CategoryCreationDto;
@@ -64,8 +64,8 @@ class CategoryControllerIT extends IntegrationTest {
 
     @Test
     void shouldGetCategoryById() throws Exception {
-        Category category = new Category(null, "Books", null);
-        Category savedCategory = categoryRepository.save(category);
+        CategoryEntity category = new CategoryEntity(null, "Books", null);
+        CategoryEntity savedCategory = categoryRepository.save(category);
 
         mockMvc.perform(get("/api/v1/categories/{id}", savedCategory.getId())
                         .accept(MediaType.APPLICATION_JSON))
@@ -75,8 +75,8 @@ class CategoryControllerIT extends IntegrationTest {
 
     @Test
     void shouldUpdateCategory() throws Exception {
-        Category category = new Category(null, "Sports", null);
-        Category savedCategory = categoryRepository.save(category);
+        CategoryEntity category = new CategoryEntity(null, "Sports", null);
+        CategoryEntity savedCategory = categoryRepository.save(category);
 
         CategoryCreationDto updatedCategoryDto = CategoryCreationDto.builder()
                 .title("Outdoor Sports")
@@ -92,13 +92,13 @@ class CategoryControllerIT extends IntegrationTest {
 
     @Test
     void shouldDeleteCategory() throws Exception {
-        Category category = new Category(null, "Fashion", null);
-        Category savedCategory = categoryRepository.save(category);
+        CategoryEntity category = new CategoryEntity(null, "Fashion", null);
+        CategoryEntity savedCategory = categoryRepository.save(category);
 
         mockMvc.perform(delete("/api/v1/categories/{id}", savedCategory.getId()))
                 .andExpect(status().isNoContent());
 
-        Optional<Category> deletedCategory = categoryRepository.findById(savedCategory.getId());
+        Optional<CategoryEntity> deletedCategory = categoryRepository.findById(savedCategory.getId());
         assert(deletedCategory.isEmpty());
     }
 }
