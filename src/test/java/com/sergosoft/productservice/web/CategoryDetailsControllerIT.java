@@ -6,7 +6,7 @@ import com.sergosoft.productservice.IntegrationTest;
 import com.sergosoft.productservice.repository.entity.CategoryEntity;
 import com.sergosoft.productservice.service.CategoryService;
 import com.sergosoft.productservice.repository.CategoryRepository;
-import com.sergosoft.productservice.dto.category.CategoryCreationDto;
+import com.sergosoft.productservice.dto.category.CategoryRequestDto;
 
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -29,7 +29,7 @@ import static org.hamcrest.Matchers.is;
 @AutoConfigureMockMvc
 @DisplayName("Category Controller IT")
 @Tag("category-service")
-class CategoryControllerIT extends IntegrationTest {
+class CategoryDetailsControllerIT extends IntegrationTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -50,7 +50,7 @@ class CategoryControllerIT extends IntegrationTest {
 
     @Test
     void shouldCreateCategory() throws Exception {
-        CategoryCreationDto newCategory = CategoryCreationDto.builder()
+        CategoryRequestDto newCategory = CategoryRequestDto.builder()
                 .title("Electronics")
                 .parentId(null)
                 .build();
@@ -78,7 +78,7 @@ class CategoryControllerIT extends IntegrationTest {
         CategoryEntity category = new CategoryEntity(null, "Sports", null);
         CategoryEntity savedCategory = categoryRepository.save(category);
 
-        CategoryCreationDto updatedCategoryDto = CategoryCreationDto.builder()
+        CategoryRequestDto updatedCategoryDto = CategoryRequestDto.builder()
                 .title("Outdoor Sports")
                 .parentId(null)
                 .build();

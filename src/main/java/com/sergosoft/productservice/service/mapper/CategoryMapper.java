@@ -1,17 +1,13 @@
 package com.sergosoft.productservice.service.mapper;
 
+import com.sergosoft.productservice.domain.CategoryDetails;
 import com.sergosoft.productservice.repository.entity.CategoryEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-import com.sergosoft.productservice.domain.Category;
-import com.sergosoft.productservice.dto.category.CategoryResponseDto;
-
 @Mapper(componentModel = "spring")
 public interface CategoryMapper {
 
-    @Mapping(target = "parentId", expression = "java(entity.getParent() != null ? entity.getParent().getId() : null)")
-    CategoryResponseDto toDto(Category entity);
-
-    Category toCategory(CategoryEntity categoryEntity);
+    @Mapping(source = "parent.title", target = "parent")
+    CategoryDetails toCategoryDetails(CategoryEntity categoryEntity);
 }

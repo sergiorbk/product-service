@@ -1,9 +1,5 @@
 package com.sergosoft.productservice.config;
 
-import com.sergosoft.productservice.service.mapper.CategoryMapper;
-import com.sergosoft.productservice.service.mapper.OrderMapper;
-import com.sergosoft.productservice.service.mapper.ProductMapper;
-
 import org.mapstruct.factory.Mappers;
 
 import org.springframework.boot.test.context.TestConfiguration;

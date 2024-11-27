@@ -4,22 +4,36 @@ server:
 spring:
   application:
     name: product-service
+
   profiles:
     active: dev
+
   liquibase:
     enabled: false
     change-log: liquibase/changelog.yaml
+
   datasource:
     driver-class-name: org.postgresql.Driver
     url: "jdbc:postgresql://localhost:5432/jwproductservicedb"
     username: postgres
     password: secret
+
   jpa:
     hibernate:
       ddl-auto: create-drop
+    show-sql: false
+#    defer-datasource-initialization: true
+
+  data:
+    elasticsearch:
+      host: localhost
+      port: 9200
 
 application:
   feature:
     toggles:
-      cosmoCats: true
-      kittyProducts: false
+      exampleToggle: true
+  params:
+    price:
+      precision: 10
+      scale: 2

@@ -1,4 +1,4 @@
-package com.sergosoft.productservice.annotation;
+package com.sergosoft.productservice.validation.price;
 
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
@@ -8,11 +8,12 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-@Constraint(validatedBy = CategoryIdsValidator.class)
-@Target({ElementType.FIELD})
+@Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface ValidCategoryIds {
-    String message() default "Categories IDs must contain only positive numbers.";
+@Constraint(validatedBy = PriceValidator.class)
+public @interface Price {
+
+    String message() default "Invalid price";
 
     Class<?>[] groups() default {};
 

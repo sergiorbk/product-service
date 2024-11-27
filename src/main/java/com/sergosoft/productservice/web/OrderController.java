@@ -9,10 +9,9 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import jakarta.validation.Valid;
 
-import com.sergosoft.productservice.domain.order.Order;
+import com.sergosoft.productservice.domain.order.OrderDetails;
 import com.sergosoft.productservice.dto.order.OrderCreationDto;
 import com.sergosoft.productservice.dto.order.OrderResponseDto;
-import com.sergosoft.productservice.service.mapper.OrderMapper;
 import com.sergosoft.productservice.service.OrderService;
 
 @RestController
@@ -30,15 +29,15 @@ public class OrderController {
 
     @GetMapping("/{id}")
     public ResponseEntity<OrderResponseDto> getOrderById(@PathVariable Long id) {
-        Order retrievedOrder = orderService.getOrderById(id);
-        OrderResponseDto categoryResponseDto = orderMapper.toDto(retrievedOrder);
+        OrderDetails retrievedOrderDetails = orderService.getOrderById(id);
+        OrderResponseDto categoryResponseDto = orderMapper.toDto(retrievedOrderDetails);
         return ResponseEntity.ok(categoryResponseDto);
     }
 
     @PostMapping
     public ResponseEntity<OrderResponseDto> createOrder(@RequestBody @Valid OrderCreationDto dto) {
-        Order createdOrder = orderService.createOrder(dto);
-        OrderResponseDto createdOrderResponseDto = orderMapper.toDto(createdOrder);
+        OrderDetails createdOrderDetails = orderService.createOrder(dto);
+        OrderResponseDto createdOrderResponseDto = orderMapper.toDto(createdOrderDetails);
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()
                 .path("/{id}")
@@ -50,8 +49,8 @@ public class OrderController {
     @PutMapping("/{id}")
     public ResponseEntity<OrderResponseDto> updateOrder(@PathVariable Long id,
                                                         @RequestBody @Valid OrderCreationDto orderDto) {
-        Order updatedOrder = orderService.updateOrder(id, orderDto);
-        return ResponseEntity.ok(orderMapper.toDto(updatedOrder));
+        OrderDetails updatedOrderDetails = orderService.updateOrder(id, orderDto);
+        return ResponseEntity.ok(orderMapper.toDto(updatedOrderDetails));
     }
 
     @DeleteMapping("/{id}")

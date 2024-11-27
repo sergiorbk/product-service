@@ -1,4 +1,4 @@
-package com.sergosoft.productservice.service.exception.category;
+package com.sergosoft.productservice.service.exception;
 
 public class CategoryNotFoundException extends RuntimeException {
 

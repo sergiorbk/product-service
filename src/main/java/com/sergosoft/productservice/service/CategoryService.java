@@ -1,12 +1,13 @@
 package com.sergosoft.productservice.service;
 
-import com.sergosoft.productservice.domain.Category;
-import com.sergosoft.productservice.dto.category.CategoryCreationDto;
+import com.sergosoft.productservice.domain.CategoryDetails;
+import com.sergosoft.productservice.dto.category.CategoryRequestDto;
+import com.sergosoft.productservice.dto.category.CategoryUpdateDto;
 
 public interface CategoryService {
 
-    Category getCategoryById(Long id);
-    Category createCategory(CategoryCreationDto dto);
-    Category updateCategory(Long id, CategoryCreationDto dto);
+    CategoryDetails getCategoryById(Long id);
+    CategoryDetails createCategory(CategoryRequestDto dto);
+    CategoryDetails updateCategory(Long id, CategoryUpdateDto dto);
     void deleteCategoryById(Long categoryId);
 }

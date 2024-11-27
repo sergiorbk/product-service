@@ -1,6 +1,7 @@
 package com.sergosoft.productservice.dto.category;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 
 import lombok.Value;
@@ -18,7 +19,7 @@ import lombok.extern.jackson.Jacksonized;
 @Value
 @Builder
 @Jacksonized
-public class CategoryCreationDto {
+public class CategoryRequestDto {
 
     /**
      * The title or name of the category.
@@ -26,6 +27,7 @@ public class CategoryCreationDto {
      * This field is mandatory, as every category requires a title.
      * </p>
      */
+    @NotNull(message = "Category is mandatory")
     @NotBlank(message = "Category title is mandatory.")
     String title;
 
@@ -38,6 +40,7 @@ public class CategoryCreationDto {
      *
      * @implNote This field is optional.
      */
+    @NotNull(message = "Category parent id is mandatory.")
     @Positive(message = "Category parent id must be positive.")
     Long parentId;
 }

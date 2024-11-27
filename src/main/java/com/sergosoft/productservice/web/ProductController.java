@@ -3,9 +3,6 @@ package com.sergosoft.productservice.web;
 import com.sergosoft.productservice.domain.Product;
 import com.sergosoft.productservice.dto.product.ProductCreationDto;
 import com.sergosoft.productservice.dto.product.ProductResponseDto;
-import com.sergosoft.productservice.featuretoggle.FeatureToggles;
-import com.sergosoft.productservice.featuretoggle.annotation.FeatureToggle;
-import com.sergosoft.productservice.service.mapper.ProductMapper;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -30,7 +27,6 @@ public class ProductController {
     }
 
     @GetMapping("/{id}")
-    @FeatureToggle(FeatureToggles.KITTY_PRODUCTS)
     public ResponseEntity<ProductResponseDto> getProductById(@PathVariable Long id) {
         Product retrievedProduct = productService.getProductById(id);
         ProductResponseDto productResponseDto = productMapper.toDto(retrievedProduct);
@@ -51,7 +47,7 @@ public class ProductController {
 
     @PutMapping("/{id}")
     public ResponseEntity<ProductResponseDto> updateProduct(@PathVariable Long id,
-                                                              @RequestBody @Valid ProductCreationDto productDto) {
+                                                            @RequestBody @Valid ProductCreationDto productDto) {
         Product updatedProduct = productService.updateProduct(id, productDto);
         return ResponseEntity.ok(productMapper.toDto(updatedProduct));
     }

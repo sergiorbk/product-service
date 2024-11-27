@@ -1,5 +1,6 @@
 package com.sergosoft.productservice.domain.order;
 
+import com.sergosoft.productservice.domain.order.item.OrderItem;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Value;
@@ -11,7 +12,7 @@ import java.util.*;
 @Value
 @Builder(toBuilder = true)
 @AllArgsConstructor
-public class Order {
+public class OrderDetails {
 
     Long id;
     Set<OrderItem> items = new HashSet<>();

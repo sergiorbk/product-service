@@ -1,25 +1,22 @@
 package com.sergosoft.productservice.service.impl;
 
-import com.sergosoft.productservice.repository.entity.CategoryEntity;
-import com.sergosoft.productservice.service.mapper.CategoryMapper;
-import org.springframework.stereotype.Service;
-
-import lombok.extern.slf4j.Slf4j;
-import lombok.RequiredArgsConstructor;
-
-import com.sergosoft.productservice.domain.Category;
-import com.sergosoft.productservice.service.CategoryService;
+import com.sergosoft.productservice.domain.CategoryDetails;
+import com.sergosoft.productservice.dto.category.CategoryRequestDto;
+import com.sergosoft.productservice.dto.category.CategoryUpdateDto;
 import com.sergosoft.productservice.repository.CategoryRepository;
-import com.sergosoft.productservice.dto.category.CategoryCreationDto;
-import com.sergosoft.productservice.service.exception.category.CategoryNotFoundException;
-import com.sergosoft.productservice.service.exception.category.ParentCategoryNotFoundException;
+import com.sergosoft.productservice.repository.entity.CategoryEntity;
+import com.sergosoft.productservice.service.CategoryService;
+import com.sergosoft.productservice.service.exception.CategoryNotFoundException;
+import com.sergosoft.productservice.service.mapper.CategoryMapper;
+import jakarta.persistence.PersistenceException;
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Optional;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor
+@AllArgsConstructor
 public class CategoryServiceImpl implements CategoryService {
 
     private final CategoryRepository categoryRepository;
@@ -27,67 +24,64 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     @Transactional(readOnly = true)
-    public Category getCategoryById(Long id) {
-        log.info("Getting product category by id: {}", id);
-        CategoryEntity retrievedCategory = categoryRepository.findById(id).orElseThrow(() -> new CategoryNotFoundException(id));
-        log.info("Category was retrieved successfully: {}", retrievedCategory);
-        return categoryMapper.toCategory(retrievedCategory);
+    public CategoryDetails getCategoryById(Long id) {
+        log.debug("Retrieving category by id: {}", id);
+        CategoryEntity retrievedCategory = categoryRepository.findById(id).orElseThrow(() -> {
+            log.error("Exception occurred while retrieving category by id: {}", id);
+            throw new CategoryNotFoundException(id);
+        });
+        CategoryDetails categoryDetails = categoryMapper.toCategoryDetails(retrievedCategory);
+        log.info("Retrieved category: {} : {}", categoryDetails, categoryDetails);
+        return categoryDetails;
     }
 
     @Override
-    public Category createCategory(CategoryCreationDto categoryCreationDto) {
-        log.info("Creating new product category: {}", categoryCreationDto);
-        Long parentId = categoryCreationDto.getParentId();
+    @Transactional
+    public CategoryDetails createCategory(CategoryRequestDto dto) {
+        log.debug("Creating category: {}", dto);
+        // retrieving parent category by id
         CategoryEntity parentCategory = null;
-        // if parent category id was specified
-        if(parentId != null) {
-            log.debug("Getting parent category with id: {}", categoryCreationDto.getParentId());
-            parentCategory = categoryRepository.findById(categoryCreationDto.getParentId())
-                    .orElseThrow(() -> new ParentCategoryNotFoundException(categoryCreationDto.getParentId()));
-            log.debug("Retrieved parent category with id {}: {}", parentId, parentCategory);
+        if(dto.getParentId() != null) {
+            parentCategory = categoryRepository.findById(dto.getParentId()).orElseThrow(() -> {
+                log.error("Exception occurred while retrieving parent category by id: {}", dto.getParentId());
+                throw new CategoryNotFoundException(dto.getParentId());
+            });
         }
-        CategoryEntity categoryToSave = new CategoryEntity(null, categoryCreationDto.getTitle(), parentCategory);
-        log.debug("Saving new category: {}", categoryToSave);
-
-        CategoryEntity savedCategory = categoryRepository.save(categoryToSave);
-        log.info("New category was saved successfully: {}", savedCategory);
-        return categoryMapper.toCategory(savedCategory);
+        CategoryEntity categoryToSave = CategoryEntity.builder()
+                .title(dto.getTitle())
+                .parent(parentCategory)
+                .build();
+        try {
+            categoryRepository.save(categoryToSave);
+        } catch (Exception ex) {
+            log.error("Exception occurred while creating category: {}", ex.getMessage());
+            throw new PersistenceException(ex.getMessage());
+        }
+        CategoryDetails categoryDetails = categoryMapper.toCategoryDetails(categoryToSave);
+        log.info("Created category: {}", categoryDetails);
+        return categoryDetails;
     }
 
     @Override
-    public Category updateCategory(Long id, CategoryCreationDto categoryDto) {
-        log.info("Updating category with id: {}", id);
-        log.debug("Retrieving category to update by id: {}", id);
-        CategoryEntity existingCategory = categoryRepository.findById(id)
-                .orElseThrow(() -> new CategoryNotFoundException(id));
-        log.debug("Retrieved category to update with id{}: {}", id, existingCategory);
-        Optional<CategoryEntity> parent = categoryRepository.findById(categoryDto.getParentId());
+    @Transactional
+    public CategoryDetails updateCategory(Long id, CategoryUpdateDto dto) {
+        log.debug("Updating category: {}", dto);
+        CategoryEntity categoryToUpdate = categoryRepository.findById(id).orElseThrow(() -> {
+            log.error("Exception occurred while retrieving category by id: {}", id);
+            throw new CategoryNotFoundException(id);
+        });
+        categoryToUpdate.toBuilder()
+                .title(dto.getTitle() == null ? null : dto.getTitle())
+                .parent(dto.getParentId() == null ? null : categoryRepository.findById(dto.getParentId()).orElseThrow(() -> {
+                    log.error("Exception occurred while retrieving parent category by id: {}", id);
+                    return new CategoryNotFoundException(id);
+                }));
 
-        CategoryEntity updatedCategory = new CategoryEntity(
-                existingCategory.getId(),
-                categoryDto.getTitle(),
-                parent.orElse(null)
-        );
-        log.info("Saving updated category with id {}: {}", id, updatedCategory);
-        CategoryEntity savedCategory = categoryRepository.save(updatedCategory);
-        log.info("Updated category was saved successfully: {}", savedCategory);
-        return categoryMapper.toCategory(savedCategory);
+        return null;
     }
 
     @Override
-    public void deleteCategoryById(Long id) {
-        log.info("Truing to delete a category with id: {}", id);
-        if(categoryRepository.existsById(id)) {
-            log.info("Deleting existent category with id: {}", id);
-            categoryRepository.deleteById(id);
-            // check does category with such id still exist after deletion
-            if(categoryRepository.existsById(id)) {
-                log.info("Category with id {} was deleted successfully.", id);
-            } else {
-                log.error("Unable to Delete Category with id {}.", id);
-            }
-        } else {
-            log.error("Unable to Delete non-existent Category with id {}.", id);
-        }
+    public void deleteCategoryById(Long categoryId) {
+        log.debug("Deleting category: {}", categoryId);
     }
 }

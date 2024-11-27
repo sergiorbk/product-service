@@ -18,7 +18,7 @@ public class Product {
     UUID ownerId;
     String title;
     String description;
-    List<Category> categories;
+    List<CategoryDetails> categories;
     BigDecimal price;
     Instant createdAt;
 }

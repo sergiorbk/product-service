@@ -1,7 +1,7 @@
 package com.sergosoft.productservice.web;
 
 import com.sergosoft.productservice.IntegrationTest;
-import com.sergosoft.productservice.domain.Category;
+import com.sergosoft.productservice.domain.CategoryDetails;
 import com.sergosoft.productservice.domain.Product;
 import com.sergosoft.productservice.dto.product.ProductCreationDto;
 import com.sergosoft.productservice.dto.product.ProductResponseDto;
@@ -13,8 +13,6 @@ import com.sergosoft.productservice.repository.entity.CategoryEntity;
 import com.sergosoft.productservice.repository.entity.ProductEntity;
 import com.sergosoft.productservice.service.CategoryService;
 import com.sergosoft.productservice.service.ProductService;
-import com.sergosoft.productservice.service.mapper.CategoryMapper;
-import com.sergosoft.productservice.service.mapper.ProductMapper;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -69,7 +67,7 @@ class ProductControllerIT extends IntegrationTest {
     private ProductEntity productEntity;
     private CategoryEntity categoryEntity;
     private Product product;
-    private Category category;
+    private CategoryDetails categoryDetails;
     private ProductCreationDto productCreationDto;
     private ProductResponseDto productResponseDto;
     private Long productId;
@@ -77,7 +75,7 @@ class ProductControllerIT extends IntegrationTest {
     @BeforeEach
     void setUp() {
         CategoryEntity createdCategory = new CategoryEntity(1L, "Category1", null);
-        when(categoryService.createCategory(any())).thenReturn(category);
+        when(categoryService.createCategory(any())).thenReturn(categoryDetails);
         categoryMapper.toCategory(createdCategory);
         productEntity = new ProductEntity(productId, "Product Title",
                 "Product Description",

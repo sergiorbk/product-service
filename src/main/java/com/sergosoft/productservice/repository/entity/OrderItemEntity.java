@@ -9,7 +9,7 @@ import java.math.BigDecimal;
 
 @Data
 @Entity
-@Table(name = "order_items")
+@Table(name = "order_item")
 @NoArgsConstructor
 @AllArgsConstructor
 public class OrderItemEntity {
@@ -27,6 +27,6 @@ public class OrderItemEntity {
     @Column(nullable = false)
     Integer quantity;
 
-    @Column(nullable = false)
+    @Column(nullable = false, precision = 10, scale = 2)
     BigDecimal price;
 }

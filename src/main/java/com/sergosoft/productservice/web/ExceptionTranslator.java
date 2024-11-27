@@ -16,7 +16,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 import lombok.extern.slf4j.Slf4j;
 
-import com.sergosoft.productservice.service.exception.category.CategoryNotFoundException;
+import com.sergosoft.productservice.service.exception.CategoryNotFoundException;
 import com.sergosoft.productservice.service.exception.category.ParentCategoryNotFoundException;
 
 @ControllerAdvice

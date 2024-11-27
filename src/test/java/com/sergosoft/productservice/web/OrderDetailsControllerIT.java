@@ -2,12 +2,11 @@ package com.sergosoft.productservice.web;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sergosoft.productservice.IntegrationTest;
-import com.sergosoft.productservice.domain.order.Order;
+import com.sergosoft.productservice.domain.order.OrderDetails;
 import com.sergosoft.productservice.dto.order.OrderCreationDto;
 import com.sergosoft.productservice.dto.order.OrderResponseDto;
 import com.sergosoft.productservice.repository.entity.OrderEntity;
 import com.sergosoft.productservice.service.OrderService;
-import com.sergosoft.productservice.service.mapper.OrderMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
@@ -35,7 +34,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @DisplayName("Order Controller IT")
 @Tag("order-service")
-class OrderControllerIT extends IntegrationTest {
+class OrderDetailsControllerIT extends IntegrationTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -50,7 +49,7 @@ class OrderControllerIT extends IntegrationTest {
     private OrderMapper orderMapper;
 
     private OrderEntity orderEntity;
-    private Order order;
+    private OrderDetails orderDetails;
     private OrderCreationDto orderCreationDto;
     private OrderResponseDto orderResponseDto;
 
@@ -84,19 +83,19 @@ class OrderControllerIT extends IntegrationTest {
                 .items(List.of())
                 .build();
 
-        order = orderMapper.toOrder(orderEntity);
+        orderDetails = orderMapper.toOrder(orderEntity);
     }
 
     @Test
     @DisplayName("GET /api/v1/orders/{id} - Success")
     void getOrderById_ShouldReturnOrder() throws Exception {
-        when(orderService.getOrderById(orderEntity.getId())).thenReturn(order);
-        when(orderMapper.toDto(order)).thenReturn(orderResponseDto);
+        when(orderService.getOrderById(orderEntity.getId())).thenReturn(orderDetails);
+        when(orderMapper.toDto(orderDetails)).thenReturn(orderResponseDto);
 
-        mockMvc.perform(get("/api/v1/orders/{id}", order.getId()))
+        mockMvc.perform(get("/api/v1/orders/{id}", orderDetails.getId()))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.id").value(order.getId()))
+                .andExpect(jsonPath("$.id").value(orderDetails.getId()))
                 .andExpect(jsonPath("$.sellerId").value(orderResponseDto.getSellerId().toString()))
                 .andExpect(jsonPath("$.buyerId").value(orderResponseDto.getBuyerId().toString()))
                 .andExpect(jsonPath("$.totalPrice").value(orderResponseDto.getTotalPrice()))
@@ -106,15 +105,15 @@ class OrderControllerIT extends IntegrationTest {
     @Test
     @DisplayName("POST /api/v1/orders - Success")
     void createOrder_ShouldReturnCreatedOrder() throws Exception {
-        when(orderService.createOrder(any(OrderCreationDto.class))).thenReturn(order);
-        when(orderMapper.toDto(order)).thenReturn(orderResponseDto);
+        when(orderService.createOrder(any(OrderCreationDto.class))).thenReturn(orderDetails);
+        when(orderMapper.toDto(orderDetails)).thenReturn(orderResponseDto);
 
         mockMvc.perform(post("/api/v1/orders")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(orderCreationDto)))
                 .andExpect(status().isCreated())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.id").value(order.getId()))
+                .andExpect(jsonPath("$.id").value(orderDetails.getId()))
                 .andExpect(jsonPath("$.sellerId").value(orderResponseDto.getSellerId().toString()))
                 .andExpect(jsonPath("$.buyerId").value(orderResponseDto.getBuyerId().toString()))
                 .andExpect(jsonPath("$.totalPrice").value(orderResponseDto.getTotalPrice()));
@@ -123,15 +122,15 @@ class OrderControllerIT extends IntegrationTest {
     @Test
     @DisplayName("PUT /api/v1/orders/{id} - Success")
     void updateOrder_ShouldReturnUpdatedOrder() throws Exception {
-        when(orderService.updateOrder(order.getId(), orderCreationDto)).thenReturn(order);
-        when(orderMapper.toDto(order)).thenReturn(orderResponseDto);
+        when(orderService.updateOrder(orderDetails.getId(), orderCreationDto)).thenReturn(orderDetails);
+        when(orderMapper.toDto(orderDetails)).thenReturn(orderResponseDto);
 
-        mockMvc.perform(put("/api/v1/orders/{id}", order.getId())
+        mockMvc.perform(put("/api/v1/orders/{id}", orderDetails.getId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(orderCreationDto)))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.id").value(order.getId()))
+                .andExpect(jsonPath("$.id").value(orderDetails.getId()))
                 .andExpect(jsonPath("$.sellerId").value(orderResponseDto.getSellerId().toString()))
                 .andExpect(jsonPath("$.buyerId").value(orderResponseDto.getBuyerId().toString()))
                 .andExpect(jsonPath("$.totalPrice").value(orderResponseDto.getTotalPrice()));
@@ -140,9 +139,9 @@ class OrderControllerIT extends IntegrationTest {
     @Test
     @DisplayName("DELETE /api/v1/orders/{id} - Success")
     void deleteOrder_ShouldReturnNoContent() throws Exception {
-        Mockito.doNothing().when(orderService).deleteOrderById(order.getId());
+        Mockito.doNothing().when(orderService).deleteOrderById(orderDetails.getId());
 
-        mockMvc.perform(delete("/api/v1/orders/{id}", order.getId()))
+        mockMvc.perform(delete("/api/v1/orders/{id}", orderDetails.getId()))
                 .andExpect(status().isNoContent());
     }
 }

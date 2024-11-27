@@ -16,21 +16,9 @@ import lombok.Value;
 @Value
 @Builder
 @AllArgsConstructor
-public class Category {
+public class CategoryDetails {
 
-    /**
-     * Unique identifier of the product category.
-     */
     Long id;
-
-    /**
-     * Title or name of the product category.
-     */
     String title;
-
-    /**
-     * <p>Parent category of this category.</p>
-     * <p>Contains null if this category is a root category.</p>
-     */
-    Category parent;
+    String parent;
 }
