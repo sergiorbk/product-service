@@ -20,5 +20,5 @@ public class CategoryDetails {
 
     Long id;
     String title;
-    String parent;
+    Long parentId;
 }

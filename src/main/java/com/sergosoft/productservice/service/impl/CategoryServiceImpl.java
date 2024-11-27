@@ -6,6 +6,7 @@ import com.sergosoft.productservice.dto.category.CategoryUpdateDto;
 import com.sergosoft.productservice.repository.CategoryRepository;
 import com.sergosoft.productservice.repository.entity.CategoryEntity;
 import com.sergosoft.productservice.service.CategoryService;
+import com.sergosoft.productservice.service.exception.CategoryInUseException;
 import com.sergosoft.productservice.service.exception.CategoryNotFoundException;
 import com.sergosoft.productservice.service.mapper.CategoryMapper;
 import jakarta.persistence.PersistenceException;
@@ -28,7 +29,7 @@ public class CategoryServiceImpl implements CategoryService {
         log.debug("Retrieving category by id: {}", id);
         CategoryEntity retrievedCategory = categoryRepository.findById(id).orElseThrow(() -> {
             log.error("Exception occurred while retrieving category by id: {}", id);
-            throw new CategoryNotFoundException(id);
+            return new CategoryNotFoundException(id);
         });
         CategoryDetails categoryDetails = categoryMapper.toCategoryDetails(retrievedCategory);
         log.info("Retrieved category: {} : {}", categoryDetails, categoryDetails);
@@ -44,7 +45,7 @@ public class CategoryServiceImpl implements CategoryService {
         if(dto.getParentId() != null) {
             parentCategory = categoryRepository.findById(dto.getParentId()).orElseThrow(() -> {
                 log.error("Exception occurred while retrieving parent category by id: {}", dto.getParentId());
-                throw new CategoryNotFoundException(dto.getParentId());
+                return new CategoryNotFoundException(dto.getParentId());
             });
         }
         CategoryEntity categoryToSave = CategoryEntity.builder()
@@ -68,20 +69,46 @@ public class CategoryServiceImpl implements CategoryService {
         log.debug("Updating category: {}", dto);
         CategoryEntity categoryToUpdate = categoryRepository.findById(id).orElseThrow(() -> {
             log.error("Exception occurred while retrieving category by id: {}", id);
-            throw new CategoryNotFoundException(id);
+            return new CategoryNotFoundException(id);
         });
         categoryToUpdate.toBuilder()
-                .title(dto.getTitle() == null ? null : dto.getTitle())
-                .parent(dto.getParentId() == null ? null : categoryRepository.findById(dto.getParentId()).orElseThrow(() -> {
+                .title(dto.getTitle() == null ? categoryToUpdate.getTitle() : dto.getTitle())
+                .parent(dto.getParentId() == null ? categoryToUpdate.getParent() : categoryRepository.findById(dto.getParentId()).orElseThrow(() -> {
                     log.error("Exception occurred while retrieving parent category by id: {}", id);
                     return new CategoryNotFoundException(id);
                 }));
-
-        return null;
+        CategoryEntity updatedCategory = categoryRepository.save(categoryToUpdate);
+        CategoryDetails categoryDetails = categoryMapper.toCategoryDetails(updatedCategory);
+        log.info("Updated category: {}", categoryDetails);
+        return categoryDetails;
     }
 
     @Override
+    @Transactional
     public void deleteCategoryById(Long categoryId) {
         log.debug("Deleting category: {}", categoryId);
+        // check if category with such id exists
+        CategoryEntity categoryToDelete = categoryRepository.findById(categoryId).orElseThrow(() -> {
+            log.error("Exception occurred while retrieving category by id: {}", categoryId);
+            return new CategoryNotFoundException(categoryId);
+        });
+        // check if category has no subcategories
+        if(!categoryToDelete.getSubcategories().isEmpty()) {
+            log.error("Unable to delete category that has subcategories: {}", categoryToDelete.getSubcategories());
+            throw  new CategoryInUseException(categoryId);
+        }
+        // check if category has no related products
+        if(!categoryToDelete.getRelatedProducts().isEmpty()) {
+            log.error("Unable to delete category that has products: {}", categoryToDelete.getRelatedProducts());
+            throw  new CategoryInUseException(categoryId);
+        }
+        // try to delete the category
+        try {
+            categoryRepository.deleteById(categoryId);
+        } catch (Exception ex) {
+            log.error("Exception occurred while deleting category: {}", ex.getMessage());
+            throw new PersistenceException(ex.getMessage());
+        }
+        log.info("Deleted category: {}", categoryId);
     }
 }

@@ -2,7 +2,6 @@ package com.sergosoft.productservice.web;
 
 import java.net.URI;
 import java.util.List;
-
 import com.sergosoft.productservice.featuretoggle.exception.FeatureNotAvailableException;
 import com.sergosoft.productservice.service.exception.*;
 import lombok.NonNull;
@@ -13,11 +12,8 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
-
 import lombok.extern.slf4j.Slf4j;
-
 import com.sergosoft.productservice.service.exception.CategoryNotFoundException;
-import com.sergosoft.productservice.service.exception.category.ParentCategoryNotFoundException;
 
 @ControllerAdvice
 @Slf4j
@@ -40,12 +36,12 @@ public class ExceptionTranslator extends ResponseEntityExceptionHandler {
         return problemDetail;
     }
 
-    @ExceptionHandler(ParentCategoryNotFoundException.class)
-    ProblemDetail handleParentCategoryNotFoundException(ParentCategoryNotFoundException ex) {
-        log.info("Parent Category Not Found exception raised.");
-        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, ex.getMessage());
-        problemDetail.setType(URI.create("parent-category-not-found"));
-        problemDetail.setTitle("Parent Category Not Found");
+    @ExceptionHandler(CategoryInUseException.class)
+    ProblemDetail handleCategoryInUseException(CategoryInUseException ex) {
+        log.info("Category In Use exception raised.");
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, ex.getMessage());
+        problemDetail.setType(URI.create("category-in-use"));
+        problemDetail.setTitle("Category In Use");
         return problemDetail;
     }
 

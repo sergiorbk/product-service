@@ -2,6 +2,8 @@ package com.sergosoft.productservice.web;
 
 import java.net.URI;
 
+import com.sergosoft.productservice.dto.category.CategoryUpdateDto;
+import com.sergosoft.productservice.service.mapper.CategoryMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -32,14 +34,14 @@ public class CategoryController {
     @GetMapping("/{id}")
     public ResponseEntity<CategoryResponseDto> getCategoryById(@PathVariable Long id) {
         CategoryDetails retrievedCategoryDetails = categoryService.getCategoryById(id);
-        CategoryResponseDto categoryResponseDto = categoryMapper.toDto(retrievedCategoryDetails);
+        CategoryResponseDto categoryResponseDto = categoryMapper.toCategoryDetailsDto(retrievedCategoryDetails);
         return ResponseEntity.ok(categoryResponseDto);
     }
 
     @PostMapping
     public ResponseEntity<CategoryResponseDto> createCategory(@RequestBody @Valid CategoryRequestDto categoryDto) {
         CategoryDetails createdCategoryDetails = categoryService.createCategory(categoryDto);
-        CategoryResponseDto createdCategoryResponseDto = categoryMapper.toDto(createdCategoryDetails);
+        CategoryResponseDto createdCategoryResponseDto = categoryMapper.toCategoryDetailsDto(createdCategoryDetails);
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()
                 .path("/{id}")
@@ -50,9 +52,9 @@ public class CategoryController {
 
     @PutMapping("/{categoryId}")
     public ResponseEntity<CategoryResponseDto> updateCategory(@PathVariable Long categoryId,
-                                                              @RequestBody @Valid CategoryRequestDto categoryDto) {
+                                                              @RequestBody @Valid CategoryUpdateDto categoryDto) {
         CategoryDetails updatedCategoryDetails = categoryService.updateCategory(categoryId, categoryDto);
-        return ResponseEntity.ok(categoryMapper.toDto(updatedCategoryDetails));
+        return ResponseEntity.ok(categoryMapper.toCategoryDetailsDto(updatedCategoryDetails));
     }
 
     @DeleteMapping("/{categoryId}")

@@ -7,13 +7,15 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.NaturalId;
-import java.util.List;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
 @Entity
-@Table(name = "category", indexes = {
-        @Index(name = "idx_category_slug", columnList = "slug")
-})
+@Table(name = "categories",
+       indexes = { @Index(name = "idx_category_slug", columnList = "slug")}
+)
 @Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
@@ -35,11 +37,20 @@ public class CategoryEntity {
     @Column(nullable = false, unique = true)
     private String slug;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "parent_id")
     private CategoryEntity parent;
 
-    @OneToMany
-    private List<CategoryEntity> subcategories;
+    @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL)
+    private Set<CategoryEntity> subcategories = new HashSet<>();
+
+    @ManyToMany
+    @JoinTable(
+            name = "product_category",
+            joinColumns = @JoinColumn(name = "category_id"),
+            inverseJoinColumns = @JoinColumn(name = "product_id")
+    )
+    private Set<ProductEntity> relatedProducts = new HashSet<>();
 
     @PrePersist
     private void generateSlug() {

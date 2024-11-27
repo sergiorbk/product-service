@@ -16,7 +16,7 @@ import java.util.UUID;
 
 @Data
 @Entity
-@Table(name = "order")
+@Table(name = "orders")
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -26,7 +26,7 @@ public class OrderEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToMany
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     private Set<OrderItemEntity> items = new HashSet<>();
 
     /**

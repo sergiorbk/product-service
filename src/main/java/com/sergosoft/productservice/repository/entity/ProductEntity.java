@@ -17,8 +17,8 @@ import java.util.UUID;
 
 @Data
 @Entity
-@Table(name = "product", indexes = {
-        @Index(name = "idx_natural_id", columnList = "naturalId")
+@Table(name = "products", indexes = {
+        @Index(name = "idx_product_natural_id", columnList = "naturalId")
 })
 @NoArgsConstructor
 @AllArgsConstructor
@@ -46,8 +46,8 @@ public class ProductEntity {
     @Column(nullable = false)
     private String slug;
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    private Set<CategoryEntity> relatedCategories = new HashSet<>();
+    @ManyToMany(mappedBy = "relatedProducts")
+    private Set<CategoryEntity> categories = new HashSet<>();
 
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal price;
