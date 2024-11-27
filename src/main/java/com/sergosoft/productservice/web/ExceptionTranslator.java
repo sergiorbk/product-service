@@ -4,6 +4,7 @@ import java.net.URI;
 import java.util.List;
 import com.sergosoft.productservice.featuretoggle.exception.FeatureNotAvailableException;
 import com.sergosoft.productservice.service.exception.*;
+import jakarta.persistence.PersistenceException;
 import lombok.NonNull;
 import org.springframework.http.*;
 import org.springframework.validation.FieldError;
@@ -15,6 +16,10 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 import lombok.extern.slf4j.Slf4j;
 import com.sergosoft.productservice.service.exception.CategoryNotFoundException;
 
+import static java.net.URI.create;
+import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
+import static org.springframework.http.ProblemDetail.forStatusAndDetail;
+
 @ControllerAdvice
 @Slf4j
 public class ExceptionTranslator extends ResponseEntityExceptionHandler {
@@ -24,6 +29,15 @@ public class ExceptionTranslator extends ResponseEntityExceptionHandler {
         problemDetail.setType(URI.create("urn:problem-type:validation-error"));
         problemDetail.setTitle("Field Validation Exception");
         problemDetail.setProperty("invalidParams", validationResponse);
+        return problemDetail;
+    }
+
+    @ExceptionHandler(PersistenceException.class)
+    ProblemDetail handlePersistenceException(PersistenceException ex) {
+        log.error("Persistence exception raised");
+        ProblemDetail problemDetail = forStatusAndDetail(INTERNAL_SERVER_ERROR, ex.getMessage());
+        problemDetail.setType(create("persistence-exception"));
+        problemDetail.setTitle("Persistence exception");
         return problemDetail;
     }
 

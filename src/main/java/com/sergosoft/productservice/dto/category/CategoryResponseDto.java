@@ -11,5 +11,6 @@ public class CategoryResponseDto {
 
     Long id;
     String title;
+    String slug;
     Long parentId;
 }

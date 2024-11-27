@@ -1,7 +1,9 @@
 package com.sergosoft.productservice.web;
 
 import java.net.URI;
+import java.util.Set;
 
+import com.sergosoft.productservice.dto.category.CategorySetDto;
 import com.sergosoft.productservice.dto.category.CategoryUpdateDto;
 import com.sergosoft.productservice.service.mapper.CategoryMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -34,14 +36,26 @@ public class CategoryController {
     @GetMapping("/{id}")
     public ResponseEntity<CategoryResponseDto> getCategoryById(@PathVariable Long id) {
         CategoryDetails retrievedCategoryDetails = categoryService.getCategoryById(id);
-        CategoryResponseDto categoryResponseDto = categoryMapper.toCategoryDetailsDto(retrievedCategoryDetails);
+        CategoryResponseDto categoryResponseDto = categoryMapper.toCategoryResponseDto(retrievedCategoryDetails);
         return ResponseEntity.ok(categoryResponseDto);
+    }
+
+    @GetMapping("/root")
+    public ResponseEntity<CategorySetDto> getRootCategories() {
+        Set<CategoryDetails> rootCategories = categoryService.getRootCategories();
+        return ResponseEntity.ok(categoryMapper.toCategorySetDto(rootCategories));
+    }
+
+    @GetMapping("/{parentId}/subcategories")
+    public ResponseEntity<CategorySetDto> getSubcategoriesByParentId(@PathVariable Long parentId) {
+        Set<CategoryDetails> subcategories = categoryService.getSubCategories(parentId);
+        return ResponseEntity.ok(categoryMapper.toCategorySetDto(subcategories));
     }
 
     @PostMapping
     public ResponseEntity<CategoryResponseDto> createCategory(@RequestBody @Valid CategoryRequestDto categoryDto) {
         CategoryDetails createdCategoryDetails = categoryService.createCategory(categoryDto);
-        CategoryResponseDto createdCategoryResponseDto = categoryMapper.toCategoryDetailsDto(createdCategoryDetails);
+        CategoryResponseDto createdCategoryResponseDto = categoryMapper.toCategoryResponseDto(createdCategoryDetails);
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()
                 .path("/{id}")
@@ -54,7 +68,7 @@ public class CategoryController {
     public ResponseEntity<CategoryResponseDto> updateCategory(@PathVariable Long categoryId,
                                                               @RequestBody @Valid CategoryUpdateDto categoryDto) {
         CategoryDetails updatedCategoryDetails = categoryService.updateCategory(categoryId, categoryDto);
-        return ResponseEntity.ok(categoryMapper.toCategoryDetailsDto(updatedCategoryDetails));
+        return ResponseEntity.ok(categoryMapper.toCategoryResponseDto(updatedCategoryDetails));
     }
 
     @DeleteMapping("/{categoryId}")

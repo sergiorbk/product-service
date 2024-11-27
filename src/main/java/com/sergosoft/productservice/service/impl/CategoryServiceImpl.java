@@ -15,6 +15,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Set;
+import java.util.stream.Collectors;
+
 @Slf4j
 @Service
 @AllArgsConstructor
@@ -37,16 +40,36 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
+    public Set<CategoryDetails> getRootCategories() {
+        log.debug("Retrieving root categories");
+        Set<CategoryEntity> rootCategories = categoryRepository.findByParentNull();
+        Set<CategoryDetails> rootCategoriesDetails = rootCategories.stream()
+                .map(categoryMapper::toCategoryDetails).collect(Collectors.toSet());
+        log.info("Retrieved {} root categories.", rootCategories.size());
+        return rootCategoriesDetails;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Set<CategoryDetails> getSubCategories(Long parentId) {
+        log.debug("Retrieving subcategories by parent category parentId: {}", parentId);
+        CategoryEntity parentCategory = retrieveCategoryByIdOrElseThrow(parentId);
+        Set<CategoryEntity> subcategories = parentCategory.getSubcategories();
+        Set<CategoryDetails> subcategoriesDetails = subcategories.stream()
+                .map(categoryMapper::toCategoryDetails).collect(Collectors.toSet());
+        log.info("Retrieved {} subcategories by parent category with parentId {}", subcategoriesDetails.size(), parentId);
+        return subcategoriesDetails;
+    }
+
+    @Override
     @Transactional
     public CategoryDetails createCategory(CategoryRequestDto dto) {
         log.debug("Creating category: {}", dto);
         // retrieving parent category by id
         CategoryEntity parentCategory = null;
         if(dto.getParentId() != null) {
-            parentCategory = categoryRepository.findById(dto.getParentId()).orElseThrow(() -> {
-                log.error("Exception occurred while retrieving parent category by id: {}", dto.getParentId());
-                return new CategoryNotFoundException(dto.getParentId());
-            });
+            // getting parent category entity
+            parentCategory = retrieveCategoryByIdOrElseThrow(dto.getParentId());
         }
         CategoryEntity categoryToSave = CategoryEntity.builder()
                 .title(dto.getTitle())
@@ -67,10 +90,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Transactional
     public CategoryDetails updateCategory(Long id, CategoryUpdateDto dto) {
         log.debug("Updating category: {}", dto);
-        CategoryEntity categoryToUpdate = categoryRepository.findById(id).orElseThrow(() -> {
-            log.error("Exception occurred while retrieving category by id: {}", id);
-            return new CategoryNotFoundException(id);
-        });
+        CategoryEntity categoryToUpdate = retrieveCategoryByIdOrElseThrow(id);
         categoryToUpdate.toBuilder()
                 .title(dto.getTitle() == null ? categoryToUpdate.getTitle() : dto.getTitle())
                 .parent(dto.getParentId() == null ? categoryToUpdate.getParent() : categoryRepository.findById(dto.getParentId()).orElseThrow(() -> {
@@ -88,10 +108,7 @@ public class CategoryServiceImpl implements CategoryService {
     public void deleteCategoryById(Long categoryId) {
         log.debug("Deleting category: {}", categoryId);
         // check if category with such id exists
-        CategoryEntity categoryToDelete = categoryRepository.findById(categoryId).orElseThrow(() -> {
-            log.error("Exception occurred while retrieving category by id: {}", categoryId);
-            return new CategoryNotFoundException(categoryId);
-        });
+        CategoryEntity categoryToDelete = retrieveCategoryByIdOrElseThrow(categoryId);
         // check if category has no subcategories
         if(!categoryToDelete.getSubcategories().isEmpty()) {
             log.error("Unable to delete category that has subcategories: {}", categoryToDelete.getSubcategories());
@@ -110,5 +127,12 @@ public class CategoryServiceImpl implements CategoryService {
             throw new PersistenceException(ex.getMessage());
         }
         log.info("Deleted category: {}", categoryId);
+    }
+
+    private CategoryEntity retrieveCategoryByIdOrElseThrow(Long id) {
+        return categoryRepository.findById(id).orElseThrow(() -> {
+            log.error("Exception occurred while retrieving category by id: {}", id);
+            return new CategoryNotFoundException(id);
+        });
     }
 }

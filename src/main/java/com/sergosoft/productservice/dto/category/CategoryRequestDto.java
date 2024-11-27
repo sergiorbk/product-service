@@ -40,7 +40,6 @@ public class CategoryRequestDto {
      *
      * @implNote This field is optional.
      */
-    @NotNull(message = "Category parent id is mandatory.")
     @Positive(message = "Category parent id must be positive.")
     Long parentId;
 }
