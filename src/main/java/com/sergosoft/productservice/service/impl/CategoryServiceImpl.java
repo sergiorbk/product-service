@@ -40,6 +40,19 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public CategoryDetails getCategoryBySlug(String slug) {
+        log.debug("Retrieving category by slug: {}", slug);
+        CategoryEntity retrievedCategory = categoryRepository.findBySlug(slug).orElseThrow(() -> {
+            log.error("Exception occurred while retrieving category by slug: {}", slug);
+            return new CategoryNotFoundException(slug);
+        });
+        CategoryDetails categoryDetails = categoryMapper.toCategoryDetails(retrievedCategory);
+        log.info("Retrieved category by slug {}: {}", slug, categoryDetails);
+        return categoryDetails;
+    }
+
+    @Override
     public Set<CategoryDetails> getRootCategories() {
         log.debug("Retrieving root categories");
         Set<CategoryEntity> rootCategories = categoryRepository.findByParentNull();

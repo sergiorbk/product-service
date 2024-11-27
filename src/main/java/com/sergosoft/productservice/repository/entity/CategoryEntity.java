@@ -6,7 +6,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.NaturalId;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -30,11 +29,10 @@ public class CategoryEntity {
 
     /**
      * Slugged category title <p>
-     * Natural id for CategoryEntity, being used as a URL part for categories and products<p>
+     * Being used as a URL part for categories and products<p>
      * Example: if title is "Computers and Laptops" slug is "computers-and-laptops"
      */
-    @NaturalId
-    @Column(nullable = false, unique = true)
+    @Column(unique = true, nullable = false)
     private String slug;
 
     @ManyToOne(fetch = FetchType.LAZY)

@@ -1,5 +1,6 @@
 package com.sergosoft.productservice.config;
 
+import com.sergosoft.productservice.service.mapper.CategoryMapper;
 import org.mapstruct.factory.Mappers;
 
 import org.springframework.boot.test.context.TestConfiguration;
@@ -13,13 +14,13 @@ public class MappersTestConfiguration {
         return Mappers.getMapper(CategoryMapper.class);
     }
 
-    @Bean
-    public OrderMapper orderMapper() {
-        return Mappers.getMapper(OrderMapper.class);
-    }
-
-    @Bean
-    public ProductMapper productMapper() {
-        return Mappers.getMapper(ProductMapper.class);
-    }
+//    @Bean
+//    public OrderMapper orderMapper() {
+//        return Mappers.getMapper(OrderMapper.class);
+//    }
+//
+//    @Bean
+//    public ProductMapper productMapper() {
+//        return Mappers.getMapper(ProductMapper.class);
+//    }
 }

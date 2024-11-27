@@ -9,6 +9,7 @@ import java.util.Set;
 public interface CategoryService {
 
     CategoryDetails getCategoryById(Long id);
+    CategoryDetails getCategoryBySlug(String slug);
     Set<CategoryDetails> getRootCategories();
     Set<CategoryDetails> getSubCategories(Long parentId);
     CategoryDetails createCategory(CategoryRequestDto dto);

@@ -40,6 +40,13 @@ public class CategoryController {
         return ResponseEntity.ok(categoryResponseDto);
     }
 
+    @GetMapping("/slug/{slug}")
+    public ResponseEntity<CategoryResponseDto> getCategoryBySlug(@PathVariable String slug) {
+        CategoryDetails retrievedCategoryDetails = categoryService.getCategoryBySlug(slug);
+        CategoryResponseDto categoryResponseDto = categoryMapper.toCategoryResponseDto(retrievedCategoryDetails);
+        return ResponseEntity.ok(categoryResponseDto);
+    }
+
     @GetMapping("/root")
     public ResponseEntity<CategorySetDto> getRootCategories() {
         Set<CategoryDetails> rootCategories = categoryService.getRootCategories();
