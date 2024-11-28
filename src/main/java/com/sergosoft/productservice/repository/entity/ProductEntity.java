@@ -1,5 +1,6 @@
 package com.sergosoft.productservice.repository.entity;
 
+import com.sergosoft.productservice.domain.product.ProductStatus;
 import com.sergosoft.productservice.util.Base64Utils;
 import com.sergosoft.productservice.util.SlugGenerator;
 import jakarta.persistence.*;
@@ -18,7 +19,7 @@ import java.util.UUID;
 @Data
 @Entity
 @Table(name = "products", indexes = {
-        @Index(name = "idx_product_natural_id", columnList = "naturalId")
+        @Index(name = "idx_product_natural_id", columnList = "base64Id")
 })
 @NoArgsConstructor
 @AllArgsConstructor
@@ -28,9 +29,12 @@ public class ProductEntity {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
+    /**
+     * Base 64 encoded id
+     */
     @NaturalId
     @Column(unique = true, nullable = false)
-    private String naturalId;
+    private String base64Id;
 
     @Column(nullable = false, length = 100)
     private String title;
@@ -38,9 +42,11 @@ public class ProductEntity {
     @Column(nullable = false)
     private String description;
 
-    /**
-     * Slugged product title
-     * <p>
+    @Column(nullable = false)
+    private UUID ownerReference;
+
+     /**
+     * Slugged product title<p>
      * Example: if title is "Sell 1kg of coffee Nescafe 3 in 1" slug is "sell-1kg-coffee-nescafe-3-in-1"
      */
     @Column(nullable = false)
@@ -52,6 +58,10 @@ public class ProductEntity {
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal price;
 
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private ProductStatus status = ProductStatus.PENDING;
+
     @Timestamp
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -59,11 +69,13 @@ public class ProductEntity {
     @PrePersist
     private void prePersist() {
         this.slug = SlugGenerator.generateSlug(this.title);
-        this.naturalId = generateNaturalId();
+        this.base64Id = Base64Utils.encode(this.id.toString());
     }
 
-    private String generateNaturalId() {
-        String encodedId = Base64Utils.encode(this.id.toString());
-        return String.format("%s-%s", slug, encodedId);
+    /**
+     * @return {slugged-title} - {base64 public id}
+     */
+    private String combineSlugAndBase64Id(String slug, String base64Id) {
+        return String.format("%s-%s", slug, base64Id);
     }
 }

@@ -1,6 +1,6 @@
 //package com.sergosoft.productservice.web;
 //
-//import com.sergosoft.productservice.domain.Product;
+//import com.sergosoft.productservice.domain.product.Product;
 //import com.sergosoft.productservice.dto.product.ProductCreationDto;
 //import com.sergosoft.productservice.dto.product.ProductResponseDto;
 //import jakarta.validation.Valid;

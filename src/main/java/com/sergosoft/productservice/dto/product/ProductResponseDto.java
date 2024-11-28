@@ -20,6 +20,7 @@ public class ProductResponseDto {
     String description;
     List<Long> categoriesIds;
     BigDecimal price;
+    String status;
     Instant createdAt;
 //    String currencyCode;
 }

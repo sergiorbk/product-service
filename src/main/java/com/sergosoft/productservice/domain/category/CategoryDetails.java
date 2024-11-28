@@ -1,11 +1,12 @@
-package com.sergosoft.productservice.domain;
+package com.sergosoft.productservice.domain.category;
 
+import com.sergosoft.productservice.domain.product.ProductDetails;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Value;
 
 /**
- * Represents a category of {@link Product}s.
+ * Represents a category of {@link ProductDetails}s.
  * <p>
  * Categories can be organized hierarchically, allowing each category to have a
  * parent category.</p>

@@ -4,7 +4,7 @@ import com.sergosoft.productservice.IntegrationTest;
 import com.sergosoft.productservice.repository.entity.CategoryEntity;
 import com.sergosoft.productservice.service.CategoryService;
 import com.sergosoft.productservice.repository.CategoryRepository;
-import com.sergosoft.productservice.dto.category.CategoryRequestDto;
+import com.sergosoft.productservice.dto.category.CategoryCreateDto;
 
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -48,7 +48,7 @@ class CategoryDetailsControllerIT extends IntegrationTest {
 
     @Test
     void shouldCreateCategory() throws Exception {
-        CategoryRequestDto newCategory = CategoryRequestDto.builder()
+        CategoryCreateDto newCategory = CategoryCreateDto.builder()
                 .title("Electronics")
                 .parentId(null)
                 .build();

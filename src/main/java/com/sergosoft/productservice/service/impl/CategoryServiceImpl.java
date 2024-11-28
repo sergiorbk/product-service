@@ -1,13 +1,14 @@
 package com.sergosoft.productservice.service.impl;
 
-import com.sergosoft.productservice.domain.CategoryDetails;
-import com.sergosoft.productservice.dto.category.CategoryRequestDto;
+import com.sergosoft.productservice.domain.category.CategoryDetails;
+import com.sergosoft.productservice.domain.category.CategoryStatus;
+import com.sergosoft.productservice.dto.category.CategoryCreateDto;
 import com.sergosoft.productservice.dto.category.CategoryUpdateDto;
 import com.sergosoft.productservice.repository.CategoryRepository;
 import com.sergosoft.productservice.repository.entity.CategoryEntity;
 import com.sergosoft.productservice.service.CategoryService;
-import com.sergosoft.productservice.service.exception.CategoryInUseException;
-import com.sergosoft.productservice.service.exception.CategoryNotFoundException;
+import com.sergosoft.productservice.service.exception.category.CategoryInUseException;
+import com.sergosoft.productservice.service.exception.category.CategoryNotFoundException;
 import com.sergosoft.productservice.service.mapper.CategoryMapper;
 import jakarta.persistence.PersistenceException;
 import lombok.AllArgsConstructor;
@@ -76,7 +77,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     @Transactional
-    public CategoryDetails createCategory(CategoryRequestDto dto) {
+    public CategoryDetails createCategory(CategoryCreateDto dto) {
         log.debug("Creating category: {}", dto);
         // retrieving parent category by id
         CategoryEntity parentCategory = null;
@@ -118,6 +119,20 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     @Transactional
+    public void archiveCategoryById(Long id) {
+        log.debug("Archiving category by id: {}", id);
+        CategoryEntity categoryToArchive = retrieveCategoryByIdOrElseThrow(id);
+        if(categoryToArchive.getStatus() == CategoryStatus.ARCHIVED) {
+            log.error("Category with id {} is already archived", id);
+            throw new IllegalArgumentException("Category with id " + id + " is already archived");
+        }
+        categoryToArchive.setStatus(CategoryStatus.ARCHIVED);
+        CategoryEntity updatedCategory = saveCategoryOrElseThrow(categoryToArchive);
+        log.info("Archived category with id {}", updatedCategory.getId());
+    }
+
+    @Override
+    @Transactional
     public void deleteCategoryById(Long categoryId) {
         log.debug("Deleting category: {}", categoryId);
         // check if category with such id exists
@@ -147,5 +162,17 @@ public class CategoryServiceImpl implements CategoryService {
             log.error("Exception occurred while retrieving category by id: {}", id);
             return new CategoryNotFoundException(id);
         });
+    }
+
+    private CategoryEntity saveCategoryOrElseThrow(CategoryEntity category) {
+        log.debug("Saving category: {}", category);
+        try {
+            CategoryEntity savedCategory = categoryRepository.save(category);
+            log.info("Saved category: {}", savedCategory);
+            return savedCategory;
+        } catch (Exception ex) {
+            log.error("Exception occurred while saving category: {}", ex.getMessage());
+            throw new PersistenceException(ex.getMessage());
+        }
     }
 }

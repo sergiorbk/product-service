@@ -1,5 +1,6 @@
 package com.sergosoft.productservice.repository.entity;
 
+import com.sergosoft.productservice.domain.category.CategoryStatus;
 import com.sergosoft.productservice.util.SlugGenerator;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -34,6 +35,10 @@ public class CategoryEntity {
      */
     @Column(unique = true, nullable = false)
     private String slug;
+
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private CategoryStatus status = CategoryStatus.ACTIVE;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_id")

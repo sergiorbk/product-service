@@ -1,6 +1,6 @@
 package com.sergosoft.productservice.service.mapper;
 
-import com.sergosoft.productservice.domain.CategoryDetails;
+import com.sergosoft.productservice.domain.category.CategoryDetails;
 import com.sergosoft.productservice.dto.category.CategoryResponseDto;
 import com.sergosoft.productservice.dto.category.CategorySetDto;
 import com.sergosoft.productservice.repository.entity.CategoryEntity;

@@ -4,6 +4,9 @@ import java.net.URI;
 import java.util.List;
 import com.sergosoft.productservice.featuretoggle.exception.FeatureNotAvailableException;
 import com.sergosoft.productservice.service.exception.*;
+import com.sergosoft.productservice.service.exception.category.CategoryInUseException;
+import com.sergosoft.productservice.service.exception.order.OrderItemNotFoundException;
+import com.sergosoft.productservice.service.exception.order.OrderNotFoundException;
 import jakarta.persistence.PersistenceException;
 import lombok.NonNull;
 import org.springframework.http.*;
@@ -14,7 +17,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import lombok.extern.slf4j.Slf4j;
-import com.sergosoft.productservice.service.exception.CategoryNotFoundException;
+import com.sergosoft.productservice.service.exception.category.CategoryNotFoundException;
 
 import static java.net.URI.create;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;

@@ -14,9 +14,9 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import jakarta.validation.Valid;
 
-import com.sergosoft.productservice.domain.CategoryDetails;
+import com.sergosoft.productservice.domain.category.CategoryDetails;
 import com.sergosoft.productservice.service.CategoryService;
-import com.sergosoft.productservice.dto.category.CategoryRequestDto;
+import com.sergosoft.productservice.dto.category.CategoryCreateDto;
 import com.sergosoft.productservice.dto.category.CategoryResponseDto;
 
 @Slf4j
@@ -60,7 +60,7 @@ public class CategoryController {
     }
 
     @PostMapping
-    public ResponseEntity<CategoryResponseDto> createCategory(@RequestBody @Valid CategoryRequestDto categoryDto) {
+    public ResponseEntity<CategoryResponseDto> createCategory(@RequestBody @Valid CategoryCreateDto categoryDto) {
         CategoryDetails createdCategoryDetails = categoryService.createCategory(categoryDto);
         CategoryResponseDto createdCategoryResponseDto = categoryMapper.toCategoryResponseDto(createdCategoryDetails);
         URI location = ServletUriComponentsBuilder

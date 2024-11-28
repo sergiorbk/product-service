@@ -1,4 +1,4 @@
-package com.sergosoft.productservice.service.exception;
+package com.sergosoft.productservice.service.exception.order;
 
 public class OrderNotFoundException extends RuntimeException {
 

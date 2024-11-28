@@ -5,7 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Value;
 
-import com.sergosoft.productservice.domain.Product;
+import com.sergosoft.productservice.domain.product.ProductDetails;
 
 import java.math.BigDecimal;
 
@@ -16,7 +16,7 @@ public class OrderItem {
 
     Long id;
     OrderDetails orderDetails;
-    Product product;
+    ProductDetails productDetails;
     Integer quantity;
     BigDecimal price;
 }

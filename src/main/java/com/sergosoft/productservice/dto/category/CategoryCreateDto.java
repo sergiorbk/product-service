@@ -19,7 +19,7 @@ import lombok.extern.jackson.Jacksonized;
 @Value
 @Builder
 @Jacksonized
-public class CategoryRequestDto {
+public class CategoryCreateDto {
 
     /**
      * The title or name of the category.
