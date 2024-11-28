@@ -2,6 +2,7 @@ package com.sergosoft.productservice.dto.product;
 
 import java.util.List;
 import java.math.BigDecimal;
+import java.util.UUID;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
@@ -21,7 +22,7 @@ public class ProductCreateDto {
     String description;
 
     @NotEmpty(message = "Categories ids list must contain at least 1 category id.")
-    List<Long> categoriesIds;
+    List<UUID> categoryIds;
 
     @Positive(message = "Price must be a positive number.")
     BigDecimal price;

@@ -6,6 +6,7 @@ import com.sergosoft.productservice.util.SlugGenerator;
 import jakarta.persistence.*;
 import jdk.jfr.Timestamp;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.NaturalId;
@@ -21,6 +22,7 @@ import java.util.UUID;
 @Table(name = "products", indexes = {
         @Index(name = "idx_product_natural_id", columnList = "base64Id")
 })
+@Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
 public class ProductEntity {

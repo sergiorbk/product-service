@@ -5,6 +5,7 @@ import com.sergosoft.productservice.domain.product.ProductStatus;
 import com.sergosoft.productservice.dto.product.ProductCreateDto;
 import com.sergosoft.productservice.repository.ProductRepository;
 import com.sergosoft.productservice.repository.entity.ProductEntity;
+import com.sergosoft.productservice.service.CategoryService;
 import com.sergosoft.productservice.service.ProductService;
 import com.sergosoft.productservice.service.exception.ProductNotFoundException;
 import com.sergosoft.productservice.service.mapper.ProductMapper;
@@ -14,12 +15,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashSet;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository productRepository;
+    private final CategoryService categoryService;
     private final ProductMapper productMapper;
 
     @Override
@@ -31,8 +35,13 @@ public class ProductServiceImpl implements ProductService {
     @Override
     @Transactional
     public ProductDetails createProduct(ProductCreateDto dto) {
-        // todo
-        return null;
+        log.info("Creating product {}", dto);
+        ProductEntity productToSave = productMapper.toProductEntity(dto);
+        productToSave.setCategories(new HashSet<>(categoryService.getCategoryEntitiesByIds(dto.getCategoryIds())));
+        saveProductOrElseThrow(productToSave);
+        ProductDetails productDetails = productMapper.toProductDetails(productToSave);
+        log.info("Saved mapped product details {}", productDetails);
+        return productDetails;
     }
 
     @Override

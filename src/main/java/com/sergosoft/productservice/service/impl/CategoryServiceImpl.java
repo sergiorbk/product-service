@@ -16,6 +16,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -39,6 +41,28 @@ public class CategoryServiceImpl implements CategoryService {
         CategoryDetails categoryDetails = categoryMapper.toCategoryDetails(retrievedCategory);
         log.info("Retrieved category: {} : {}", categoryDetails, categoryDetails);
         return categoryDetails;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<CategoryDetails> getCategoriesByIds(List<UUID> ids) {
+        List<CategoryEntity> retrievedCategories = getCategoryEntitiesByIds(ids);
+        List<CategoryDetails> retrievedCategoriesDetails = retrievedCategories.stream().map(categoryMapper::toCategoryDetails).toList();
+        log.info("Retrieved mapped category details list: {}", retrievedCategoriesDetails);
+        return retrievedCategoriesDetails;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<CategoryEntity> getCategoryEntitiesByIds(List<UUID> ids) {
+        log.debug("Retrieving categories by ids: {}", ids);
+        List<CategoryEntity> retrievedCategories = new ArrayList<>();
+        for(UUID id : ids) {
+            retrievedCategories.add(retrieveCategoryByIdOrElseThrow(id));
+            log.debug("Retrieved category with id {} was added to categories list.", id);
+        }
+        log.info("Retrieved categories list: {}", retrievedCategories);
+        return retrievedCategories;
     }
 
     @Override
@@ -160,14 +184,16 @@ public class CategoryServiceImpl implements CategoryService {
         log.info("Deleted category: {}", categoryId);
     }
 
-    private CategoryEntity retrieveCategoryByIdOrElseThrow(UUID id) {
+    @Transactional(readOnly = true)
+    public CategoryEntity retrieveCategoryByIdOrElseThrow(UUID id) {
         return categoryRepository.findById(id).orElseThrow(() -> {
             log.error("Exception occurred while retrieving category by id: {}", id);
             return new CategoryNotFoundException(id);
         });
     }
 
-    private CategoryEntity saveCategoryOrElseThrow(CategoryEntity category) {
+    @Transactional(readOnly = true)
+    public CategoryEntity saveCategoryOrElseThrow(CategoryEntity category) {
         log.debug("Saving category: {}", category);
         try {
             CategoryEntity savedCategory = categoryRepository.save(category);
