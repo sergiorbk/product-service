@@ -4,7 +4,6 @@ import com.sergosoft.productservice.domain.product.ProductStatus;
 import com.sergosoft.productservice.util.Base64Utils;
 import com.sergosoft.productservice.util.SlugGenerator;
 import jakarta.persistence.*;
-import jdk.jfr.Timestamp;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -62,16 +61,17 @@ public class ProductEntity {
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private ProductStatus status = ProductStatus.PENDING;
+    private ProductStatus status;
 
-    @Timestamp
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
     @PrePersist
     private void prePersist() {
+        this.status = ProductStatus.PENDING;
         this.slug = SlugGenerator.generateSlug(this.title);
         this.base64Id = Base64Utils.encode(this.id.toString());
+        this.createdAt = LocalDateTime.now();
     }
 
     /**

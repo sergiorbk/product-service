@@ -5,21 +5,22 @@ import lombok.Builder;
 import lombok.Value;
 
 import java.math.BigDecimal;
-import java.time.Instant;
-import java.util.List;
+import java.time.LocalDateTime;
+import java.util.Set;
 
 @Value
 @Builder
 @AllArgsConstructor
 public class ProductResponseDto {
 
-    String productId;
-    String ownerReference;
+    String id;
     String title;
     String description;
-    List<Long> categoriesIds;
+    String ownerReference;
+    String slug;
     BigDecimal price;
     String status;
-    Instant createdAt;
-//    String currencyCode;
+    Set<String> categoriesIds;
+    LocalDateTime createdAt;
+
 }

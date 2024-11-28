@@ -39,7 +39,7 @@ public class CategoryEntity {
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private CategoryStatus status = CategoryStatus.ACTIVE;
+    private CategoryStatus status;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_id")
@@ -58,6 +58,7 @@ public class CategoryEntity {
 
     @PrePersist
     private void generateSlug() {
+        this.status = CategoryStatus.ACTIVE;
         this.slug = SlugGenerator.generateSlug(this.title);
     }
 }

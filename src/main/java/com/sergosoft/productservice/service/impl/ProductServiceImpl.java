@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -37,9 +38,11 @@ public class ProductServiceImpl implements ProductService {
     public ProductDetails createProduct(ProductCreateDto dto) {
         log.info("Creating product {}", dto);
         ProductEntity productToSave = productMapper.toProductEntity(dto);
-        productToSave.setCategories(new HashSet<>(categoryService.getCategoryEntitiesByIds(dto.getCategoryIds())));
-        saveProductOrElseThrow(productToSave);
-        ProductDetails productDetails = productMapper.toProductDetails(productToSave);
+        productToSave = productToSave.toBuilder()
+                .categories(new HashSet<>(categoryService.getCategoryEntitiesByIds(dto.getCategoryIds().stream().map(UUID::fromString).toList())))
+                .build();
+        ProductEntity savedProduct = saveProductOrElseThrow(productToSave);
+        ProductDetails productDetails = productMapper.toProductDetails(savedProduct);
         log.info("Saved mapped product details {}", productDetails);
         return productDetails;
     }

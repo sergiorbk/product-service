@@ -2,7 +2,7 @@ package com.sergosoft.productservice.domain.product;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 import com.sergosoft.productservice.domain.category.CategoryDetails;
@@ -22,6 +22,6 @@ public class ProductDetails {
     String slug;
     BigDecimal price;
     ProductStatus status;
-    List<CategoryDetails> categories;
+    Set<CategoryDetails> categories;
     LocalDateTime createdAt;
 }
