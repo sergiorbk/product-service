@@ -9,6 +9,5 @@ import org.mapstruct.Mapping;
 public interface ProductMapper {
 
     @Mapping(source = "base64Id", target = "id")
-
     ProductDetails toProductDetails(ProductEntity product);
 }

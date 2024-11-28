@@ -5,15 +5,16 @@ import com.sergosoft.productservice.dto.category.CategoryCreateDto;
 import com.sergosoft.productservice.dto.category.CategoryUpdateDto;
 
 import java.util.Set;
+import java.util.UUID;
 
 public interface CategoryService {
 
-    CategoryDetails getCategoryById(Long id);
+    CategoryDetails getCategoryById(UUID id);
     CategoryDetails getCategoryBySlug(String slug);
     Set<CategoryDetails> getRootCategories();
-    Set<CategoryDetails> getSubCategories(Long parentId);
+    Set<CategoryDetails> getSubCategories(UUID parentId);
     CategoryDetails createCategory(CategoryCreateDto dto);
-    CategoryDetails updateCategory(Long id, CategoryUpdateDto dto);
-    void archiveCategoryById(Long id);
-    void deleteCategoryById(Long categoryId);
+    CategoryDetails updateCategory(UUID id, CategoryUpdateDto dto);
+    void archiveCategoryById(UUID id);
+    void deleteCategoryById(UUID categoryId);
 }

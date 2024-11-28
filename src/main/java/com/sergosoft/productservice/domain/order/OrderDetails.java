@@ -14,7 +14,7 @@ import java.util.*;
 @AllArgsConstructor
 public class OrderDetails {
 
-    Long id;
+    UUID id;
     Set<OrderItem> items = new HashSet<>();
 
     // this microservice is going to keep the conception of P2P trading

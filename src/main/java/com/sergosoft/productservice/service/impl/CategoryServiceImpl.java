@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -29,7 +30,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     @Transactional(readOnly = true)
-    public CategoryDetails getCategoryById(Long id) {
+    public CategoryDetails getCategoryById(UUID id) {
         log.debug("Retrieving category by id: {}", id);
         CategoryEntity retrievedCategory = categoryRepository.findById(id).orElseThrow(() -> {
             log.error("Exception occurred while retrieving category by id: {}", id);
@@ -65,7 +66,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     @Transactional(readOnly = true)
-    public Set<CategoryDetails> getSubCategories(Long parentId) {
+    public Set<CategoryDetails> getSubCategories(UUID parentId) {
         log.debug("Retrieving subcategories by parent category parentId: {}", parentId);
         CategoryEntity parentCategory = retrieveCategoryByIdOrElseThrow(parentId);
         Set<CategoryEntity> subcategories = parentCategory.getSubcategories();
@@ -83,7 +84,7 @@ public class CategoryServiceImpl implements CategoryService {
         CategoryEntity parentCategory = null;
         if(dto.getParentId() != null) {
             // getting parent category entity
-            parentCategory = retrieveCategoryByIdOrElseThrow(dto.getParentId());
+            parentCategory = retrieveCategoryByIdOrElseThrow(UUID.fromString(dto.getParentId()));
         }
         CategoryEntity categoryToSave = CategoryEntity.builder()
                 .title(dto.getTitle())
@@ -102,15 +103,17 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     @Transactional
-    public CategoryDetails updateCategory(Long id, CategoryUpdateDto dto) {
+    public CategoryDetails updateCategory(UUID id, CategoryUpdateDto dto) {
         log.debug("Updating category: {}", dto);
         CategoryEntity categoryToUpdate = retrieveCategoryByIdOrElseThrow(id);
         categoryToUpdate.toBuilder()
                 .title(dto.getTitle() == null ? categoryToUpdate.getTitle() : dto.getTitle())
-                .parent(dto.getParentId() == null ? categoryToUpdate.getParent() : categoryRepository.findById(dto.getParentId()).orElseThrow(() -> {
-                    log.error("Exception occurred while retrieving parent category by id: {}", id);
-                    return new CategoryNotFoundException(id);
-                }));
+                .parent(dto.getParentId() == null ? categoryToUpdate.getParent() : categoryRepository.findById(UUID.fromString(dto.getParentId()))
+                        .orElseThrow(() -> {
+                            log.error("Exception occurred while retrieving parent category by id: {}", id);
+                            return new CategoryNotFoundException(id);
+                }))
+                .status(dto.getStatus() == null ? categoryToUpdate.getStatus() : CategoryStatus.valueOf(dto.getStatus()));
         CategoryEntity updatedCategory = categoryRepository.save(categoryToUpdate);
         CategoryDetails categoryDetails = categoryMapper.toCategoryDetails(updatedCategory);
         log.info("Updated category: {}", categoryDetails);
@@ -119,7 +122,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     @Transactional
-    public void archiveCategoryById(Long id) {
+    public void archiveCategoryById(UUID id) {
         log.debug("Archiving category by id: {}", id);
         CategoryEntity categoryToArchive = retrieveCategoryByIdOrElseThrow(id);
         if(categoryToArchive.getStatus() == CategoryStatus.ARCHIVED) {
@@ -133,7 +136,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     @Transactional
-    public void deleteCategoryById(Long categoryId) {
+    public void deleteCategoryById(UUID categoryId) {
         log.debug("Deleting category: {}", categoryId);
         // check if category with such id exists
         CategoryEntity categoryToDelete = retrieveCategoryByIdOrElseThrow(categoryId);
@@ -145,7 +148,7 @@ public class CategoryServiceImpl implements CategoryService {
         // check if category has no related products
         if(!categoryToDelete.getRelatedProducts().isEmpty()) {
             log.error("Unable to delete category that has products: {}", categoryToDelete.getRelatedProducts());
-            throw  new CategoryInUseException(categoryId);
+            throw new CategoryInUseException(categoryId);
         }
         // try to delete the category
         try {
@@ -157,7 +160,7 @@ public class CategoryServiceImpl implements CategoryService {
         log.info("Deleted category: {}", categoryId);
     }
 
-    private CategoryEntity retrieveCategoryByIdOrElseThrow(Long id) {
+    private CategoryEntity retrieveCategoryByIdOrElseThrow(UUID id) {
         return categoryRepository.findById(id).orElseThrow(() -> {
             log.error("Exception occurred while retrieving category by id: {}", id);
             return new CategoryNotFoundException(id);

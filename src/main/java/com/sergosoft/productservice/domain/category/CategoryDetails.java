@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Value;
 
+import java.util.UUID;
+
 /**
  * Represents a category of {@link ProductDetails}s.
  * <p>
@@ -19,8 +21,8 @@ import lombok.Value;
 @AllArgsConstructor
 public class CategoryDetails {
 
-    Long id;
+    UUID id;
     String title;
     String slug;
-    Long parentId;
+    UUID parentId;
 }

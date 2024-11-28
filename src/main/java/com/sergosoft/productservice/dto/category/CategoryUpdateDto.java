@@ -1,9 +1,9 @@
 package com.sergosoft.productservice.dto.category;
 
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Positive;
 import lombok.Builder;
 import lombok.Value;
+import org.hibernate.validator.constraints.UUID;
 
 @Value
 @Builder
@@ -12,6 +12,9 @@ public class CategoryUpdateDto {
     @NotBlank(message = "Category title is mandatory.")
     String title;
 
-    @Positive(message = "Category parent id must be positive.")
-    Long parentId;
+    @UUID(message = "Category parent id bust be UUID.")
+    String parentId;
+
+    @NotBlank(message = "Category status is mandatory.")
+    String status;
 }

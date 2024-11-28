@@ -10,9 +10,9 @@ import lombok.extern.jackson.Jacksonized;
 @Jacksonized
 public class OrderItemResponseDto {
 
-    Long id;
-    Long orderId;
-    Long productId;
+    String id;
+    String orderId;
+    String productId;
     Integer quantity;
     BigDecimal price;
 }

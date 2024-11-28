@@ -8,13 +8,14 @@ import lombok.Value;
 import com.sergosoft.productservice.domain.product.ProductDetails;
 
 import java.math.BigDecimal;
+import java.util.UUID;
 
 @Value
 @Builder(toBuilder = true)
 @AllArgsConstructor
 public class OrderItem {
 
-    Long id;
+    UUID id;
     OrderDetails orderDetails;
     ProductDetails productDetails;
     Integer quantity;

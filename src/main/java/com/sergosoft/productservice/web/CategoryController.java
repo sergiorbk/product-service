@@ -2,6 +2,7 @@ package com.sergosoft.productservice.web;
 
 import java.net.URI;
 import java.util.Set;
+import java.util.UUID;
 
 import com.sergosoft.productservice.dto.category.CategorySetDto;
 import com.sergosoft.productservice.dto.category.CategoryUpdateDto;
@@ -34,7 +35,7 @@ public class CategoryController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<CategoryResponseDto> getCategoryById(@PathVariable Long id) {
+    public ResponseEntity<CategoryResponseDto> getCategoryById(@PathVariable UUID id) {
         CategoryDetails retrievedCategoryDetails = categoryService.getCategoryById(id);
         CategoryResponseDto categoryResponseDto = categoryMapper.toCategoryResponseDto(retrievedCategoryDetails);
         return ResponseEntity.ok(categoryResponseDto);
@@ -54,7 +55,7 @@ public class CategoryController {
     }
 
     @GetMapping("/{parentId}/subcategories")
-    public ResponseEntity<CategorySetDto> getSubcategoriesByParentId(@PathVariable Long parentId) {
+    public ResponseEntity<CategorySetDto> getSubcategoriesByParentId(@PathVariable UUID parentId) {
         Set<CategoryDetails> subcategories = categoryService.getSubCategories(parentId);
         return ResponseEntity.ok(categoryMapper.toCategorySetDto(subcategories));
     }
@@ -72,14 +73,14 @@ public class CategoryController {
     }
 
     @PutMapping("/{categoryId}")
-    public ResponseEntity<CategoryResponseDto> updateCategory(@PathVariable Long categoryId,
+    public ResponseEntity<CategoryResponseDto> updateCategory(@PathVariable UUID categoryId,
                                                               @RequestBody @Valid CategoryUpdateDto categoryDto) {
         CategoryDetails updatedCategoryDetails = categoryService.updateCategory(categoryId, categoryDto);
         return ResponseEntity.ok(categoryMapper.toCategoryResponseDto(updatedCategoryDetails));
     }
 
     @DeleteMapping("/{categoryId}")
-    public ResponseEntity<Void> deleteCategory(@PathVariable Long categoryId) {
+    public ResponseEntity<Void> deleteCategory(@PathVariable UUID categoryId) {
         categoryService.deleteCategoryById(categoryId);
         return ResponseEntity.noContent().build();
     }

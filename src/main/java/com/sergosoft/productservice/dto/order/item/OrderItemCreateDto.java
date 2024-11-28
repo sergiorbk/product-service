@@ -10,10 +10,10 @@ import lombok.Value;
 @Value
 @Builder
 @AllArgsConstructor
-public class OrderItemCreationDto {
+public class OrderItemCreateDto {
 
     @NotNull(message = "Order Id is mandatory.")
-    Long orderId;
+    String orderId;
 
     @NotNull(message = "Product Id is mandatory.")
     Long productId;

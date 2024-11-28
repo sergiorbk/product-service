@@ -2,11 +2,11 @@ package com.sergosoft.productservice.dto.category;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
 
 import lombok.Value;
 import lombok.Builder;
 import lombok.extern.jackson.Jacksonized;
+import org.hibernate.validator.constraints.UUID;
 
 /**
  * Data Transfer Object for creating a new category of product.
@@ -21,25 +21,10 @@ import lombok.extern.jackson.Jacksonized;
 @Jacksonized
 public class CategoryCreateDto {
 
-    /**
-     * The title or name of the category.
-     * <p>
-     * This field is mandatory, as every category requires a title.
-     * </p>
-     */
     @NotNull(message = "Category is mandatory")
     @NotBlank(message = "Category title is mandatory.")
     String title;
 
-    /**
-     * The ID of the parent category, if this category is a subcategory.
-     * <p>
-     * If this value is provided, it should reference an existing category ID.
-     * If null, the category will be created as a root category.
-     * </p>
-     *
-     * @implNote This field is optional.
-     */
-    @Positive(message = "Category parent id must be positive.")
-    Long parentId;
+    @UUID(message = "Category parent id bust be UUID.")
+    String parentId;
 }
