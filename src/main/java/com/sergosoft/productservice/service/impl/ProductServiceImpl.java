@@ -66,6 +66,7 @@ public class ProductServiceImpl implements ProductService {
                 )
                 .updatedAt(LocalDateTime.now())
                 .build();
+        // save updated product and return the product details
         ProductEntity savedProduct = saveProductOrElseThrow(productToUpdate);
         ProductDetails savedProductDetails = productMapper.toProductDetails(savedProduct);
         log.info("Updated product details {}", savedProductDetails);
