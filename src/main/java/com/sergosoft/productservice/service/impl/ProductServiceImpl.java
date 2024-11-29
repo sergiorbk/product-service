@@ -3,8 +3,7 @@ package com.sergosoft.productservice.service.impl;
 import com.sergosoft.productservice.domain.product.ProductDetails;
 import com.sergosoft.productservice.domain.product.ProductStatus;
 import com.sergosoft.productservice.dto.product.ProductCreateDto;
-import com.sergosoft.productservice.elasticsearch.document.ProductSearchDocument;
-import com.sergosoft.productservice.elasticsearch.repository.ProductSearchRepository;
+import com.sergosoft.productservice.elasticsearch.service.ProductSearchService;
 import com.sergosoft.productservice.repository.ProductRepository;
 import com.sergosoft.productservice.repository.entity.ProductEntity;
 import com.sergosoft.productservice.service.CategoryService;
@@ -28,7 +27,7 @@ import java.util.UUID;
 public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository productRepository;
-    private final ProductSearchRepository productSearchRepository;
+    private final ProductSearchService productSearchService;
     private final CategoryService categoryService;
     private final ProductMapper productMapper;
 
@@ -48,7 +47,7 @@ public class ProductServiceImpl implements ProductService {
                 .build();
         // save created product to jpa and search repositories
         ProductEntity savedProduct = saveProductToJpaOrElseThrow(productToSave);
-        saveProductToElasticsearchOrElseThrow(productMapper.toProductDocument(savedProduct));
+        productSearchService.createProductDocument(productMapper.toProductDocument(savedProduct));
         // return saved product details
         ProductDetails productDetails = productMapper.toProductDetails(savedProduct);
         log.info("Saved mapped product details {}", productDetails);
@@ -74,7 +73,7 @@ public class ProductServiceImpl implements ProductService {
                 .build();
         // save updated product
         ProductEntity savedProduct = saveProductToJpaOrElseThrow(productToUpdate);
-        saveProductToElasticsearchOrElseThrow(productMapper.toProductDocument(savedProduct));
+        productSearchService.createProductDocument(productMapper.toProductDocument(savedProduct));
         // return the product details
         ProductDetails savedProductDetails = productMapper.toProductDetails(savedProduct);
         log.info("Updated product details {}", savedProductDetails);
@@ -89,7 +88,7 @@ public class ProductServiceImpl implements ProductService {
         if(productToActivate.getStatus() != ProductStatus.ACTIVE) {
             productToActivate.setStatus(ProductStatus.ACTIVE);
             saveProductToJpaOrElseThrow(productToActivate);
-            saveProductToElasticsearchOrElseThrow(productMapper.toProductDocument(productToActivate));
+            productSearchService.createProductDocument(productMapper.toProductDocument(productToActivate));
             log.info("Product with id {} was activated", id);
             return;
         }
@@ -109,7 +108,7 @@ public class ProductServiceImpl implements ProductService {
             try {
                 productRepository.save(productToArchive);
                 // delete archived product from elasticsearch
-                productSearchRepository.deleteById(productToArchive.getId());
+                productSearchService.deleteProductDocumentById(productToArchive.getId());
             } catch (Exception e) {
                 log.error("Exception occurred wile archiving product: {}", e.getMessage());
             }
@@ -129,7 +128,7 @@ public class ProductServiceImpl implements ProductService {
             try {
                 productRepository.save(productTopBan);
                 // delete archived product from elasticsearch
-                productSearchRepository.deleteById(productTopBan.getId());
+                productSearchService.deleteProductDocumentById(productTopBan.getId());
             } catch (Exception e) {
                 log.error("Exception occurred wile banning product: {}", e.getMessage());
             }
@@ -147,7 +146,7 @@ public class ProductServiceImpl implements ProductService {
         log.info("Delete product by id: {}", id);
         try {
             productRepository.deleteById(id);
-            productSearchRepository.deleteById(id);
+           productSearchService.deleteProductDocumentById(id);
         } catch (Exception ex) {
             log.error("Exception occurred while hard deleting product with id {}: {}", id, ex.getMessage());
         }
@@ -174,19 +173,6 @@ public class ProductServiceImpl implements ProductService {
             return savedProduct;
         } catch (Exception ex) {
             log.error("Exception occurred while saving product to JPA repository {}: {}", productToSave, ex.getMessage());
-            throw new PersistenceException(ex.getMessage());
-        }
-    }
-
-    @Transactional
-    public ProductSearchDocument saveProductToElasticsearchOrElseThrow(ProductSearchDocument productToSave) {
-        log.debug("Saving product to Elasticsearch repository {}", productToSave);
-        try {
-            ProductSearchDocument savedProduct = productSearchRepository.save(productToSave);
-            log.info("Saved product to Elasticsearch repository {}", savedProduct);
-            return savedProduct;
-        } catch (Exception ex) {
-            log.error("Exception occurred while saving product to Elasticsearch repository {}", ex.getMessage());
             throw new PersistenceException(ex.getMessage());
         }
     }
