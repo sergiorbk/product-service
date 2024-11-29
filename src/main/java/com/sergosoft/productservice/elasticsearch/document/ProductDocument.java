@@ -10,7 +10,6 @@ import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.Set;
 import java.util.UUID;
 
@@ -51,10 +50,10 @@ public class ProductDocument {
     @Field(type = FieldType.Keyword)
     private String status;
 
-    @Field(type = FieldType.Date, format = {}, pattern = "uuuu-MM-dd'T'HH:mm:ss.SSSZZ")
-    private LocalDateTime updatedAt;
-
-    @Field(type = FieldType.Date, format = {}, pattern = "uuuu-MM-dd'T'HH:mm:ss.SSSZZ")
-    private LocalDateTime createdAt;
+//    @Field(type = FieldType.Date, format = {}, pattern = "uuuu-MM-dd'T'HH:mm:ss.SSSZZ")
+//    private LocalDateTime updatedAt;
+//
+//    @Field(type = FieldType.Date, format = {}, pattern = "uuuu-MM-dd'T'HH:mm:ss.SSSZZ")
+//    private LocalDateTime createdAt;
 
 }

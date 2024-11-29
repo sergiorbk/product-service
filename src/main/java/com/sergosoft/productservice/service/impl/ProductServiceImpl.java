@@ -3,6 +3,7 @@ package com.sergosoft.productservice.service.impl;
 import com.sergosoft.productservice.domain.product.ProductDetails;
 import com.sergosoft.productservice.domain.product.ProductStatus;
 import com.sergosoft.productservice.dto.product.ProductCreateDto;
+import com.sergosoft.productservice.elasticsearch.document.ProductDocument;
 import com.sergosoft.productservice.elasticsearch.repository.ProductSearchRepository;
 import com.sergosoft.productservice.repository.ProductRepository;
 import com.sergosoft.productservice.repository.entity.ProductEntity;
@@ -34,7 +35,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     @Transactional(readOnly = true)
     public ProductDetails getProductById(UUID id) {
-        return productMapper.toProductDetails(retrieveProductByIdOrElseThrow(id));
+        return productMapper.toProductDetails(retrieveProductByIdFromJpaOrElseThrow(id));
     }
 
     @Override
@@ -46,7 +47,8 @@ public class ProductServiceImpl implements ProductService {
                 .categories(new HashSet<>(categoryService.getCategoryEntitiesByIds(dto.getCategoryIds().stream().map(UUID::fromString).toList())))
                 .build();
         // save created product to jpa and search repositories
-        ProductEntity savedProduct = saveProductOrElseThrow(productToSave);
+        ProductEntity savedProduct = saveProductToJpaOrElseThrow(productToSave);
+        saveProductToElasticsearchOrElseThrow(productMapper.toProductDocument(savedProduct));
         // return saved product details
         ProductDetails productDetails = productMapper.toProductDetails(savedProduct);
         log.info("Saved mapped product details {}", productDetails);
@@ -57,7 +59,7 @@ public class ProductServiceImpl implements ProductService {
     @Transactional
     public ProductDetails updateProduct(UUID id, ProductCreateDto dto) {
         log.debug("Updating product with id {} with data: {}", id, dto);
-        ProductEntity productToUpdate = retrieveProductByIdOrElseThrow(id);
+        ProductEntity productToUpdate = retrieveProductByIdFromJpaOrElseThrow(id);
         productToUpdate = productToUpdate.toBuilder()
                 .title(dto.getTitle() == null ? productToUpdate.getTitle() : dto.getTitle())
                 .slug(SlugGenerator.generateSlug(dto.getTitle()))
@@ -70,11 +72,28 @@ public class ProductServiceImpl implements ProductService {
                 )
                 .updatedAt(LocalDateTime.now())
                 .build();
-        // save updated product and return the product details
-        ProductEntity savedProduct = saveProductOrElseThrow(productToUpdate);
+        // save updated product
+        ProductEntity savedProduct = saveProductToJpaOrElseThrow(productToUpdate);
+        saveProductToElasticsearchOrElseThrow(productMapper.toProductDocument(savedProduct));
+        // return the product details
         ProductDetails savedProductDetails = productMapper.toProductDetails(savedProduct);
         log.info("Updated product details {}", savedProductDetails);
         return savedProductDetails;
+    }
+
+    @Override
+    @Transactional
+    public void activateProduct(UUID id) {
+        log.debug("Activating product with id {}", id);
+        ProductEntity productToActivate = retrieveProductByIdFromJpaOrElseThrow(id);
+        if(productToActivate.getStatus() != ProductStatus.ACTIVE) {
+            productToActivate.setStatus(ProductStatus.ACTIVE);
+            saveProductToJpaOrElseThrow(productToActivate);
+            saveProductToElasticsearchOrElseThrow(productMapper.toProductDocument(productToActivate));
+            log.info("Product with id {} was activated", id);
+            return;
+        }
+        log.warn("Product with id {} was already activated", id);
     }
 
     /**
@@ -84,11 +103,37 @@ public class ProductServiceImpl implements ProductService {
     @Transactional
     public void archiveProduct(UUID id) {
         log.debug("Archiving product with id: {}", id);
-        ProductEntity productToArchive = retrieveProductByIdOrElseThrow(id);
+        ProductEntity productToArchive = retrieveProductByIdFromJpaOrElseThrow(id);
         if(productToArchive.getStatus() != ProductStatus.ARCHIVED) {
             productToArchive.setStatus(ProductStatus.ARCHIVED);
-            saveProductOrElseThrow(productToArchive);
+            try {
+                productRepository.save(productToArchive);
+                // delete archived product from elasticsearch
+                productSearchRepository.deleteById(productToArchive.getId());
+            } catch (Exception e) {
+                log.error("Exception occurred wile archiving product: {}", e.getMessage());
+            }
             log.info("Product with id {} was archived", id);
+            return;
+        }
+        log.warn("Product with id {} was already archived", id);
+    }
+
+    @Override
+    @Transactional
+    public void banProduct(UUID id) {
+        log.debug("Banning product with id: {}", id);
+        ProductEntity productTopBan = retrieveProductByIdFromJpaOrElseThrow(id);
+        if(productTopBan.getStatus() != ProductStatus.BANNED) {
+            productTopBan.setStatus(ProductStatus.BANNED);
+            try {
+                productRepository.save(productTopBan);
+                // delete archived product from elasticsearch
+                productSearchRepository.deleteById(productTopBan.getId());
+            } catch (Exception e) {
+                log.error("Exception occurred wile banning product: {}", e.getMessage());
+            }
+            log.info("Product with id {} was banned", id);
         }
     }
 
@@ -102,6 +147,7 @@ public class ProductServiceImpl implements ProductService {
         log.info("Delete product by id: {}", id);
         try {
             productRepository.deleteById(id);
+            productSearchRepository.deleteById(id);
         } catch (Exception ex) {
             log.error("Exception occurred while hard deleting product with id {}: {}", id, ex.getMessage());
         }
@@ -109,7 +155,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Transactional(readOnly = true)
-    public ProductEntity retrieveProductByIdOrElseThrow(UUID id) {
+    public ProductEntity retrieveProductByIdFromJpaOrElseThrow(UUID id) {
         log.debug("Retrieving product by id: {}", id);
         ProductEntity retrievedProduct = productRepository.findById(id).orElseThrow(() -> {
             log.error("Exception occurred while retrieving product by id: {}", id);
@@ -120,15 +166,27 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Transactional
-    public ProductEntity saveProductOrElseThrow(ProductEntity productToSave) {
-        log.debug("Saving product {}", productToSave);
+    public ProductEntity saveProductToJpaOrElseThrow(ProductEntity productToSave) {
+        log.debug("Saving product to JPA repository {}", productToSave);
         try {
             ProductEntity savedProduct = productRepository.save(productToSave);
-            productSearchRepository.save(productMapper.toProductDocument(productToSave));
-            log.info("Saved product {}", savedProduct);
+            log.info("Saved product to JPA repository {}", savedProduct);
             return savedProduct;
         } catch (Exception ex) {
-            log.error("Exception occurred while saving product {}: {}", productToSave, ex.getMessage());
+            log.error("Exception occurred while saving product to JPA repository {}: {}", productToSave, ex.getMessage());
+            throw new PersistenceException(ex.getMessage());
+        }
+    }
+
+    @Transactional
+    public ProductDocument saveProductToElasticsearchOrElseThrow(ProductDocument productToSave) {
+        log.debug("Saving product to Elasticsearch repository {}", productToSave);
+        try {
+            ProductDocument savedProduct = productSearchRepository.save(productToSave);
+            log.info("Saved product to Elasticsearch repository {}", savedProduct);
+            return savedProduct;
+        } catch (Exception ex) {
+            log.error("Exception occurred while saving product to Elasticsearch repository {}", ex.getMessage());
             throw new PersistenceException(ex.getMessage());
         }
     }

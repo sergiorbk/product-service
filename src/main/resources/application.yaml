@@ -29,7 +29,3 @@ application:
   feature:
     toggles:
       exampleToggle: true
-  params:
-    price:
-      precision: 10
-      scale: 2
