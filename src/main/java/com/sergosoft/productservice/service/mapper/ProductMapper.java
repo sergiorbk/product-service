@@ -11,7 +11,7 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring")
 public interface ProductMapper {
 
-    @Mapping(source = "base64Id", target = "id")
+    @Mapping(source = "id", target = "id")
     ProductDetails toProductDetails(ProductEntity product);
 
     ProductEntity toProductEntity(ProductCreateDto productCreateDto);

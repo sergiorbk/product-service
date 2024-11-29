@@ -13,6 +13,7 @@ import com.sergosoft.productservice.service.ProductService;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/products")
@@ -28,7 +29,7 @@ public class ProductController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ProductResponseDto> getProductById(@PathVariable String id) {
+    public ResponseEntity<ProductResponseDto> getProductById(@PathVariable UUID id) {
         ProductDetails retrievedProduct = productService.getProductById(id);
         ProductResponseDto productResponseDto = productMapper.toProductResponseDto(retrievedProduct);
         return ResponseEntity.ok(productResponseDto);
@@ -47,14 +48,20 @@ public class ProductController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ProductResponseDto> updateProduct(@PathVariable String id,
+    public ResponseEntity<ProductResponseDto> updateProduct(@PathVariable UUID id,
                                                             @RequestBody @Valid ProductCreateDto productDto) {
         ProductDetails updatedProduct = productService.updateProduct(id, productDto);
         return ResponseEntity.ok(productMapper.toProductResponseDto(updatedProduct));
     }
 
+    @PostMapping("/{id}")
+    public ResponseEntity<Void> archiveProduct(@PathVariable UUID id) {
+        productService.archiveProduct(id);
+        return ResponseEntity.noContent().build();
+    }
+
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteProduct(@PathVariable String id) {
+    public ResponseEntity<Void> deleteProduct(@PathVariable UUID id) {
         productService.deleteProductById(id);
         return ResponseEntity.noContent().build();
     }

@@ -29,7 +29,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional(readOnly = true)
-    public ProductDetails getProductById(String id) {
+    public ProductDetails getProductById(UUID id) {
         return productMapper.toProductDetails(retrieveProductByIdOrElseThrow(id));
     }
 
@@ -49,7 +49,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional
-    public ProductDetails updateProduct(String id, ProductCreateDto dto) {
+    public ProductDetails updateProduct(UUID id, ProductCreateDto dto) {
         return null;
     }
 
@@ -58,7 +58,7 @@ public class ProductServiceImpl implements ProductService {
      */
     @Override
     @Transactional
-    public void archiveProduct(String id) {
+    public void archiveProduct(UUID id) {
         log.debug("Archiving product with id: {}", id);
         ProductEntity productToArchive = retrieveProductByIdOrElseThrow(id);
         if(productToArchive.getStatus() != ProductStatus.ARCHIVED) {
@@ -74,7 +74,7 @@ public class ProductServiceImpl implements ProductService {
      */
     @Override
     @Transactional
-    public void deleteProductById(String id) {
+    public void deleteProductById(UUID id) {
         log.info("Delete product by id: {}", id);
         try {
             productRepository.deleteById(id);
@@ -84,11 +84,11 @@ public class ProductServiceImpl implements ProductService {
         productRepository.deleteById(id);
     }
 
-    private ProductEntity retrieveProductByIdOrElseThrow(String id) {
+    private ProductEntity retrieveProductByIdOrElseThrow(UUID id) {
         log.debug("Retrieving product by id: {}", id);
         ProductEntity retrievedProduct = productRepository.findById(id).orElseThrow(() -> {
             log.error("Exception occurred while retrieving product by id: {}", id);
-            return new ProductNotFoundException(id);
+            return new ProductNotFoundException(id.toString());
         });
         log.info("Retrieved product by id {}: {}", id, retrievedProduct);
         return retrievedProduct;

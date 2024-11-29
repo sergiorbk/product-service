@@ -4,11 +4,11 @@ import com.sergosoft.productservice.domain.product.ProductStatus;
 import com.sergosoft.productservice.util.Base64Utils;
 import com.sergosoft.productservice.util.SlugGenerator;
 import jakarta.persistence.*;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.NaturalId;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -33,7 +33,7 @@ public class ProductEntity {
     /**
      * Base 64 encoded id
      */
-    @NaturalId
+//    @NaturalId
     @Column(unique = true, nullable = false)
     private String base64Id;
 
