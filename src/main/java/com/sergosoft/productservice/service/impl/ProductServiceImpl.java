@@ -3,7 +3,7 @@ package com.sergosoft.productservice.service.impl;
 import com.sergosoft.productservice.domain.product.ProductDetails;
 import com.sergosoft.productservice.domain.product.ProductStatus;
 import com.sergosoft.productservice.dto.product.ProductCreateDto;
-import com.sergosoft.productservice.elasticsearch.document.ProductDocument;
+import com.sergosoft.productservice.elasticsearch.document.ProductSearchDocument;
 import com.sergosoft.productservice.elasticsearch.repository.ProductSearchRepository;
 import com.sergosoft.productservice.repository.ProductRepository;
 import com.sergosoft.productservice.repository.entity.ProductEntity;
@@ -179,10 +179,10 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Transactional
-    public ProductDocument saveProductToElasticsearchOrElseThrow(ProductDocument productToSave) {
+    public ProductSearchDocument saveProductToElasticsearchOrElseThrow(ProductSearchDocument productToSave) {
         log.debug("Saving product to Elasticsearch repository {}", productToSave);
         try {
-            ProductDocument savedProduct = productSearchRepository.save(productToSave);
+            ProductSearchDocument savedProduct = productSearchRepository.save(productToSave);
             log.info("Saved product to Elasticsearch repository {}", savedProduct);
             return savedProduct;
         } catch (Exception ex) {

@@ -18,7 +18,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Document(indexName = "products")
-public class ProductDocument {
+public class ProductSearchDocument {
 
     /**
      * UUID as ID for Elasticsearch
