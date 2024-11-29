@@ -6,6 +6,8 @@ import com.sergosoft.productservice.elasticsearch.service.ProductSearchService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 
 @Slf4j
@@ -16,6 +18,7 @@ public class ProductSearchServiceImpl implements ProductSearchService {
     private final ProductSearchRepository productSearchRepository;
 
     @Override
+    @Transactional(readOnly = true)
     public List<ProductDetails> findProductsByQuery(String query) {
         // todo implement
         throw new UnsupportedOperationException("Not supported yet.");

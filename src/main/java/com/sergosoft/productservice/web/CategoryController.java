@@ -79,6 +79,12 @@ public class CategoryController {
         return ResponseEntity.ok(categoryMapper.toCategoryResponseDto(updatedCategoryDetails));
     }
 
+    @PutMapping("/{categoryId}/archive")
+    public ResponseEntity<Void> archiveCategory(@PathVariable UUID categoryId) {
+        categoryService.archiveCategoryById(categoryId);
+        return ResponseEntity.noContent().build();
+    }
+
     @DeleteMapping("/{categoryId}")
     public ResponseEntity<Void> deleteCategory(@PathVariable UUID categoryId) {
         categoryService.deleteCategoryById(categoryId);

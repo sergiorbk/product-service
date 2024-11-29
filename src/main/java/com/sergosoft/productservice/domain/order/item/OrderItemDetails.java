@@ -13,7 +13,7 @@ import java.util.UUID;
 @Value
 @Builder(toBuilder = true)
 @AllArgsConstructor
-public class OrderItem {
+public class OrderItemDetails {
 
     UUID id;
     OrderDetails orderDetails;

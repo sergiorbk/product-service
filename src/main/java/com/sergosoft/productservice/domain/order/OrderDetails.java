@@ -1,6 +1,6 @@
 package com.sergosoft.productservice.domain.order;
 
-import com.sergosoft.productservice.domain.order.item.OrderItem;
+import com.sergosoft.productservice.domain.order.item.OrderItemDetails;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Value;
@@ -15,7 +15,7 @@ import java.util.*;
 public class OrderDetails {
 
     UUID id;
-    Set<OrderItem> items = new HashSet<>();
+    Set<OrderItemDetails> items = new HashSet<>();
 
     // this microservice is going to keep the conception of P2P trading
     UUID sellerId;
