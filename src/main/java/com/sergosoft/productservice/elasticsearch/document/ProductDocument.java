@@ -12,6 +12,7 @@ import org.springframework.data.elasticsearch.annotations.FieldType;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Set;
+import java.util.UUID;
 
 @Data
 @Builder
@@ -24,7 +25,7 @@ public class ProductDocument {
      * UUID as ID for Elasticsearch
      */
     @Id
-    private String id;
+    private UUID id;
 
     @Field(type = FieldType.Text)
     private String title;

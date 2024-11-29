@@ -3,6 +3,7 @@ package com.sergosoft.productservice.service.impl;
 import com.sergosoft.productservice.domain.product.ProductDetails;
 import com.sergosoft.productservice.domain.product.ProductStatus;
 import com.sergosoft.productservice.dto.product.ProductCreateDto;
+import com.sergosoft.productservice.elasticsearch.repository.ProductSearchRepository;
 import com.sergosoft.productservice.repository.ProductRepository;
 import com.sergosoft.productservice.repository.entity.ProductEntity;
 import com.sergosoft.productservice.service.CategoryService;
@@ -26,6 +27,7 @@ import java.util.UUID;
 public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository productRepository;
+    private final ProductSearchRepository productSearchRepository;
     private final CategoryService categoryService;
     private final ProductMapper productMapper;
 
@@ -43,7 +45,9 @@ public class ProductServiceImpl implements ProductService {
         productToSave = productToSave.toBuilder()
                 .categories(new HashSet<>(categoryService.getCategoryEntitiesByIds(dto.getCategoryIds().stream().map(UUID::fromString).toList())))
                 .build();
+        // save created product to jpa and search repositories
         ProductEntity savedProduct = saveProductOrElseThrow(productToSave);
+        // return saved product details
         ProductDetails productDetails = productMapper.toProductDetails(savedProduct);
         log.info("Saved mapped product details {}", productDetails);
         return productDetails;
@@ -104,7 +108,8 @@ public class ProductServiceImpl implements ProductService {
         productRepository.deleteById(id);
     }
 
-    private ProductEntity retrieveProductByIdOrElseThrow(UUID id) {
+    @Transactional(readOnly = true)
+    public ProductEntity retrieveProductByIdOrElseThrow(UUID id) {
         log.debug("Retrieving product by id: {}", id);
         ProductEntity retrievedProduct = productRepository.findById(id).orElseThrow(() -> {
             log.error("Exception occurred while retrieving product by id: {}", id);
@@ -114,10 +119,12 @@ public class ProductServiceImpl implements ProductService {
         return retrievedProduct;
     }
 
-    private ProductEntity saveProductOrElseThrow(ProductEntity productToSave) {
+    @Transactional
+    public ProductEntity saveProductOrElseThrow(ProductEntity productToSave) {
         log.debug("Saving product {}", productToSave);
         try {
             ProductEntity savedProduct = productRepository.save(productToSave);
+            productSearchRepository.save(productMapper.toProductDocument(productToSave));
             log.info("Saved product {}", savedProduct);
             return savedProduct;
         } catch (Exception ex) {
@@ -125,4 +132,5 @@ public class ProductServiceImpl implements ProductService {
             throw new PersistenceException(ex.getMessage());
         }
     }
+
 }

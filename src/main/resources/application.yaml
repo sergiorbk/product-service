@@ -23,7 +23,7 @@ spring:
       ddl-auto: create
     show-sql: true
     open-in-view: false
-#    defer-datasource-initialization: true
+    #    defer-datasource-initialization: true
 
 application:
   feature:
