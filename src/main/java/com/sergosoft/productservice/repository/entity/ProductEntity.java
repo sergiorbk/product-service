@@ -63,6 +63,8 @@ public class ProductEntity {
     @Enumerated(EnumType.STRING)
     private ProductStatus status;
 
+    private LocalDateTime updatedAt;
+
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 

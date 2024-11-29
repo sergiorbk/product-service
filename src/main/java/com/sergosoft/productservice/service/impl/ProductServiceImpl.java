@@ -9,12 +9,14 @@ import com.sergosoft.productservice.service.CategoryService;
 import com.sergosoft.productservice.service.ProductService;
 import com.sergosoft.productservice.service.exception.ProductNotFoundException;
 import com.sergosoft.productservice.service.mapper.ProductMapper;
+import com.sergosoft.productservice.util.SlugGenerator;
 import jakarta.persistence.PersistenceException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.UUID;
 
@@ -50,7 +52,24 @@ public class ProductServiceImpl implements ProductService {
     @Override
     @Transactional
     public ProductDetails updateProduct(UUID id, ProductCreateDto dto) {
-        return null;
+        log.debug("Updating product with id {} with data: {}", id, dto);
+        ProductEntity productToUpdate = retrieveProductByIdOrElseThrow(id);
+        productToUpdate = productToUpdate.toBuilder()
+                .title(dto.getTitle() == null ? productToUpdate.getTitle() : dto.getTitle())
+                .slug(SlugGenerator.generateSlug(dto.getTitle()))
+                .description(dto.getDescription() == null ? productToUpdate.getDescription() : dto.getDescription())
+                .price(dto.getPrice() == null ? productToUpdate.getPrice() : dto.getPrice())
+                .categories(dto.getCategoryIds() == null ? productToUpdate.getCategories() :
+                        new HashSet<>(categoryService.getCategoryEntitiesByIds(
+                                dto.getCategoryIds().stream().map(UUID::fromString).toList())
+                        )
+                )
+                .updatedAt(LocalDateTime.now())
+                .build();
+        ProductEntity savedProduct = saveProductOrElseThrow(productToUpdate);
+        ProductDetails savedProductDetails = productMapper.toProductDetails(savedProduct);
+        log.info("Updated product details {}", savedProductDetails);
+        return savedProductDetails;
     }
 
     /**
