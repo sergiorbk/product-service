@@ -5,15 +5,17 @@ import lombok.Value;
 import lombok.Builder;
 import lombok.extern.jackson.Jacksonized;
 
+import java.math.BigDecimal;
 import java.util.List;
+import java.util.UUID;
 
 @Value
 @Builder
 @Jacksonized
 public class OrderCreateDto {
 
-    String sellerReference;
-    String buyerReference;
+    UUID sellerReference;
+    UUID buyerReference;
     List<OrderItemCreateDto> items;
-    Double totalPrice;
+    BigDecimal totalPrice;
 }

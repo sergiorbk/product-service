@@ -16,8 +16,8 @@ import java.util.UUID;
 public class OrderResponseDto {
 
     UUID id;
-    String sellerReference;
-    String buyerReference;
+    UUID sellerReference;
+    UUID buyerReference;
     List<OrderItemResponseDto> items;
     BigDecimal totalPrice;
     LocalDateTime createdAt;

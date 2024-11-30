@@ -14,9 +14,6 @@ import lombok.extern.jackson.Jacksonized;
 @AllArgsConstructor
 public class OrderItemCreateDto {
 
-    @NotNull(message = "Order Id is mandatory.")
-    String orderId;
-
     @NotNull(message = "Product Id is mandatory.")
     Long productId;
 
