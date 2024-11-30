@@ -6,8 +6,9 @@ import lombok.Builder;
 import lombok.Value;
 
 import java.math.BigDecimal;
-import java.time.Instant;
-import java.util.*;
+import java.time.LocalDateTime;
+import java.util.Set;
+import java.util.UUID;
 
 @Value
 @Builder(toBuilder = true)
@@ -15,12 +16,12 @@ import java.util.*;
 public class OrderDetails {
 
     UUID id;
-    Set<OrderItemDetails> items = new HashSet<>();
+    Set<OrderItemDetails> items;
 
     // this microservice is going to keep the conception of P2P trading
     UUID sellerId;
     UUID buyerId;
 
     BigDecimal totalPrice;
-    Instant createdAt;
+    LocalDateTime createdAt;
 }

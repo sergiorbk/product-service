@@ -6,18 +6,19 @@ import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
 import java.math.BigDecimal;
-import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Value
 @Builder
 @Jacksonized
 public class OrderResponseDto {
 
-    String id;
+    UUID id;
     String sellerReference;
     String buyerReference;
     List<OrderItemResponseDto> items;
     BigDecimal totalPrice;
-    Instant createdAt;
+    LocalDateTime createdAt;
 }

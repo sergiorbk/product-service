@@ -1,6 +1,7 @@
 package com.sergosoft.productservice.web;
 
 import java.net.URI;
+import java.util.UUID;
 
 import com.sergosoft.productservice.service.mapper.OrderMapper;
 import org.springframework.http.ResponseEntity;
@@ -29,7 +30,7 @@ public class OrderController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<OrderResponseDto> getOrderById(@PathVariable Long id) {
+    public ResponseEntity<OrderResponseDto> getOrderById(@PathVariable UUID id) {
         OrderDetails retrievedOrderDetails = orderService.getOrderById(id);
         OrderResponseDto categoryResponseDto = orderMapper.toOrderResponseDto(retrievedOrderDetails);
         return ResponseEntity.ok(categoryResponseDto);
@@ -48,15 +49,16 @@ public class OrderController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<OrderResponseDto> updateOrder(@PathVariable Long id,
+    public ResponseEntity<OrderResponseDto> updateOrder(@PathVariable UUID id,
                                                         @RequestBody @Valid OrderCreationDto orderDto) {
         OrderDetails updatedOrderDetails = orderService.updateOrder(id, orderDto);
         return ResponseEntity.ok(orderMapper.toOrderResponseDto(updatedOrderDetails));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteOrder(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteOrder(@PathVariable UUID id) {
         orderService.deleteOrderById(id);
         return ResponseEntity.noContent().build();
     }
+
 }
