@@ -20,8 +20,8 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: create
-    show-sql: true
+      ddl-auto: none
+    show-sql: false
     open-in-view: false
     #    defer-datasource-initialization: true
 

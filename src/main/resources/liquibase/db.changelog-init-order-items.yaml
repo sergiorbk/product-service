@@ -1,0 +1,49 @@
+databaseChangeLog:
+  - changeSet:
+      id: lab-3-2
+      author: "sergiorbk"
+      changes:
+        - createTable:
+            tableName: "order_items"
+            columns:
+              - column:
+                  name: "id"
+                  type: "UUID"
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: "order_id"
+                  type: "UUID"
+                  constraints:
+                    nullable: false
+              - column:
+                  name: "product_id"
+                  type: "UUID"
+                  constraints:
+                    nullable: false
+              - column:
+                  name: "quantity"
+                  type: "INTEGER"
+                  constraints:
+                    nullable: false
+              - column:
+                  name: "price"
+                  type: "DECIMAL(10,2)"
+                  constraints:
+                    nullable: false
+
+        - addForeignKeyConstraint:
+            constraintName: "fk_order_items_order"
+            baseTableName: "order_items"
+            baseColumnNames: "order_id"
+            referencedTableName: "orders"
+            referencedColumnNames: "id"
+            onDelete: "CASCADE"
+
+        - addForeignKeyConstraint:
+            constraintName: "fk_order_items_product"
+            baseTableName: "order_items"
+            baseColumnNames: "product_id"
+            referencedTableName: "products"
+            referencedColumnNames: "id"
