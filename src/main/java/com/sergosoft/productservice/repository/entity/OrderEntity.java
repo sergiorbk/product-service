@@ -20,7 +20,7 @@ import java.util.UUID;
 @Table(name = "orders", indexes = {
         @Index(name = "idx_order_number", columnList ="orderNumber")
 })
-@Builder
+@Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
 public class OrderEntity {

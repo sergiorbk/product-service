@@ -10,10 +10,12 @@ import jakarta.validation.constraints.Positive;
 
 import lombok.Value;
 import lombok.Builder;
+import lombok.extern.jackson.Jacksonized;
 import org.hibernate.validator.constraints.UUID;
 
 @Value
 @Builder
+@Jacksonized
 public class ProductCreateDto {
 
     @NotBlank(message = "Title is mandatory.")

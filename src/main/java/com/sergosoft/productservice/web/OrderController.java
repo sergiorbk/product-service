@@ -12,7 +12,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import jakarta.validation.Valid;
 
 import com.sergosoft.productservice.domain.order.OrderDetails;
-import com.sergosoft.productservice.dto.order.OrderCreationDto;
+import com.sergosoft.productservice.dto.order.OrderCreateDto;
 import com.sergosoft.productservice.dto.order.OrderResponseDto;
 import com.sergosoft.productservice.service.OrderService;
 
@@ -37,7 +37,7 @@ public class OrderController {
     }
 
     @PostMapping
-    public ResponseEntity<OrderResponseDto> createOrder(@RequestBody @Valid OrderCreationDto dto) {
+    public ResponseEntity<OrderResponseDto> createOrder(@RequestBody @Valid OrderCreateDto dto) {
         OrderDetails createdOrderDetails = orderService.createOrder(dto);
         OrderResponseDto createdOrderResponseDto = orderMapper.toOrderResponseDto(createdOrderDetails);
         URI location = ServletUriComponentsBuilder
@@ -50,7 +50,7 @@ public class OrderController {
 
     @PutMapping("/{id}")
     public ResponseEntity<OrderResponseDto> updateOrder(@PathVariable UUID id,
-                                                        @RequestBody @Valid OrderCreationDto orderDto) {
+                                                        @RequestBody @Valid OrderCreateDto orderDto) {
         OrderDetails updatedOrderDetails = orderService.updateOrder(id, orderDto);
         return ResponseEntity.ok(orderMapper.toOrderResponseDto(updatedOrderDetails));
     }

@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.Builder;
 import lombok.Value;
+import lombok.extern.jackson.Jacksonized;
 import org.hibernate.validator.constraints.UUID;
 
 import java.math.BigDecimal;
@@ -13,6 +14,7 @@ import java.util.List;
 
 @Value
 @Builder
+@Jacksonized
 public class ProductUpdateDto {
 
     @NotBlank(message = "Title is mandatory.")

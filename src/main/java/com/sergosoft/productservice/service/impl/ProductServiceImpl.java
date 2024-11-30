@@ -42,16 +42,15 @@ public class ProductServiceImpl implements ProductService {
     public ProductDetails createProduct(ProductCreateDto dto) {
         log.info("Creating product {}", dto);
         ProductEntity productToSave = productMapper.toProductEntity(dto);
+        // add or change attributes via the builder
         productToSave = productToSave.toBuilder()
                 .categories(new HashSet<>(categoryService.getCategoryEntitiesByIds(dto.getCategoryIds().stream().map(UUID::fromString).toList())))
                 .build();
         // save created product to jpa and search repositories
-        ProductEntity savedProduct = saveProductToJpaOrElseThrow(productToSave);
+        ProductEntity savedProduct = saveProductOrElseThrow(productToSave);
         productSearchService.createProductDocument(productMapper.toProductDocument(savedProduct));
         // return saved product details
-        ProductDetails productDetails = productMapper.toProductDetails(savedProduct);
-        log.info("Saved mapped product details {}", productDetails);
-        return productDetails;
+        return productMapper.toProductDetails(savedProduct);
     }
 
     @Override
@@ -72,7 +71,7 @@ public class ProductServiceImpl implements ProductService {
                 .updatedAt(LocalDateTime.now())
                 .build();
         // save updated product
-        ProductEntity savedProduct = saveProductToJpaOrElseThrow(productToUpdate);
+        ProductEntity savedProduct = saveProductOrElseThrow(productToUpdate);
         productSearchService.createProductDocument(productMapper.toProductDocument(savedProduct));
         // return the product details
         ProductDetails savedProductDetails = productMapper.toProductDetails(savedProduct);
@@ -87,7 +86,7 @@ public class ProductServiceImpl implements ProductService {
         ProductEntity productToActivate = retrieveProductByIdFromJpaOrElseThrow(id);
         if(productToActivate.getStatus() != ProductStatus.ACTIVE) {
             productToActivate.setStatus(ProductStatus.ACTIVE);
-            saveProductToJpaOrElseThrow(productToActivate);
+            saveProductOrElseThrow(productToActivate);
             productSearchService.createProductDocument(productMapper.toProductDocument(productToActivate));
             log.info("Product with id {} was activated", id);
             return;
@@ -165,7 +164,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Transactional
-    public ProductEntity saveProductToJpaOrElseThrow(ProductEntity productToSave) {
+    public ProductEntity saveProductOrElseThrow(ProductEntity productToSave) {
         log.debug("Saving product to JPA repository {}", productToSave);
         try {
             ProductEntity savedProduct = productRepository.save(productToSave);

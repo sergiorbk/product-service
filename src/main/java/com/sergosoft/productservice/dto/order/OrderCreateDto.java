@@ -3,12 +3,14 @@ package com.sergosoft.productservice.dto.order;
 import com.sergosoft.productservice.dto.order.item.OrderItemCreateDto;
 import lombok.Value;
 import lombok.Builder;
+import lombok.extern.jackson.Jacksonized;
 
 import java.util.List;
 
 @Value
 @Builder
-public class OrderCreationDto {
+@Jacksonized
+public class OrderCreateDto {
 
     String sellerReference;
     String buyerReference;

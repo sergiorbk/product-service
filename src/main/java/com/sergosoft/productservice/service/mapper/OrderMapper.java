@@ -1,6 +1,7 @@
 package com.sergosoft.productservice.service.mapper;
 
 import com.sergosoft.productservice.domain.order.OrderDetails;
+import com.sergosoft.productservice.dto.order.OrderCreateDto;
 import com.sergosoft.productservice.dto.order.OrderResponseDto;
 import com.sergosoft.productservice.repository.entity.OrderEntity;
 import org.mapstruct.Mapper;
@@ -11,5 +12,7 @@ public interface OrderMapper {
     OrderResponseDto toOrderResponseDto(OrderDetails order);
 
     OrderDetails toOrderDetails(OrderEntity orderEntity);
+
+    OrderEntity toOrderEntity(OrderCreateDto orderCreateDto);
 
 }
