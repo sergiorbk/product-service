@@ -69,7 +69,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Transactional(readOnly = true)
     public CategoryDetails getCategoryBySlug(String slug) {
         log.debug("Retrieving category by slug: {}", slug);
-        CategoryEntity retrievedCategory = categoryRepository.findBySlug(slug).orElseThrow(() -> {
+        CategoryEntity retrievedCategory = categoryRepository.findByNaturalId(slug).orElseThrow(() -> {
             log.error("Exception occurred while retrieving category by slug: {}", slug);
             return new CategoryNotFoundException(slug);
         });

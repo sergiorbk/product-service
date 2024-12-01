@@ -9,7 +9,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.NaturalId;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -34,7 +33,6 @@ public class ProductEntity {
     /**
      * Base 64 encoded id
      */
-    @NaturalId
     @Column(unique = true, updatable = false, nullable = false)
     private String base64Id;
 

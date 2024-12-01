@@ -7,8 +7,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.NaturalId;
-
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.HashSet;
@@ -28,10 +26,6 @@ public class OrderEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
-
-    @NaturalId
-    @Column(unique = true, nullable = false, updatable = false)
-    private Long orderNumber;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     private Set<OrderItemEntity> items = new HashSet<>();
