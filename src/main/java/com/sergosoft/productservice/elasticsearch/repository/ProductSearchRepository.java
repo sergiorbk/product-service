@@ -7,6 +7,8 @@ import org.springframework.stereotype.Repository;
 import java.util.UUID;
 
 @Repository
-public interface ProductSearchRepository extends ElasticsearchRepository<ProductSearchDocument, UUID> {
+public interface ProductSearchRepository
+//        extends ElasticsearchRepository<ProductSearchDocument, UUID>
+{
 
 }
