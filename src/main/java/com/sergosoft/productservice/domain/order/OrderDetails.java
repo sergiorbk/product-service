@@ -17,8 +17,8 @@ public class OrderDetails {
 
     UUID id;
     List<OrderItemDetails> items;
-    UUID sellerId;
-    UUID buyerId;
+    UUID sellerReference;
+    UUID buyerReference;
     BigDecimal totalPrice;
     LocalDateTime createdAt;
 }

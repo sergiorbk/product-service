@@ -3,10 +3,8 @@ package com.sergosoft.productservice.repository.entity;
 import jakarta.persistence.*;
 import jdk.jfr.Timestamp;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -24,7 +22,8 @@ public class OrderEntity {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @OneToMany(mappedBy = "order", cascade = CascadeType.PERSIST, orphanRemoval = true)
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    @ToString.Exclude
     private List<OrderItemEntity> items;
 
     /**
