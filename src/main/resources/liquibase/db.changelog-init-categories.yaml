@@ -67,3 +67,11 @@ databaseChangeLog:
             constraintName: "fk_product_category_product"
             referencedTableName: "products"
             referencedColumnNames: "id"
+
+        # index for category slug
+        - createIndex:
+            indexName: idx_category_slug
+            tableName: categories
+            columns:
+              - column:
+                  name: slug

@@ -47,3 +47,15 @@ databaseChangeLog:
             constraintName: "fk_order_items_product"
             referencedTableName: "products"
             referencedColumnNames: "id"
+
+        # custom sequence for surrogate if generation, for demonstration purposes only (replaced by UUID)
+        - createSequence:
+            sequenceName: order_item_id_sequence
+            startValue: 1
+            incrementBy: 11
+
+        # Add a unique constraint to ensure a product appears only once per order
+        - addUniqueConstraint:
+            tableName: "order_items"
+            columnNames: "order_id, product_id"
+            constraintName: "unique_order_item_product"
