@@ -2,7 +2,8 @@ plugins {
 	java
 	id("org.springframework.boot") version "3.3.5"
 	id("io.spring.dependency-management") version "1.1.6"
-	id("org.barfuin.gradle.jacocolog") version "3.1.0" // for labs
+	id ("org.barfuin.gradle.jacocolog") version "3.1.0"
+	id("jacoco")
 }
 
 group = "com.sergosoft"
@@ -69,3 +70,4 @@ dependencies {
 tasks.withType<Test> {
 	useJUnitPlatform()
 }
+

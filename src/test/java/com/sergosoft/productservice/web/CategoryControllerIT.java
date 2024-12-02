@@ -70,7 +70,7 @@ class CategoryControllerIT extends IntegrationTest {
                 .andExpect(jsonPath("$.slug").value("computers"));
     }
 
-    private CategoryCreateDto buildCreateCategoryDto() {
+    CategoryCreateDto buildCreateCategoryDto() {
         return CategoryCreateDto.builder()
                 .title("Computers")
                 .parentId(null)

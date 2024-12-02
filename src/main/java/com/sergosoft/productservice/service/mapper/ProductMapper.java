@@ -2,7 +2,6 @@ package com.sergosoft.productservice.service.mapper;
 
 import com.sergosoft.productservice.domain.category.CategoryDetails;
 import com.sergosoft.productservice.domain.product.ProductDetails;
-import com.sergosoft.productservice.dto.product.ProductCreateDto;
 import com.sergosoft.productservice.dto.product.ProductResponseDto;
 import com.sergosoft.productservice.elasticsearch.document.ProductSearchDocument;
 import com.sergosoft.productservice.repository.entity.ProductEntity;
@@ -14,8 +13,6 @@ public interface ProductMapper {
 
     @Mapping(source = "id", target = "id")
     ProductDetails toProductDetails(ProductEntity product);
-
-    ProductEntity toProductEntity(ProductCreateDto productCreateDto);
 
     @Mapping(source = "categories", target = "categoriesIds")
     ProductResponseDto toProductResponseDto(ProductDetails product);

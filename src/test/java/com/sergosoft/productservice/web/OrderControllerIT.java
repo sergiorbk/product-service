@@ -2,9 +2,11 @@ package com.sergosoft.productservice.web;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sergosoft.productservice.IntegrationTest;
+import com.sergosoft.productservice.dto.category.CategoryCreateDto;
 import com.sergosoft.productservice.dto.order.OrderCreateDto;
 import com.sergosoft.productservice.dto.order.item.OrderItemCreateDto;
 import com.sergosoft.productservice.dto.product.ProductCreateDto;
+import com.sergosoft.productservice.service.CategoryService;
 import com.sergosoft.productservice.service.OrderService;
 import com.sergosoft.productservice.service.ProductService;
 
@@ -32,7 +34,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class OrderControllerIT extends IntegrationTest {
 
     private static UUID PRODUCT_ID;
-
     @Autowired
     private MockMvc mockMvc;
 
@@ -45,10 +46,12 @@ class OrderControllerIT extends IntegrationTest {
     @SpyBean
     private ProductService productService;
 
+    @SpyBean
+    private CategoryService categoryService;
+
     @BeforeEach
     void setUp() throws Exception {
         reset(orderService, productService);
-
         PRODUCT_ID = createTestProduct();
     }
 
@@ -82,8 +85,9 @@ class OrderControllerIT extends IntegrationTest {
         ProductCreateDto productCreateDto = ProductCreateDto.builder()
                 .title("Laptop")
                 .price(BigDecimal.valueOf(500.0))
-                .categoryIds(List.of(UUID.randomUUID().toString()))
+                .categoryIds(List.of(createTestCategory().toString()))
                 .description("High-performance laptop")
+                .ownerReference(UUID.randomUUID().toString())
                 .build();
 
         String productResponse = mockMvc.perform(post("/api/v1/products")
@@ -96,5 +100,12 @@ class OrderControllerIT extends IntegrationTest {
                 .getContentAsString();
 
         return UUID.fromString(objectMapper.readTree(productResponse).get("id").asText(String.valueOf(UUID.class)));
+    }
+
+    private UUID createTestCategory() throws Exception {
+        CategoryCreateDto categoryCreateDto = CategoryCreateDto.builder()
+                .title(UUID.randomUUID().toString())
+                .build();
+        return categoryService.createCategory(categoryCreateDto).getId();
     }
 }

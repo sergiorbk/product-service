@@ -4,6 +4,7 @@ import com.sergosoft.productservice.domain.product.ProductDetails;
 import com.sergosoft.productservice.domain.product.ProductStatus;
 import com.sergosoft.productservice.dto.product.ProductCreateDto;
 import com.sergosoft.productservice.repository.ProductRepository;
+import com.sergosoft.productservice.repository.entity.CategoryEntity;
 import com.sergosoft.productservice.repository.entity.ProductEntity;
 import com.sergosoft.productservice.service.CategoryService;
 import com.sergosoft.productservice.service.ProductService;
@@ -42,11 +43,14 @@ public class ProductServiceImpl implements ProductService {
     @Transactional
     public ProductDetails createProduct(ProductCreateDto dto) {
         log.info("Creating product {}", dto);
-        ProductEntity productToSave = productMapper.toProductEntity(dto);
-        // add or change attributes via the builder
-        productToSave = productToSave.toBuilder()
+        ProductEntity productToSave = ProductEntity.builder()
+                .title(dto.getTitle())
+                .description(dto.getDescription())
+                .ownerReference(UUID.fromString(dto.getOwnerReference()))
+                .price(dto.getPrice())
                 .categories(new HashSet<>(categoryService.getCategoryEntitiesByIds(dto.getCategoryIds().stream().map(UUID::fromString).toList())))
                 .build();
+
         // save created product to jpa and search repositories
         ProductEntity savedProduct = saveProductOrElseThrow(productToSave);
 //        productSearchService.createProductDocument(productMapper.toProductDocument(savedProduct));

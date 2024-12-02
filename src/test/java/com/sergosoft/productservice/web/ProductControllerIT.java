@@ -43,6 +43,9 @@ class ProductControllerIT extends IntegrationTest {
     @BeforeEach
     void setUp() throws Exception {
         reset(productService);
+        if(CATEGORY_ID != null) {
+            productService.deleteProductById(CATEGORY_ID);
+        }
         CATEGORY_ID = createTestCategory();
     }
 
@@ -59,6 +62,19 @@ class ProductControllerIT extends IntegrationTest {
                 .andExpect(jsonPath("$.price").value(500.0));
     }
 
+    @Test
+    void shouldReturnBadRequestIfTitleIsMissing() throws Exception {
+        ProductCreateDto productCreateDto = buildProductCreateDto(CATEGORY_ID).toBuilder()
+                .title("")
+                .build();
+
+        mockMvc.perform(post("/api/v1/products")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(productCreateDto)))
+                .andExpect(status().isBadRequest());
+    }
+
     private ProductCreateDto buildProductCreateDto(UUID categoryId) {
         return ProductCreateDto.builder()
                 .title("Laptop")
@@ -71,7 +87,7 @@ class ProductControllerIT extends IntegrationTest {
 
     private UUID createTestCategory() throws Exception {
         CategoryCreateDto categoryCreateDto = CategoryCreateDto.builder()
-                .title("Electronics")
+                .title(UUID.randomUUID().toString())
                 .parentId(null)
                 .build();
 

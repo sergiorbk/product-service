@@ -13,14 +13,16 @@ import lombok.extern.jackson.Jacksonized;
 import org.hibernate.validator.constraints.UUID;
 
 @Value
-@Builder
+@Builder(toBuilder = true)
 @Jacksonized
 public class ProductCreateDto {
 
-    @NotBlank(message = "Title is mandatory.")
+    @NotNull(message = "Product title is mandatory.")
+    @NotBlank(message = "Product title cannot be a blank line.")
     String title;
 
-    @NotBlank(message = "Description is mandatory.")
+    @NotNull(message = "Product description is mandatory.")
+    @NotBlank(message = "Description cannot be a blank line.")
     String description;
 
     @NotNull(message = "Owner reference is mandatory for product")
@@ -33,4 +35,5 @@ public class ProductCreateDto {
 
     @Positive(message = "Price must be a positive number.")
     BigDecimal price;
+
 }
