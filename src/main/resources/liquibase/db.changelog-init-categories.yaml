@@ -22,7 +22,6 @@ databaseChangeLog:
                   name: "slug"
                   type: "VARCHAR(255)"
                   constraints:
-                    updatable: false
                     nullable: false
                     unique: true
               - column:
@@ -68,10 +67,3 @@ databaseChangeLog:
             constraintName: "fk_product_category_product"
             referencedTableName: "products"
             referencedColumnNames: "id"
-
-        - createIndex:
-            tableName: "categories"
-            indexName: "idx_category_slug"
-            columns:
-              - column:
-                  name: "slug"

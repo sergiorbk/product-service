@@ -1,8 +1,8 @@
 package com.sergosoft.productservice.dto.order;
 
 import com.sergosoft.productservice.dto.order.item.OrderItemCreateDto;
-import lombok.Value;
 import lombok.Builder;
+import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
 import java.math.BigDecimal;
@@ -13,7 +13,6 @@ import java.util.UUID;
 @Builder
 @Jacksonized
 public class OrderCreateDto {
-
     UUID sellerReference;
     UUID buyerReference;
     List<OrderItemCreateDto> items;

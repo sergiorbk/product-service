@@ -9,15 +9,12 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 import java.util.UUID;
 
 @Data
 @Entity
-@Table(name = "orders", indexes = {
-        @Index(name = "idx_order_number", columnList ="orderNumber")
-})
+@Table(name = "orders")
 @Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
@@ -27,8 +24,8 @@ public class OrderEntity {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
-    private Set<OrderItemEntity> items = new HashSet<>();
+    @OneToMany(mappedBy = "order", cascade = CascadeType.PERSIST, orphanRemoval = true)
+    private List<OrderItemEntity> items;
 
     /**
      * Refers to the Person who SELLS a product;
@@ -50,4 +47,10 @@ public class OrderEntity {
     @Timestamp
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
+
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
+    }
+
 }

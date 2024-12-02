@@ -1,6 +1,7 @@
 package com.sergosoft.productservice.repository.entity;
 
 import jakarta.persistence.*;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -21,17 +22,17 @@ public class OrderItemEntity {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "order_id")
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "order_id", nullable = false)
     private OrderEntity order;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "product_id")
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "product_id", nullable = false)
     private ProductEntity product;
 
     @Column(nullable = false)
-    Integer quantity;
+    private Integer quantity;
 
     @Column(nullable = false, precision = 10, scale = 2)
-    BigDecimal price;
+    private BigDecimal price;
 }

@@ -13,30 +13,36 @@ databaseChangeLog:
                     primaryKey: true
                     nullable: false
               - column:
-                  name: "sellerReference"
+                  name: "seller_reference"
                   type: "UUID"
                   constraints:
                     nullable: false
               - column:
-                  name: "buyerReference"
+                  name: "buyer_reference"
                   type: "UUID"
                   constraints:
                     nullable: false
               - column:
-                  name: "totalPrice"
+                  name: "total_price"
                   type: "DECIMAL(10,2)"
                   constraints:
                     nullable: false
               - column:
-                  name: "createdAt"
+                  name: "created_at"
                   type: "TIMESTAMP"
                   constraints:
                     nullable: false
+
         - createIndex:
             tableName: "orders"
-            indexName: "idx_order_number"
-            unique: true
+            indexName: "idx_order_seller_reference"
             columns:
               - column:
-                  name: "orderNumber"
-                  type: "BIGINT"
+                  name: "seller_reference"
+
+        - createIndex:
+            tableName: "orders"
+            indexName: "idx_order_buyer_reference"
+            columns:
+              - column:
+                  name: "buyer_reference"

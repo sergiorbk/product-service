@@ -10,13 +10,15 @@ import com.sergosoft.productservice.service.ProductService;
 import com.sergosoft.productservice.service.exception.ProductNotFoundException;
 import com.sergosoft.productservice.service.mapper.ProductMapper;
 import com.sergosoft.productservice.util.SlugGenerator;
+
 import jakarta.persistence.PersistenceException;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.UUID;
 
@@ -67,7 +69,6 @@ public class ProductServiceImpl implements ProductService {
                                 dto.getCategoryIds().stream().map(UUID::fromString).toList())
                         )
                 )
-                .updatedAt(LocalDateTime.now())
                 .build();
         // save updated product
         ProductEntity savedProduct = saveProductOrElseThrow(productToUpdate);

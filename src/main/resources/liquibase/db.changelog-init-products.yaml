@@ -13,23 +13,22 @@ databaseChangeLog:
                     primaryKey: true
                     nullable: false
               - column:
-                  name: "base64Id"
-                  type: "VARCHAR(255)"
-                  constraints:
-                    nullable: false
-                    unique: true
-              - column:
                   name: "title"
-                  type: "VARCHAR(100)"
+                  type: "VARCHAR(255)"
                   constraints:
                     nullable: false
               - column:
                   name: "description"
                   type: "TEXT"
                   constraints:
+                    nullable: true
+              - column:
+                  name: "price"
+                  type: "DECIMAL(10,2)"
+                  constraints:
                     nullable: false
               - column:
-                  name: "ownerReference"
+                  name: "owner_reference"
                   type: "UUID"
                   constraints:
                     nullable: false
@@ -39,27 +38,13 @@ databaseChangeLog:
                   constraints:
                     nullable: false
               - column:
-                  name: "price"
-                  type: "DECIMAL(10,2)"
-                  constraints:
-                    nullable: false
-              - column:
                   name: "status"
                   type: "VARCHAR(50)"
                   constraints:
                     nullable: false
               - column:
-                  name: "updatedAt"
-                  type: "TIMESTAMP"
-              - column:
-                  name: "createdAt"
+                  name: "created_at"
                   type: "TIMESTAMP"
                   constraints:
                     nullable: false
-
-        - createIndex:
-            tableName: "products"
-            indexName: "idx_product_natural_id"
-            columns:
-              - column:
-                  name: "base64Id"
+                    updatable: false

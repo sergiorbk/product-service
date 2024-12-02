@@ -60,7 +60,7 @@ public class CategoryEntity {
 
     @PrePersist
     private void generateSlug() {
-        this.status = CategoryStatus.ACTIVE;
+        this.status = CategoryStatus.ARCHIVED;
         this.slug = SlugGenerator.generateSlug(this.title);
     }
 }

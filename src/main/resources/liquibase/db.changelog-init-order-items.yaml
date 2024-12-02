@@ -34,16 +34,16 @@ databaseChangeLog:
                     nullable: false
 
         - addForeignKeyConstraint:
-            constraintName: "fk_order_items_order"
             baseTableName: "order_items"
             baseColumnNames: "order_id"
+            constraintName: "fk_order_items_order"
             referencedTableName: "orders"
             referencedColumnNames: "id"
             onDelete: "CASCADE"
 
         - addForeignKeyConstraint:
-            constraintName: "fk_order_items_product"
             baseTableName: "order_items"
             baseColumnNames: "product_id"
+            constraintName: "fk_order_items_product"
             referencedTableName: "products"
             referencedColumnNames: "id"

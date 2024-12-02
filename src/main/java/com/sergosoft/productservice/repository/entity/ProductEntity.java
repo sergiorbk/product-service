@@ -1,7 +1,6 @@
 package com.sergosoft.productservice.repository.entity;
 
 import com.sergosoft.productservice.domain.product.ProductStatus;
-import com.sergosoft.productservice.util.Base64Utils;
 import com.sergosoft.productservice.util.SlugGenerator;
 import jakarta.persistence.*;
 
@@ -18,9 +17,7 @@ import java.util.UUID;
 
 @Data
 @Entity
-@Table(name = "products", indexes = {
-        @Index(name = "idx_product_natural_id", columnList = "base64Id")
-})
+@Table(name = "products")
 @Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
@@ -29,12 +26,6 @@ public class ProductEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
-
-    /**
-     * Base 64 encoded id
-     */
-    @Column(unique = true, updatable = false, nullable = false)
-    private String base64Id;
 
     @Column(nullable = false, length = 100)
     private String title;
@@ -62,8 +53,6 @@ public class ProductEntity {
     @Enumerated(EnumType.STRING)
     private ProductStatus status;
 
-    private LocalDateTime updatedAt;
-
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
@@ -71,14 +60,6 @@ public class ProductEntity {
     private void prePersist() {
         this.status = ProductStatus.PENDING;
         this.slug = SlugGenerator.generateSlug(this.title);
-        this.base64Id = Base64Utils.encode(this.id.toString());
         this.createdAt = LocalDateTime.now();
-    }
-
-    /**
-     * @return {slugged-title} - {base64 public id}
-     */
-    private String combineSlugAndBase64Id(String slug, String base64Id) {
-        return String.format("%s-%s", slug, base64Id);
     }
 }

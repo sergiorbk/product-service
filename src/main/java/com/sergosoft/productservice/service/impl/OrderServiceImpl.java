@@ -1,93 +1,61 @@
 package com.sergosoft.productservice.service.impl;
 
-import com.sergosoft.productservice.domain.order.OrderDetails;
 import com.sergosoft.productservice.dto.order.OrderCreateDto;
 import com.sergosoft.productservice.repository.OrderRepository;
+import com.sergosoft.productservice.repository.ProductRepository;
 import com.sergosoft.productservice.repository.entity.OrderEntity;
-import com.sergosoft.productservice.service.OrderService;
-import com.sergosoft.productservice.service.exception.order.OrderNotFoundException;
-import com.sergosoft.productservice.service.mapper.OrderMapper;
-import jakarta.persistence.PersistenceException;
+import com.sergosoft.productservice.repository.entity.OrderItemEntity;
+import com.sergosoft.productservice.repository.entity.ProductEntity;
+import com.sergosoft.productservice.service.exception.ProductNotFoundException;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.util.List;
 import java.util.UUID;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
-public class OrderServiceImpl implements OrderService {
+public class OrderServiceImpl {
 
     private final OrderRepository orderRepository;
-    private final OrderMapper orderMapper;
+    private final ProductRepository productRepository;
 
-    @Override
-    @Transactional(readOnly = true)
-    public OrderDetails getOrderById(UUID id) {
-        return orderMapper.toOrderDetails(retrieveOrderEntityOrElseThrow(id));
-    }
-
-    @Override
     @Transactional
-    public OrderDetails createOrder(OrderCreateDto dto) {
-        log.info("Creating order: {}", dto);
-        OrderEntity orderToCreate = orderMapper.toOrderEntity(dto);
-        // add or change attributes via the builder
-        orderToCreate = orderToCreate.toBuilder()
-                //todo
-//                .items()
-//                .sellerReference()
-//                .buyerReference()
-//                .totalPrice
+    public OrderEntity createOrder(OrderCreateDto orderCreateDto) {
+        BigDecimal totalPrice = orderCreateDto.getItems().stream()
+                .map(item -> item.getPrice().multiply(BigDecimal.valueOf(item.getQuantity())))
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        OrderEntity order = OrderEntity.builder()
+                .sellerReference(orderCreateDto.getSellerReference())
+                .buyerReference(orderCreateDto.getBuyerReference())
+                .totalPrice(totalPrice)
                 .build();
-        // save the product
-        OrderEntity savedOrder = saveOrderOrElseThrow(orderToCreate);
-        // return saved product details
-        return orderMapper.toOrderDetails(savedOrder);
+
+        List<OrderItemEntity> orderItems = orderCreateDto.getItems().stream().map(itemDTO -> {
+            ProductEntity product = productRepository.findById(itemDTO.getProductId())
+                    .orElseThrow(() -> new ProductNotFoundException(itemDTO.getProductId().toString()));
+
+            OrderItemEntity orderItem = OrderItemEntity.builder()
+                    .order(order)
+                    .product(product)
+                    .quantity(itemDTO.getQuantity())
+                    .price(itemDTO.getPrice())
+                    .build();
+
+            return orderItem;
+        }).toList();
+
+        order.setItems(orderItems);
+        return orderRepository.save(order);
     }
 
-    @Override
-    @Transactional
-    public OrderDetails updateOrder(UUID id, OrderCreateDto dto) {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
-    @Transactional
-    public void deleteOrderById(UUID id) {
-        log.debug("Deleting order with id: {}", id);
-        try{
-            orderRepository.deleteById(id);
-            log.info("Deleted order with id: {}", id);
-        } catch (Exception ex) {
-            log.error("Exception occurred while deleting order with id {}: {}", id, ex.getMessage());
-            throw new PersistenceException(ex.getMessage());
-        }
-    }
 
     @Transactional(readOnly = true)
-    public OrderEntity retrieveOrderEntityOrElseThrow(UUID id) {
-        log.debug("Retrieving order by id: {}: ", id);
-        OrderEntity retrievedOrder = orderRepository.findById(id).orElseThrow(() -> {
-            log.error("Exception occurred while retrieving order with id {}:", id);
-            return new OrderNotFoundException(id);
-        });
-        log.info("Retrieved order entity with id {}: {}", id, retrievedOrder);
-        return retrievedOrder;
-    }
-
-    @Transactional
-    public OrderEntity saveOrderOrElseThrow(OrderEntity orderToSave) {
-        log.debug("Saving order: {}", orderToSave);
-        try{
-            OrderEntity savedProduct = orderRepository.save(orderToSave);
-            log.info("Saved order: {}", savedProduct);
-            return savedProduct;
-        } catch (Exception ex) {
-            log.error("Exception occurred while saving order: {}", orderToSave);
-            throw new PersistenceException(ex.getMessage());
-        }
+    public OrderEntity findOrderById(UUID orderId) {
+        return orderRepository.findById(orderId)
+                .orElseThrow(() -> new RuntimeException("Order not found with id: " + orderId));
     }
 }
