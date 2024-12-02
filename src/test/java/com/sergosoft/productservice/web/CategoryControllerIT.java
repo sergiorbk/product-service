@@ -6,7 +6,6 @@ import com.sergosoft.productservice.dto.category.CategoryCreateDto;
 import com.sergosoft.productservice.dto.category.CategoryResponseDto;
 import com.sergosoft.productservice.service.CategoryService;
 
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -31,8 +30,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @DisplayName("Category Controller IT")
-@Tag("category-service")
-class CategoryDetailsControllerIT extends IntegrationTest {
+class CategoryControllerIT extends IntegrationTest {
 
     private final CategoryCreateDto CATEGORY_CREATE_DTO = buildCreateCategoryDto();
 
