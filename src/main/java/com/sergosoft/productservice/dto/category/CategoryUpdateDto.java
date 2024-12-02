@@ -16,7 +16,6 @@ public class CategoryUpdateDto {
 
     @UUID(message = "Category parent id bust be UUID.")
     String parentId;
-
-    @NotBlank(message = "Category status is mandatory.")
+    
     String status;
 }

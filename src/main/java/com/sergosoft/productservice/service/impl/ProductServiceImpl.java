@@ -4,7 +4,6 @@ import com.sergosoft.productservice.domain.product.ProductDetails;
 import com.sergosoft.productservice.domain.product.ProductStatus;
 import com.sergosoft.productservice.dto.product.ProductCreateDto;
 import com.sergosoft.productservice.repository.ProductRepository;
-import com.sergosoft.productservice.repository.entity.CategoryEntity;
 import com.sergosoft.productservice.repository.entity.ProductEntity;
 import com.sergosoft.productservice.service.CategoryService;
 import com.sergosoft.productservice.service.ProductService;

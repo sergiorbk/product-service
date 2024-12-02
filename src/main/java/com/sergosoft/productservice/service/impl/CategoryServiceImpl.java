@@ -130,14 +130,15 @@ public class CategoryServiceImpl implements CategoryService {
     public CategoryDetails updateCategory(UUID id, CategoryUpdateDto dto) {
         log.debug("Updating category: {}", dto);
         CategoryEntity categoryToUpdate = retrieveCategoryByIdOrElseThrow(id);
-        categoryToUpdate.toBuilder()
+        categoryToUpdate = categoryToUpdate.toBuilder()
                 .title(dto.getTitle() == null ? categoryToUpdate.getTitle() : dto.getTitle())
-                .parent(dto.getParentId() == null ? categoryToUpdate.getParent() : categoryRepository.findById(UUID.fromString(dto.getParentId()))
-                        .orElseThrow(() -> {
+                .parent(dto.getParentId() == null ? categoryToUpdate.getParent() :
+                        categoryRepository.findById(UUID.fromString(dto.getParentId())).orElseThrow(() -> {
                             log.error("Exception occurred while retrieving parent category by id: {}", id);
-                            return new CategoryNotFoundException(id);
-                }))
-                .status(dto.getStatus() == null ? categoryToUpdate.getStatus() : CategoryStatus.valueOf(dto.getStatus()));
+                            return new CategoryNotFoundException(id);})
+                )
+                .status(dto.getStatus() == null ? categoryToUpdate.getStatus() : CategoryStatus.valueOf(dto.getStatus()))
+                .build();
         CategoryEntity updatedCategory = categoryRepository.save(categoryToUpdate);
         CategoryDetails categoryDetails = categoryMapper.toCategoryDetails(updatedCategory);
         log.info("Updated category: {}", categoryDetails);
