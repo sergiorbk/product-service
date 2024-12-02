@@ -13,6 +13,7 @@ import org.junit.jupiter.api.DisplayName;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -38,7 +39,7 @@ class CategoryDetailsControllerIT extends IntegrationTest {
     @Autowired
     private CategoryRepository categoryRepository;
 
-    @Autowired
+    @SpyBean
     private CategoryService categoryService;
 
     @BeforeEach

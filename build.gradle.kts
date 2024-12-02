@@ -58,6 +58,7 @@ dependencies {
 
 	testAnnotationProcessor("org.mapstruct:mapstruct-processor:1.6.2")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
+	testImplementation("org.testcontainers:junit-jupiter")
 
 	// WireMock for testing with Jetty 11 support
 	testImplementation ("org.wiremock:wiremock-jetty12:3.9.2")
