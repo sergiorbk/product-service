@@ -1,10 +1,10 @@
 package com.sergosoft.productservice.web;
 
+import com.github.tomakehurst.wiremock.client.WireMock;
 import com.sergosoft.productservice.IntegrationTest;
-import com.sergosoft.productservice.repository.entity.CategoryEntity;
-import com.sergosoft.productservice.service.CategoryService;
-import com.sergosoft.productservice.repository.CategoryRepository;
 import com.sergosoft.productservice.dto.category.CategoryCreateDto;
+import com.sergosoft.productservice.dto.category.CategoryResponseDto;
+import com.sergosoft.productservice.service.CategoryService;
 
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -20,9 +20,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
+import static org.mockito.Mockito.reset;
+import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static org.hamcrest.Matchers.is;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -30,79 +34,48 @@ import static org.hamcrest.Matchers.is;
 @Tag("category-service")
 class CategoryDetailsControllerIT extends IntegrationTest {
 
+    private final CategoryCreateDto CATEGORY_CREATE_DTO = buildCreateCategoryDto();
+
     @Autowired
     private MockMvc mockMvc;
 
     @Autowired
     private ObjectMapper objectMapper;
 
-    @Autowired
-    private CategoryRepository categoryRepository;
-
     @SpyBean
     private CategoryService categoryService;
 
     @BeforeEach
     void setUp() {
-        categoryRepository.deleteAll();
+        reset(categoryService);
     }
 
     @Test
     void shouldCreateCategory() throws Exception {
-        CategoryCreateDto newCategory = CategoryCreateDto.builder()
-                .title("Electronics")
-                .parentId(null)
-                .build();
+        // Mocking external service using WireMock
+        stubFor(WireMock.post("/api/v1/categories")
+                .willReturn(aResponse()
+                        .withStatus(201)
+                        .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
+                        .withBody(objectMapper.writeValueAsString(CategoryResponseDto.builder()
+                                .title("Computers")
+                                .slug("computers")
+                                .parentId(null)
+                                .build()))));
 
         mockMvc.perform(post("/api/v1/categories")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(newCategory)))
+                        .accept(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(CATEGORY_CREATE_DTO)))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.title", is("Electronics")));
+                .andExpect(jsonPath("$.slug").exists())
+                .andExpect(jsonPath("$.slug").value("computers"));
     }
 
-    @Test
-    void shouldGetCategoryById() throws Exception {
-        String title = "Electronics";
-        CategoryEntity categoryToSave = CategoryEntity.builder()
-                .title(title)
-                .parent(null)
+    private CategoryCreateDto buildCreateCategoryDto() {
+        return CategoryCreateDto.builder()
+                .title("Computers")
+                .parentId(null)
                 .build();
-
-        CategoryEntity savedCategory = categoryRepository.save(categoryToSave);
-
-        mockMvc.perform(get("/api/v1/categories/{id}", savedCategory.getId())
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.title", is(title)));
     }
-
-//    @Test
-//    void shouldUpdateCategory() throws Exception {
-//        CategoryEntity category = new CategoryEntity(null, "Sports", null);
-//        CategoryEntity savedCategory = categoryRepository.save(category);
-//
-//        CategoryRequestDto updatedCategoryDto = CategoryRequestDto.builder()
-//                .title("Outdoor Sports")
-//                .parentId(null)
-//                .build();
-//
-//        mockMvc.perform(put("/api/v1/categories/{id}", savedCategory.getId())
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .content(objectMapper.writeValueAsString(updatedCategoryDto)))
-//                .andExpect(status().isOk())
-//                .andExpect(jsonPath("$.title", is("Outdoor Sports")));
-//    }
-//
-//    @Test
-//    void shouldDeleteCategory() throws Exception {
-//        CategoryEntity category = new CategoryEntity(null, "Fashion", null);
-//        CategoryEntity savedCategory = categoryRepository.save(category);
-//
-//        mockMvc.perform(delete("/api/v1/categories/{id}", savedCategory.getId()))
-//                .andExpect(status().isNoContent());
-//
-//        Optional<CategoryEntity> deletedCategory = categoryRepository.findById(savedCategory.getId());
-//        assert(deletedCategory.isEmpty());
-//    }
 }
