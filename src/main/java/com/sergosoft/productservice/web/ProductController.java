@@ -3,6 +3,7 @@ package com.sergosoft.productservice.web;
 import com.sergosoft.productservice.domain.product.ProductDetails;
 import com.sergosoft.productservice.dto.product.ProductCreateDto;
 import com.sergosoft.productservice.dto.product.ProductResponseDto;
+import com.sergosoft.productservice.dto.product.ProductUpdateDto;
 import com.sergosoft.productservice.service.mapper.ProductMapper;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -49,8 +50,8 @@ public class ProductController {
 
     @PutMapping("/{id}")
     public ResponseEntity<ProductResponseDto> updateProduct(@PathVariable UUID id,
-                                                            @RequestBody @Valid ProductCreateDto productDto) {
-        ProductDetails updatedProduct = productService.updateProduct(id, productDto);
+                                                            @RequestBody @Valid ProductUpdateDto updateDto) {
+        ProductDetails updatedProduct = productService.updateProduct(id, updateDto);
         return ResponseEntity.ok(productMapper.toProductResponseDto(updatedProduct));
     }
 

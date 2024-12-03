@@ -61,7 +61,7 @@ public class CategoryServiceImpl implements CategoryService {
             retrievedCategories.add(retrieveCategoryByIdOrElseThrow(id));
             log.debug("Retrieved category with id {} was added to categories list.", id);
         }
-        log.info("Retrieved categories list: {}", retrievedCategories);
+        log.info("Retrieved categories list by ids: {}", ids);
         return retrievedCategories;
     }
 

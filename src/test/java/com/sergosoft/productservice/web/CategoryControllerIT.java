@@ -17,6 +17,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.testcontainers.shaded.org.apache.commons.lang3.RandomStringUtils;
 
+import static org.mockito.Mockito.reset;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -40,7 +41,16 @@ class CategoryControllerIT {
 
     @BeforeEach
     void setUp() {
+        reset(categoryService);
         createdCategory = categoryService.createCategory(CATEGORY_CREATE_DTO);
+    }
+
+    @Test
+    void shouldGetCategoryById() throws Exception {
+        mockMvc.perform(get("/api/v1/categories/{id}", createdCategory.getId()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.slug").exists())
+                .andExpect(jsonPath("$.slug").value(createdCategory.getSlug()));
     }
 
     @Test
@@ -53,14 +63,6 @@ class CategoryControllerIT {
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.slug").exists())
                 .andExpect(jsonPath("$.slug").value(SlugGenerator.generateSlug(createCategoryDto.getTitle())));
-    }
-
-    @Test
-    void shouldGetCategoryById() throws Exception {
-        mockMvc.perform(get("/api/v1/categories/{id}", createdCategory.getId()))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.slug").exists())
-                .andExpect(jsonPath("$.slug").value(createdCategory.getSlug()));
     }
 
     @Test
