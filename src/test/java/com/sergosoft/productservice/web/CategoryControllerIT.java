@@ -5,6 +5,7 @@ import com.sergosoft.productservice.dto.category.CategoryCreateDto;
 import com.sergosoft.productservice.dto.category.CategoryUpdateDto;
 import com.sergosoft.productservice.service.CategoryService;
 import com.sergosoft.productservice.util.SlugGenerator;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -23,7 +24,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @SpringBootTest
 @AutoConfigureMockMvc
 @DisplayName("Category Controller CRUD Tests")
-class CategoryControllerCrudIT {
+class CategoryControllerIT {
 
     private final CategoryCreateDto CATEGORY_CREATE_DTO = buildCreateCategoryDto();
     private CategoryDetails createdCategory;
@@ -73,7 +74,7 @@ class CategoryControllerCrudIT {
     @Test
     void shouldUpdateCategory() throws Exception {
         CategoryUpdateDto categoryToUpdateDto = CategoryUpdateDto.builder()
-                .title("Updated Title")
+                .title(RandomStringUtils.randomAlphabetic(10))
                 .build();
 
         mockMvc.perform(put("/api/v1/categories/{categoryId}", createdCategory.getId())
