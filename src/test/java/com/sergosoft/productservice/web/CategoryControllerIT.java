@@ -17,6 +17,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.testcontainers.shaded.org.apache.commons.lang3.RandomStringUtils;
 
+import java.util.List;
+
 import static org.mockito.Mockito.reset;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -27,7 +29,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @DisplayName("Category Controller CRUD Tests")
 class CategoryControllerIT {
 
-    private final CategoryCreateDto CATEGORY_CREATE_DTO = buildCreateCategoryDto();
+    private final CategoryCreateDto CATEGORY_CREATE_DTO = buildCreateCategoryDto(List.of());
     private CategoryDetails createdCategory;
 
     @Autowired
@@ -55,7 +57,7 @@ class CategoryControllerIT {
 
     @Test
     void shouldCreateCategory() throws Exception {
-        CategoryCreateDto createCategoryDto = buildCreateCategoryDto();
+        CategoryCreateDto createCategoryDto = buildCreateCategoryDto(List.of());
         mockMvc.perform(post("/api/v1/categories")
                         .contentType(APPLICATION_JSON_VALUE)
                         .accept(APPLICATION_JSON_VALUE)
@@ -94,7 +96,7 @@ class CategoryControllerIT {
                 .andExpect(status().isNoContent());
     }
 
-    CategoryCreateDto buildCreateCategoryDto() {
+    public static CategoryCreateDto buildCreateCategoryDto(List<String> parentIds) {
         return CategoryCreateDto.builder()
                 .title(RandomStringUtils.randomAlphabetic(10))
                 .parentId(null)

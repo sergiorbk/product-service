@@ -5,7 +5,6 @@ import com.jayway.jsonpath.JsonPath;
 import com.sergosoft.productservice.IntegrationTest;
 import com.sergosoft.productservice.domain.category.CategoryDetails;
 import com.sergosoft.productservice.domain.product.ProductDetails;
-import com.sergosoft.productservice.dto.category.CategoryCreateDto;
 import com.sergosoft.productservice.dto.product.ProductCreateDto;
 import com.sergosoft.productservice.dto.product.ProductUpdateDto;
 import com.sergosoft.productservice.service.CategoryService;
@@ -23,8 +22,10 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.testcontainers.shaded.org.apache.commons.lang3.RandomStringUtils;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.reset;
@@ -55,9 +56,7 @@ class ProductControllerIT extends IntegrationTest {
     @BeforeEach
     void setUp() {
         reset(productService, categoryService);
-        testCategoryDetails = categoryService.createCategory(CategoryCreateDto.builder()
-                .title("Test Category " + RandomStringUtils.randomAlphabetic(5))
-                .build());
+        testCategoryDetails = categoryService.createCategory(CategoryControllerIT.buildCreateCategoryDto(List.of()));
         categoryIds = List.of(testCategoryDetails.getId().toString());
         testProductDetails = productService.createProduct(buildProductCreateDto(categoryIds));
     }
@@ -147,13 +146,19 @@ class ProductControllerIT extends IntegrationTest {
                 .andExpect(status().isNotFound());
     }
 
-    ProductCreateDto buildProductCreateDto(List<String> categoryIds) {
+    public static ProductCreateDto buildProductCreateDto(List<String> categoryIds) {
         return ProductCreateDto.builder()
                 .title("Test Product " + RandomStringUtils.randomAlphabetic(10))
                 .description("Test Description " + RandomStringUtils.randomAlphabetic(10))
                 .ownerReference(UUID.randomUUID().toString())
                 .categoryIds(categoryIds)
-                .price(BigDecimal.valueOf(777))
+                .price(generateAllowedPrice())
                 .build();
+    }
+
+    public static BigDecimal generateAllowedPrice() {
+        BigDecimal price = BigDecimal.valueOf(ThreadLocalRandom.current().nextDouble(0.01, 1_000_000.00));
+        price = price.setScale(2, RoundingMode.HALF_UP);
+        return price;
     }
 }
