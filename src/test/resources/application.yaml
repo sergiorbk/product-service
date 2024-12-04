@@ -1,11 +1,31 @@
+server:
+  port: 8081
+
 spring:
   application:
     name: product-service
+
   profiles:
-    active: fakeRepository
+    active: dev
+
+  liquibase:
+    enabled: true
+    change-log: liquibase/changelog.yaml
+
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: "jdbc:postgresql://localhost:5432/jwproductservicedb"
+    username: postgres
+    password: secret
+
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: false
+    open-in-view: false
+    #    defer-datasource-initialization: true
 
 application:
   feature:
     toggles:
-      cosmoCats: true
-      kittyProducts: true
+      exampleToggle: true

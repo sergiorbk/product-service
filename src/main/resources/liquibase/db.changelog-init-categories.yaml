@@ -1,0 +1,77 @@
+databaseChangeLog:
+  - changeSet:
+      id: lab-3-1
+      author: "sergiorbk"
+      changes:
+        - createTable:
+            tableName: "categories"
+            columns:
+              - column:
+                  name: "id"
+                  type: "UUID"
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: "title"
+                  type: "VARCHAR(100)"
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: "slug"
+                  type: "VARCHAR(255)"
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: "status"
+                  type: "VARCHAR(50)"
+                  constraints:
+                    nullable: false
+              - column:
+                  name: "parent_id"
+                  type: "UUID"
+
+        - createTable:
+            tableName: "product_category"
+            columns:
+              - column:
+                  name: "category_id"
+                  type: "UUID"
+                  constraints:
+                    nullable: false
+              - column:
+                  name: "product_id"
+                  type: "UUID"
+                  constraints:
+                    nullable: false
+
+        - addForeignKeyConstraint:
+            baseTableName: "categories"
+            baseColumnNames: "parent_id"
+            constraintName: "fk_categories_parent"
+            referencedTableName: "categories"
+            referencedColumnNames: "id"
+
+        - addForeignKeyConstraint:
+            baseTableName: "product_category"
+            baseColumnNames: "category_id"
+            constraintName: "fk_product_category_category"
+            referencedTableName: "categories"
+            referencedColumnNames: "id"
+
+        - addForeignKeyConstraint:
+            baseTableName: "product_category"
+            baseColumnNames: "product_id"
+            constraintName: "fk_product_category_product"
+            referencedTableName: "products"
+            referencedColumnNames: "id"
+
+        # index for category slug
+        - createIndex:
+            indexName: idx_category_slug
+            tableName: categories
+            columns:
+              - column:
+                  name: slug
