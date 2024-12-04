@@ -55,7 +55,13 @@ public class ProductController {
         return ResponseEntity.ok(productMapper.toProductResponseDto(updatedProduct));
     }
 
-    @PostMapping("/{id}")
+    @PutMapping("/{id}/activate")
+    public ResponseEntity<Void> activateProduct(@PathVariable UUID id) {
+        productService.activateProduct(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/{id}/archive")
     public ResponseEntity<Void> archiveProduct(@PathVariable UUID id) {
         productService.archiveProduct(id);
         return ResponseEntity.noContent().build();

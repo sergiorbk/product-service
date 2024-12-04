@@ -146,6 +146,44 @@ class ProductControllerIT extends IntegrationTest {
                 .andExpect(status().isNotFound());
     }
 
+    @Test
+    void shouldActivateProductById() throws Exception {
+        // create new product to activate
+        ProductCreateDto productCreateDto = buildProductCreateDto(List.of());
+        ProductDetails createdProduct = productService.createProduct(productCreateDto);
+
+        // activating the product
+        mockMvc.perform(put("/api/v1/products/{id}/activate", testProductDetails.getId()))
+                .andExpect(status().isNoContent());
+
+        // check if product was activated
+        mockMvc.perform(get("/api/v1/products/{id}", testProductDetails.getId()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("ACTIVE"));
+
+        // delete product after all tests were passed
+        productService.deleteProductById(UUID.fromString(createdProduct.getId()));
+    }
+
+    @Test
+    void shouldArchiveProductById() throws Exception {
+        // create new product to archive
+        ProductCreateDto productCreateDto = buildProductCreateDto(List.of());
+        ProductDetails createdProduct = productService.createProduct(productCreateDto);
+
+        // archiving the product
+        mockMvc.perform(put("/api/v1/products/{id}/archive", testProductDetails.getId()))
+                .andExpect(status().isNoContent());
+
+        // check if product was archived
+        mockMvc.perform(get("/api/v1/products/{id}", testProductDetails.getId()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("ARCHIVED"));
+
+        // delete product after all tests were passed
+        productService.deleteProductById(UUID.fromString(createdProduct.getId()));
+    }
+
     public static ProductCreateDto buildProductCreateDto(List<String> categoryIds) {
         return ProductCreateDto.builder()
                 .title("Test Product " + RandomStringUtils.randomAlphabetic(10))
