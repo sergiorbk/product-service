@@ -8,6 +8,12 @@ spring:
   profiles:
     active: dev
 
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: http://localhost:8080/realms/trgl-realm/protocol/openid-connect/certs
+
   liquibase:
     enabled: true
     change-log: liquibase/changelog.yaml
