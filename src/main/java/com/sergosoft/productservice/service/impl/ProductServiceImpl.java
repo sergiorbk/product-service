@@ -17,6 +17,8 @@ import jakarta.persistence.PersistenceException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,6 +39,21 @@ public class ProductServiceImpl implements ProductService {
     @Transactional(readOnly = true)
     public ProductDetails getProductById(UUID id) {
         return productMapper.toProductDetails(retrieveProductByIdFromJpaOrElseThrow(id));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<ProductDetails> getProductsPageByOwnerReference(UUID ownerReference, Pageable pageable) {
+        log.debug("Retrieving products page: {} by ownerReference: {}", pageable.getPageNumber(), ownerReference);
+        Page<ProductEntity> productEntityPage;
+        try {
+            productEntityPage = productRepository.findAllByOwnerReference(pageable, ownerReference);
+        } catch (Exception ex) {
+            log.error("Exception occurred while retrieving a product page: {}", ex.getMessage());
+            throw new ProductNotFoundException(ex.getMessage());
+        }
+        log.info("Retrieved products page number: {} by userReference: {}", pageable.getPageNumber(), ownerReference);
+        return productEntityPage.map(productMapper::toProductDetails);
     }
 
     @Override

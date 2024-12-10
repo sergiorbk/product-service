@@ -30,6 +30,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static org.mockito.Mockito.reset;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -61,7 +62,7 @@ class OrderControllerIT extends IntegrationTest {
     private CategoryService categoryService;
 
     @BeforeEach
-    void setUp() throws Exception {
+    void setUp() {
         reset(orderService, productService, categoryService);
         // create categories
         testElectronicsCategory = categoryService.createCategory(CategoryControllerIT.buildCreateCategoryDto(null));
@@ -75,11 +76,21 @@ class OrderControllerIT extends IntegrationTest {
     }
 
     @Test
-    @WithMockUser
     void shouldGetOrderById() throws Exception {
-        mockMvc.perform(get("/api/v1/orders/{id}", testOrderDetails.getId()))
+        mockMvc.perform(get("/api/v1/orders/{id}", testOrderDetails.getId())
+                .with(jwt().jwt(jwt -> jwt
+                        .claim("sub", "mock-user")
+                        .claim("email", "mockuser@example.com")
+                        .claim("roles", "USER")))
+                )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(testOrderDetails.getId().toString()));
+    }
+
+    @Test
+    void shouldGetOrderByIdUnauthorized() throws Exception {
+        mockMvc.perform(get("/api/v1/orders/{id}", testOrderDetails.getId()))
+                .andExpect(status().isUnauthorized());
     }
 
     @Test
