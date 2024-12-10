@@ -19,6 +19,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.testcontainers.shaded.org.apache.commons.lang3.RandomUtils;
 
@@ -74,6 +75,7 @@ class OrderControllerIT extends IntegrationTest {
     }
 
     @Test
+    @WithMockUser
     void shouldGetOrderById() throws Exception {
         mockMvc.perform(get("/api/v1/orders/{id}", testOrderDetails.getId()))
                 .andExpect(status().isOk())
@@ -81,6 +83,7 @@ class OrderControllerIT extends IntegrationTest {
     }
 
     @Test
+    @WithMockUser
     void shouldCreateOrder() throws Exception {
         mockMvc.perform(post("/api/v1/orders")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -90,6 +93,7 @@ class OrderControllerIT extends IntegrationTest {
     }
 
     @Test
+    @WithMockUser
     void shouldUpdateOrder() throws Exception {
         List<ProductDetails> updatedProducts = new ArrayList<>(List.copyOf(existentProducts));
         updatedProducts.add(testFridgeProduct);
@@ -115,6 +119,7 @@ class OrderControllerIT extends IntegrationTest {
     }
 
     @Test
+    @WithMockUser
     void shouldDeleteOrder() throws Exception {
         OrderCreateDto orderToSaveDto = buildOrderCreateDto(existentProducts.stream().map(ProductDetails::getId).map(UUID::fromString).collect(Collectors.toList()));
         OrderDetails orderToDelete = orderService.createOrder(orderToSaveDto);

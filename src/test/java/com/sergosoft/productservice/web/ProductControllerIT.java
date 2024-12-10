@@ -18,6 +18,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.testcontainers.shaded.org.apache.commons.lang3.RandomStringUtils;
 
@@ -62,6 +63,7 @@ class ProductControllerIT extends IntegrationTest {
     }
 
     @Test
+    @WithMockUser
     void shouldGetProductById() throws Exception {
         mockMvc.perform(get("/api/v1/products/{id}", testProductDetails.getId()))
                 .andExpect(status().isOk())
@@ -81,6 +83,7 @@ class ProductControllerIT extends IntegrationTest {
     }
 
     @Test
+    @WithMockUser
     void shouldCreateProduct() throws Exception {
         ProductCreateDto productCreateDto = buildProductCreateDto(categoryIds);
 
@@ -94,6 +97,7 @@ class ProductControllerIT extends IntegrationTest {
     }
 
     @Test
+    @WithMockUser
     void shouldUpdateProduct() throws Exception {
 //        CategoryCreateDto categoryCreateDto = CategoryCreateDto.builder()
 //                .title(testCategoryDetails.getTitle() + " child " + RandomStringUtils.randomAlphabetic(5))
@@ -122,6 +126,7 @@ class ProductControllerIT extends IntegrationTest {
     }
 
     @Test
+    @WithMockUser
     void shouldReturnBadRequestIfTitleIsMissing() throws Exception {
         ProductCreateDto productCreateDto = buildProductCreateDto(categoryIds).toBuilder()
                 .title("")
@@ -135,6 +140,7 @@ class ProductControllerIT extends IntegrationTest {
     }
 
     @Test
+    @WithMockUser
     void shouldDeleteProductById() throws Exception {
         mockMvc.perform(get("/api/v1/products/{id}", testProductDetails.getId()))
                 .andExpect(status().isOk());
@@ -147,6 +153,7 @@ class ProductControllerIT extends IntegrationTest {
     }
 
     @Test
+    @WithMockUser
     void shouldActivateProductById() throws Exception {
         // create new product to activate
         ProductCreateDto productCreateDto = buildProductCreateDto(List.of());
@@ -166,6 +173,7 @@ class ProductControllerIT extends IntegrationTest {
     }
 
     @Test
+    @WithMockUser
     void shouldArchiveProductById() throws Exception {
         // create new product to archive
         ProductCreateDto productCreateDto = buildProductCreateDto(List.of());

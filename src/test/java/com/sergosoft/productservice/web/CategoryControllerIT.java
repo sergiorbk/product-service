@@ -13,6 +13,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.testcontainers.shaded.org.apache.commons.lang3.RandomStringUtils;
@@ -48,6 +49,7 @@ class CategoryControllerIT {
     }
 
     @Test
+    @WithMockUser
     void shouldGetCategoryById() throws Exception {
         mockMvc.perform(get("/api/v1/categories/{id}", createdCategory.getId()))
                 .andExpect(status().isOk())
@@ -56,6 +58,7 @@ class CategoryControllerIT {
     }
 
     @Test
+    @WithMockUser
     void shouldCreateCategory() throws Exception {
         CategoryCreateDto createCategoryDto = buildCreateCategoryDto(List.of());
         mockMvc.perform(post("/api/v1/categories")
@@ -68,6 +71,7 @@ class CategoryControllerIT {
     }
 
     @Test
+    @WithMockUser
     void shouldGetCategoryBySlug() throws Exception {
         mockMvc.perform(get("/api/v1/categories/slug/{slug}", createdCategory.getSlug()))
                 .andExpect(status().isOk())
@@ -76,6 +80,7 @@ class CategoryControllerIT {
     }
 
     @Test
+    @WithMockUser
     void shouldUpdateCategory() throws Exception {
         CategoryUpdateDto categoryToUpdateDto = CategoryUpdateDto.builder()
                 .title(RandomStringUtils.randomAlphabetic(10))
@@ -91,6 +96,7 @@ class CategoryControllerIT {
     }
 
     @Test
+    @WithMockUser
     void shouldDeleteCategory() throws Exception {
         mockMvc.perform(delete("/api/v1/categories/{categoryId}", createdCategory.getId()))
                 .andExpect(status().isNoContent());

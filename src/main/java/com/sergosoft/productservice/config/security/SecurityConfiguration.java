@@ -3,6 +3,7 @@ package com.sergosoft.productservice.config.security;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -27,9 +28,10 @@ public class SecurityConfiguration {
                 .cors(Customizer.withDefaults())
                 .csrf(CsrfConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(
-                        authorize -> authorize.requestMatchers(API_V1_PRODUCTS).authenticated()
-                )
+                .authorizeHttpRequests(authorize ->
+                        authorize
+                                .requestMatchers(HttpMethod.GET, API_V1_PRODUCTS).permitAll()
+                                .requestMatchers(API_V1_PRODUCTS).authenticated())
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()));
 
         return http.build();
@@ -41,8 +43,10 @@ public class SecurityConfiguration {
         http.securityMatcher(API_V1_CATEGORIES)
         .csrf(CsrfConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(
-                        authorize -> authorize.requestMatchers(API_V1_CATEGORIES).authenticated()
+                .authorizeHttpRequests(authorize ->
+                        authorize
+                                .requestMatchers(HttpMethod.GET, API_V1_CATEGORIES).permitAll()
+                                .requestMatchers(API_V1_CATEGORIES).authenticated()
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()));
 
@@ -55,8 +59,9 @@ public class SecurityConfiguration {
         http.securityMatcher(API_V1_ORDERS)
         .csrf(CsrfConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(
-                        authorize -> authorize.requestMatchers(API_V1_ORDERS).authenticated()
+                .authorizeHttpRequests(authorize ->
+                        authorize
+                                .requestMatchers(API_V1_ORDERS).authenticated()
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()));
 
