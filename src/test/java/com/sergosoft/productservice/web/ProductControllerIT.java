@@ -63,7 +63,6 @@ class ProductControllerIT extends IntegrationTest {
     }
 
     @Test
-    @WithMockUser
     void shouldGetProductById() throws Exception {
         mockMvc.perform(get("/api/v1/products/{id}", testProductDetails.getId()))
                 .andExpect(status().isOk())
@@ -99,17 +98,10 @@ class ProductControllerIT extends IntegrationTest {
     @Test
     @WithMockUser
     void shouldUpdateProduct() throws Exception {
-//        CategoryCreateDto categoryCreateDto = CategoryCreateDto.builder()
-//                .title(testCategoryDetails.getTitle() + " child " + RandomStringUtils.randomAlphabetic(5))
-//                .parentId(testCategoryDetails.getId().toString())
-//                .build();
-//        CategoryDetails childCategoryDetails = categoryService.createCategory(categoryCreateDto);
-
         ProductUpdateDto productUpdateDto = ProductUpdateDto.builder()
                 .title(RandomStringUtils.randomAlphabetic(5))
                 .description(RandomStringUtils.randomAlphabetic(5))
                 .price(BigDecimal.valueOf(888))
-//                .categoryIds(List.of(childCategoryDetails.getId().toString()))
                 .build();
 
         mockMvc.perform(put("/api/v1/products/{id}", testProductDetails.getId())
@@ -121,8 +113,6 @@ class ProductControllerIT extends IntegrationTest {
                 .andExpect(jsonPath("$.title").value(productUpdateDto.getTitle()))
                 .andExpect(jsonPath("$.description").value(productUpdateDto.getDescription()))
                 .andExpect(jsonPath("$.price").value(productUpdateDto.getPrice()));
-//                .andExpect(jsonPath("$.categoriesIds").exists())
-//                .andExpect(jsonPath("$.categoriesIds").isArray());
     }
 
     @Test
@@ -140,7 +130,7 @@ class ProductControllerIT extends IntegrationTest {
     }
 
     @Test
-    @WithMockUser
+    @WithMockUser(roles = {"MODERATOR"})
     void shouldDeleteProductById() throws Exception {
         mockMvc.perform(get("/api/v1/products/{id}", testProductDetails.getId()))
                 .andExpect(status().isOk());

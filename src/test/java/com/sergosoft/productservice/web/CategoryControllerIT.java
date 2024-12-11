@@ -49,7 +49,6 @@ class CategoryControllerIT {
     }
 
     @Test
-    @WithMockUser
     void shouldGetCategoryById() throws Exception {
         mockMvc.perform(get("/api/v1/categories/{id}", createdCategory.getId()))
                 .andExpect(status().isOk())
@@ -58,7 +57,15 @@ class CategoryControllerIT {
     }
 
     @Test
-    @WithMockUser
+    void shouldGetCategoryBySlug() throws Exception {
+        mockMvc.perform(get("/api/v1/categories/slug/{slug}", createdCategory.getSlug()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.slug").exists())
+                .andExpect(jsonPath("$.slug").value(createdCategory.getSlug()));
+    }
+
+    @Test
+    @WithMockUser(roles = {"MODERATOR"})
     void shouldCreateCategory() throws Exception {
         CategoryCreateDto createCategoryDto = buildCreateCategoryDto(List.of());
         mockMvc.perform(post("/api/v1/categories")
@@ -71,16 +78,7 @@ class CategoryControllerIT {
     }
 
     @Test
-    @WithMockUser
-    void shouldGetCategoryBySlug() throws Exception {
-        mockMvc.perform(get("/api/v1/categories/slug/{slug}", createdCategory.getSlug()))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.slug").exists())
-                .andExpect(jsonPath("$.slug").value(createdCategory.getSlug()));
-    }
-
-    @Test
-    @WithMockUser
+    @WithMockUser(roles = {"MODERATOR"})
     void shouldUpdateCategory() throws Exception {
         CategoryUpdateDto categoryToUpdateDto = CategoryUpdateDto.builder()
                 .title(RandomStringUtils.randomAlphabetic(10))
@@ -96,7 +94,7 @@ class CategoryControllerIT {
     }
 
     @Test
-    @WithMockUser
+    @WithMockUser(roles = {"MODERATOR"})
     void shouldDeleteCategory() throws Exception {
         mockMvc.perform(delete("/api/v1/categories/{categoryId}", createdCategory.getId()))
                 .andExpect(status().isNoContent());
