@@ -18,6 +18,8 @@ import org.springframework.security.web.SecurityFilterChain;
 
 import java.util.stream.Stream;
 
+import static org.springframework.security.config.Customizer.withDefaults;
+
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity(securedEnabled = true, jsr250Enabled = true)
@@ -37,6 +39,7 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(authorize ->
                         authorize
                                 .requestMatchers(HttpMethod.GET, API_V1_PRODUCTS).permitAll()
+                                .requestMatchers(HttpMethod.DELETE, API_V1_PRODUCTS).hasRole("MODERATOR")
                                 .requestMatchers(API_V1_PRODUCTS).authenticated()
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()));
@@ -53,7 +56,7 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(authorize ->
                         authorize
                                 .requestMatchers(HttpMethod.GET, API_V1_CATEGORIES).permitAll()
-                                .requestMatchers(API_V1_CATEGORIES).authenticated()
+                                .requestMatchers(API_V1_CATEGORIES).hasRole("MODERATOR")
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()));
 
@@ -70,8 +73,21 @@ public class SecurityConfiguration {
                         authorize
                                 .requestMatchers(API_V1_ORDERS).authenticated()
                 )
-                .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()));
+                .oauth2ResourceServer(oauth2 ->
+                        oauth2.jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter())));
 
+        return http.build();
+    }
+
+    @Bean
+    @Order(4)
+    public SecurityFilterChain filterChainDashboardV1(HttpSecurity http) throws Exception {
+        http
+                .authorizeHttpRequests(authorize -> authorize
+                        .requestMatchers("/login/**").permitAll()
+                        .requestMatchers("/api/v1/**").authenticated()
+                )
+                .oauth2Login(withDefaults());
         return http.build();
     }
 
