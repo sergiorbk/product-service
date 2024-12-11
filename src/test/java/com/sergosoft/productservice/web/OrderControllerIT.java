@@ -104,7 +104,7 @@ class OrderControllerIT extends IntegrationTest {
     }
 
     @Test
-    @WithMockUser
+    @WithMockUser(roles = "MODERATOR")
     void shouldUpdateOrder() throws Exception {
         List<ProductDetails> updatedProducts = new ArrayList<>(List.copyOf(existentProducts));
         updatedProducts.add(testFridgeProduct);

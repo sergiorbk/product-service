@@ -143,7 +143,7 @@ class ProductControllerIT extends IntegrationTest {
     }
 
     @Test
-    @WithMockUser
+    @WithMockUser(roles = {"MODERATOR"})
     void shouldActivateProductById() throws Exception {
         // create new product to activate
         ProductCreateDto productCreateDto = buildProductCreateDto(List.of());
