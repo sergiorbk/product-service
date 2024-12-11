@@ -19,8 +19,6 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtGra
 import org.springframework.security.web.SecurityFilterChain;
 import java.util.stream.Stream;
 
-import static org.springframework.security.config.Customizer.withDefaults;
-
 @Profile("!no-auth")
 @Configuration
 @EnableWebSecurity
@@ -87,9 +85,12 @@ public class SecurityConfiguration {
         http
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/login/**").permitAll()
-                        .requestMatchers("/api/v1/**").authenticated()
+                        .requestMatchers("/api/v1/dashboard").authenticated()
                 )
-                .oauth2Login(withDefaults());
+                .oauth2Login(oauth2 -> oauth2
+                        .defaultSuccessUrl("/api/v1/dashboard", true)
+                );
+
         return http.build();
     }
 
