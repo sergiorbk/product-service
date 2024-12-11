@@ -2,6 +2,7 @@ package com.sergosoft.productservice.config.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
@@ -20,6 +21,7 @@ import java.util.stream.Stream;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
+@Profile("!no-auth")
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity(securedEnabled = true, jsr250Enabled = true)
