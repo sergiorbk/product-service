@@ -31,7 +31,6 @@ import java.util.UUID;
 public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository productRepository;
-//    private final ProductSearchService productSearchService;
     private final CategoryService categoryService;
     private final ProductMapper productMapper;
 
@@ -70,8 +69,6 @@ public class ProductServiceImpl implements ProductService {
 
         // save created product to jpa and search repositories
         ProductEntity savedProduct = saveProductOrElseThrow(productToSave);
-//        productSearchService.createProductDocument(productMapper.toProductDocument(savedProduct));
-        // return saved product details
         return productMapper.toProductDetails(savedProduct);
     }
 
@@ -90,8 +87,6 @@ public class ProductServiceImpl implements ProductService {
                 .build();
         // save updated product
         ProductEntity savedProduct = saveProductOrElseThrow(productToUpdate);
-//        productSearchService.createProductDocument(productMapper.toProductDocument(savedProduct));
-        // return the product details
         ProductDetails savedProductDetails = productMapper.toProductDetails(savedProduct);
         log.info("Updated product details {}", savedProductDetails);
         return savedProductDetails;
@@ -105,7 +100,6 @@ public class ProductServiceImpl implements ProductService {
         if(productToActivate.getStatus() != ProductStatus.ACTIVE) {
             productToActivate.setStatus(ProductStatus.ACTIVE);
             saveProductOrElseThrow(productToActivate);
-//            productSearchService.createProductDocument(productMapper.toProductDocument(productToActivate));
             log.info("Product with id {} was activated", id);
             return;
         }
@@ -124,8 +118,6 @@ public class ProductServiceImpl implements ProductService {
             productToArchive.setStatus(ProductStatus.ARCHIVED);
             try {
                 productRepository.save(productToArchive);
-                // delete archived product from elasticsearch
-//                productSearchService.deleteProductDocumentById(productToArchive.getId());
             } catch (Exception e) {
                 log.error("Exception occurred wile archiving product: {}", e.getMessage());
             }
@@ -144,8 +136,6 @@ public class ProductServiceImpl implements ProductService {
             productTopBan.setStatus(ProductStatus.BANNED);
             try {
                 productRepository.save(productTopBan);
-                // delete archived product from elasticsearch
-//                productSearchService.deleteProductDocumentById(productTopBan.getId());
             } catch (Exception e) {
                 log.error("Exception occurred wile banning product: {}", e.getMessage());
             }
@@ -163,7 +153,6 @@ public class ProductServiceImpl implements ProductService {
         log.info("Delete product by id: {}", id);
         try {
             productRepository.deleteById(id);
-//           productSearchService.deleteProductDocumentById(id);
         } catch (Exception ex) {
             log.error("Exception occurred while hard deleting product with id {}: {}", id, ex.getMessage());
         }
