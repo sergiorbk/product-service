@@ -69,6 +69,7 @@ public class ProductServiceImpl implements ProductService {
 
         // save created product to jpa and search repositories
         ProductEntity savedProduct = saveProductOrElseThrow(productToSave);
+        // return saved product details
         return productMapper.toProductDetails(savedProduct);
     }
 
