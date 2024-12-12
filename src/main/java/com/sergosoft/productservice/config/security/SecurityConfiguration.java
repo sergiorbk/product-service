@@ -13,7 +13,6 @@ import org.springframework.security.config.annotation.web.configurers.CsrfConfig
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
@@ -49,9 +48,10 @@ public class SecurityConfiguration {
 
     @Bean
     @Order(2)
-    public SecurityFilterChain filterChainCategories(HttpSecurity http, JwtDecoder jwtDecoder) throws Exception {
+    public SecurityFilterChain filterChainCategories(HttpSecurity http) throws Exception {
         http.securityMatcher(API_V1_CATEGORIES)
-        .csrf(CsrfConfigurer::disable)
+                .cors(Customizer.withDefaults())
+                .csrf(CsrfConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize ->
                         authorize
@@ -67,7 +67,8 @@ public class SecurityConfiguration {
     @Order(3)
     public SecurityFilterChain filterChainOrders(HttpSecurity http) throws Exception {
         http.securityMatcher(API_V1_ORDERS)
-        .csrf(CsrfConfigurer::disable)
+                .csrf(CsrfConfigurer::disable)
+                .cors(Customizer.withDefaults())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize ->
                         authorize

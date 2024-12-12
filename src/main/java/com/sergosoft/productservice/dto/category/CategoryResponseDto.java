@@ -11,5 +11,6 @@ public class CategoryResponseDto {
 
     String slug;
     String title;
+    String imageUrl;
     String parentSlug;
 }

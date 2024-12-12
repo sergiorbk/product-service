@@ -21,7 +21,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -57,23 +56,23 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public Set<CategoryDetails> getRootCategories() {
+    public List<CategoryDetails> getRootCategories() {
         log.debug("Retrieving root categories");
-        Set<CategoryEntity> rootCategories = categoryRepository.findByParentNull();
-        Set<CategoryDetails> rootCategoriesDetails = rootCategories.stream()
-                .map(categoryMapper::toCategoryDetails).collect(Collectors.toSet());
+        List<CategoryEntity> rootCategories = categoryRepository.findByParentNull();
+        List<CategoryDetails> rootCategoriesDetails = rootCategories.stream()
+                .map(categoryMapper::toCategoryDetails).toList();
         log.info("Retrieved {} root categories.", rootCategories.size());
         return rootCategoriesDetails;
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Set<CategoryDetails> getSubCategoriesByParentSlug(String parentSlug) {
+    public List<CategoryDetails> getSubCategoriesByParentSlug(String parentSlug) {
         log.debug("Retrieving subcategories by parent category with slug: {}", parentSlug);
         CategoryEntity parentCategory = retrieveCategoryBySlugOrElseThrow(parentSlug);
         Set<CategoryEntity> subcategories = parentCategory.getSubcategories();
-        Set<CategoryDetails> subcategoriesDetails = subcategories.stream()
-                .map(categoryMapper::toCategoryDetails).collect(Collectors.toSet());
+        List<CategoryDetails> subcategoriesDetails = subcategories.stream()
+                .map(categoryMapper::toCategoryDetails).toList();
         log.info("Retrieved {} subcategories by parent category with slug {}", subcategoriesDetails.size(), parentSlug);
         return subcategoriesDetails;
     }

@@ -5,13 +5,13 @@ import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
-import java.util.Set;
+import java.util.List;
 
 @Value
 @Builder
 @Jacksonized
 @AllArgsConstructor
-public class CategorySetDto {
+public class CategoryListDto {
 
-    Set<CategoryResponseDto> categories;
+    List<CategoryResponseDto> categories;
 }

@@ -1,9 +1,9 @@
 package com.sergosoft.productservice.web;
 
 import java.net.URI;
-import java.util.Set;
+import java.util.List;
 
-import com.sergosoft.productservice.dto.category.CategorySetDto;
+import com.sergosoft.productservice.dto.category.CategoryListDto;
 import com.sergosoft.productservice.dto.category.CategoryUpdateDto;
 import com.sergosoft.productservice.service.mapper.CategoryMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -41,14 +41,14 @@ public class CategoryController {
     }
 
     @GetMapping("/root")
-    public ResponseEntity<CategorySetDto> getRootCategories() {
-        Set<CategoryDetails> rootCategories = categoryService.getRootCategories();
+    public ResponseEntity<CategoryListDto> getRootCategories() {
+        List<CategoryDetails> rootCategories = categoryService.getRootCategories();
         return ResponseEntity.ok(categoryMapper.toCategorySetDto(rootCategories));
     }
 
     @GetMapping("/{parentSlug}/subcategories")
-    public ResponseEntity<CategorySetDto> getSubcategoriesByParentSlug(@PathVariable String parentSlug) {
-        Set<CategoryDetails> subcategories = categoryService.getSubCategoriesByParentSlug(parentSlug);
+    public ResponseEntity<CategoryListDto> getSubcategoriesByParentSlug(@PathVariable String parentSlug) {
+        List<CategoryDetails> subcategories = categoryService.getSubCategoriesByParentSlug(parentSlug);
         return ResponseEntity.ok(categoryMapper.toCategorySetDto(subcategories));
     }
 
