@@ -6,7 +6,6 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Value;
 import lombok.Builder;
 import lombok.extern.jackson.Jacksonized;
-import org.hibernate.validator.constraints.UUID;
 
 /**
  * Data Transfer Object for creating a new category of product.
@@ -25,6 +24,6 @@ public class CategoryCreateDto {
     @NotBlank(message = "Category title is mandatory.")
     String title;
 
-    @UUID(message = "Category parent id bust be UUID.")
-    String parentId;
+//    @NotEmpty(message = "Category parent slug cannot be an empty string.")
+    String parentSlug;
 }

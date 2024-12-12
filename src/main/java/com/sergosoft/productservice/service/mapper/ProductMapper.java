@@ -20,7 +20,7 @@ public interface ProductMapper {
     ProductSearchDocument toProductDocument(ProductEntity entity);
 
     default String mapCategoriesToIds(CategoryDetails categoryDetails) {
-        return categoryDetails != null ? categoryDetails.getId().toString() : null;
+        return categoryDetails != null ? categoryDetails.getSlug() : null;
     }
 
 }

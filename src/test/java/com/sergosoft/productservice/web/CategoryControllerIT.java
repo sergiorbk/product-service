@@ -50,7 +50,7 @@ class CategoryControllerIT {
 
     @Test
     void shouldGetCategoryById() throws Exception {
-        mockMvc.perform(get("/api/v1/categories/{id}", createdCategory.getId()))
+        mockMvc.perform(get("/api/v1/categories/{id}", createdCategory.getSlug()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.slug").exists())
                 .andExpect(jsonPath("$.slug").value(createdCategory.getSlug()));
@@ -58,7 +58,7 @@ class CategoryControllerIT {
 
     @Test
     void shouldGetCategoryBySlug() throws Exception {
-        mockMvc.perform(get("/api/v1/categories/slug/{slug}", createdCategory.getSlug()))
+        mockMvc.perform(get("/api/v1/categories/{slug}", createdCategory.getSlug()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.slug").exists())
                 .andExpect(jsonPath("$.slug").value(createdCategory.getSlug()));
@@ -84,7 +84,7 @@ class CategoryControllerIT {
                 .title(RandomStringUtils.randomAlphabetic(10))
                 .build();
 
-        mockMvc.perform(put("/api/v1/categories/{categoryId}", createdCategory.getId())
+        mockMvc.perform(put("/api/v1/categories/{categoryId}", createdCategory.getSlug())
                         .contentType(APPLICATION_JSON_VALUE)
                         .accept(APPLICATION_JSON_VALUE)
                         .content(objectMapper.writeValueAsString(categoryToUpdateDto)))
@@ -96,14 +96,14 @@ class CategoryControllerIT {
     @Test
     @WithMockUser(roles = {"MODERATOR"})
     void shouldDeleteCategory() throws Exception {
-        mockMvc.perform(delete("/api/v1/categories/{categoryId}", createdCategory.getId()))
+        mockMvc.perform(delete("/api/v1/categories/{categoryId}", createdCategory.getSlug()))
                 .andExpect(status().isNoContent());
     }
 
-    public static CategoryCreateDto buildCreateCategoryDto(List<String> parentIds) {
+    public static CategoryCreateDto buildCreateCategoryDto(List<String> parentsSlugList) {
         return CategoryCreateDto.builder()
                 .title(RandomStringUtils.randomAlphabetic(10))
-                .parentId(null)
+                .parentSlug(null)
                 .build();
     }
 }

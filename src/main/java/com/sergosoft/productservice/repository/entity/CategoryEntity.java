@@ -1,7 +1,6 @@
 package com.sergosoft.productservice.repository.entity;
 
 import com.sergosoft.productservice.domain.category.CategoryStatus;
-import com.sergosoft.productservice.util.SlugGenerator;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -58,9 +57,4 @@ public class CategoryEntity {
     )
     private Set<ProductEntity> relatedProducts = new HashSet<>();
 
-    @PrePersist
-    private void generateSlug() {
-        this.status = CategoryStatus.ARCHIVED;
-        this.slug = SlugGenerator.generateSlug(this.title);
-    }
 }

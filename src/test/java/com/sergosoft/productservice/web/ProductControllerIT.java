@@ -39,7 +39,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class ProductControllerIT extends IntegrationTest {
 
     private CategoryDetails testCategoryDetails;
-    private List<String> categoryIds;
+    private List<String> categorySlugs;
     private ProductDetails testProductDetails;
 
     @Autowired
@@ -58,8 +58,8 @@ class ProductControllerIT extends IntegrationTest {
     void setUp() {
         reset(productService, categoryService);
         testCategoryDetails = categoryService.createCategory(CategoryControllerIT.buildCreateCategoryDto(List.of()));
-        categoryIds = List.of(testCategoryDetails.getId().toString());
-        testProductDetails = productService.createProduct(buildProductCreateDto(categoryIds));
+        categorySlugs = List.of(testCategoryDetails.getSlug());
+        testProductDetails = productService.createProduct(buildProductCreateDto(categorySlugs));
     }
 
     @Test
@@ -84,7 +84,7 @@ class ProductControllerIT extends IntegrationTest {
     @Test
     @WithMockUser
     void shouldCreateProduct() throws Exception {
-        ProductCreateDto productCreateDto = buildProductCreateDto(categoryIds);
+        ProductCreateDto productCreateDto = buildProductCreateDto(categorySlugs);
 
         mockMvc.perform(post("/api/v1/products")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -118,7 +118,7 @@ class ProductControllerIT extends IntegrationTest {
     @Test
     @WithMockUser
     void shouldReturnBadRequestIfTitleIsMissing() throws Exception {
-        ProductCreateDto productCreateDto = buildProductCreateDto(categoryIds).toBuilder()
+        ProductCreateDto productCreateDto = buildProductCreateDto(categorySlugs).toBuilder()
                 .title("")
                 .build();
 
