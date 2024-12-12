@@ -66,10 +66,10 @@ class OrderControllerIT extends IntegrationTest {
         reset(orderService, productService, categoryService);
         // create categories
         testElectronicsCategory = categoryService.createCategory(CategoryControllerIT.buildCreateCategoryDto(null));
-        testLaptopsCategory = categoryService.createCategory(CategoryControllerIT.buildCreateCategoryDto(List.of(testElectronicsCategory.getId().toString())));
+        testLaptopsCategory = categoryService.createCategory(CategoryControllerIT.buildCreateCategoryDto(List.of(testElectronicsCategory.getSlug())));
         // create products
-        testLaptopProduct = productService.createProduct(ProductControllerIT.buildProductCreateDto(List.of(testLaptopsCategory.getId().toString(), testElectronicsCategory.getId().toString())));
-        testFridgeProduct = productService.createProduct(ProductControllerIT.buildProductCreateDto(List.of(testElectronicsCategory.getId().toString())));
+        testLaptopProduct = productService.createProduct(ProductControllerIT.buildProductCreateDto(List.of(testLaptopsCategory.getSlug(), testElectronicsCategory.getSlug())));
+        testFridgeProduct = productService.createProduct(ProductControllerIT.buildProductCreateDto(List.of(testElectronicsCategory.getSlug())));
         existentProducts = new ArrayList<>(List.of(testLaptopProduct, testFridgeProduct));
         // create orders
         testOrderDetails = orderService.createOrder(buildOrderCreateDto(existentProducts.stream().map(ProductDetails::getId).map(UUID::fromString).toList()));

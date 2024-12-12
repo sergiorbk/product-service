@@ -1,11 +1,8 @@
 package com.sergosoft.productservice.domain.category;
 
 import com.sergosoft.productservice.domain.product.ProductDetails;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Value;
-
-import java.util.UUID;
 
 /**
  * Represents a category of {@link ProductDetails}s.
@@ -18,11 +15,10 @@ import java.util.UUID;
  */
 @Value
 @Builder
-@AllArgsConstructor
 public class CategoryDetails {
 
-    UUID id;
-    String title;
     String slug;
-    UUID parentId;
+    String title;
+    String parentSlug;
+    CategoryStatus status;
 }

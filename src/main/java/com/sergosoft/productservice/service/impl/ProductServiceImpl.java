@@ -65,7 +65,7 @@ public class ProductServiceImpl implements ProductService {
                 .description(dto.getDescription())
                 .ownerReference(UUID.fromString(dto.getOwnerReference()))
                 .price(dto.getPrice())
-                .categories(new HashSet<>(categoryService.getCategoryEntitiesByIds(dto.getCategoryIds().stream().map(UUID::fromString).toList())))
+                .categories(new HashSet<>(categoryService.getCategoryEntitiesBySlugs(dto.getCategoryIds())))
                 .build();
 
         // save created product to jpa and search repositories
@@ -86,10 +86,7 @@ public class ProductServiceImpl implements ProductService {
                 .description(dto.getDescription() == null ? productToUpdate.getDescription() : dto.getDescription())
                 .price(dto.getPrice() == null ? productToUpdate.getPrice() : dto.getPrice())
                 .categories(dto.getCategoryIds() == null ? productToUpdate.getCategories() :
-                        new HashSet<>(categoryService.getCategoryEntitiesByIds(
-                                dto.getCategoryIds().stream().map(UUID::fromString).toList())
-                        )
-                )
+                        new HashSet<>(categoryService.getCategoryEntitiesBySlugs(dto.getCategoryIds())))
                 .build();
         // save updated product
         ProductEntity savedProduct = saveProductOrElseThrow(productToUpdate);

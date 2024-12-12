@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 @Mapper(componentModel = "spring")
 public interface CategoryMapper {
 
-    @Mapping(source = "parent.id", target = "parentId")
+    @Mapping(source = "parent.slug", target = "parentSlug")
     CategoryDetails toCategoryDetails(CategoryEntity categoryEntity);
 
     CategoryResponseDto toCategoryResponseDto(CategoryDetails categoryDetails);
