@@ -23,7 +23,6 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.testcontainers.shaded.org.apache.commons.lang3.RandomUtils;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -108,9 +107,7 @@ class OrderControllerIT extends IntegrationTest {
     void shouldUpdateOrder() throws Exception {
         List<ProductDetails> updatedProducts = new ArrayList<>(List.copyOf(existentProducts));
         updatedProducts.add(testFridgeProduct);
-
         OrderCreateDto orderUpdateDto = buildOrderCreateDto(updatedProducts.stream().map(ProductDetails::getId).map(UUID::fromString).toList());
-        BigDecimal expectedTotalPrice = existentProducts.stream().map(ProductDetails::getPrice).reduce(BigDecimal.ZERO, BigDecimal::add);
 
         // create a new order to update
         OrderCreateDto orderToSaveDto = buildOrderCreateDto(existentProducts.stream().map(ProductDetails::getId).map(UUID::fromString).toList());
@@ -123,8 +120,6 @@ class OrderControllerIT extends IntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.buyerReference").value(orderUpdateDto.getBuyerReference().toString()))
                 .andExpect(jsonPath("$.sellerReference").value(orderUpdateDto.getSellerReference().toString()));
-//                .andExpect(jsonPath("$.totalPrice").value(expectedTotalPrice));
-
         // deleting updated order if all tests are passed
         orderService.deleteOrderById(orderToUpdate.getId());
     }
@@ -134,7 +129,6 @@ class OrderControllerIT extends IntegrationTest {
     void shouldDeleteOrder() throws Exception {
         OrderCreateDto orderToSaveDto = buildOrderCreateDto(existentProducts.stream().map(ProductDetails::getId).map(UUID::fromString).collect(Collectors.toList()));
         OrderDetails orderToDelete = orderService.createOrder(orderToSaveDto);
-
         // check if order was created
         mockMvc.perform(get("/api/v1/orders/{id}", orderToDelete.getId()))
                 .andExpect(status().isOk())
