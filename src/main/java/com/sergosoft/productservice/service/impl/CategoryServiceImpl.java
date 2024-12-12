@@ -9,7 +9,9 @@ import com.sergosoft.productservice.repository.entity.CategoryEntity;
 import com.sergosoft.productservice.service.CategoryService;
 import com.sergosoft.productservice.service.exception.category.CategoryInUseException;
 import com.sergosoft.productservice.service.exception.category.CategoryNotFoundException;
+import com.sergosoft.productservice.service.exception.category.DuplicateCategorySlugException;
 import com.sergosoft.productservice.service.mapper.CategoryMapper;
+import com.sergosoft.productservice.util.SlugGenerator;
 import jakarta.persistence.PersistenceException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -80,16 +82,28 @@ public class CategoryServiceImpl implements CategoryService {
     @Transactional
     public CategoryDetails createCategory(CategoryCreateDto dto) {
         log.debug("Creating category: {}", dto);
-        // retrieving parent category by id
+        // generate slug by title and check if the slug is unique
+        String slug = SlugGenerator.generateSlug(dto.getTitle());
+        if(categoryRepository.existsByNaturalId(slug)) {
+            log.error("Category with title {} already exists", dto.getTitle());
+            throw new DuplicateCategorySlugException(slug);
+        }
+
+        // retrieving parent category by slug if present
         CategoryEntity parentCategory = null;
         if(dto.getParentSlug() != null) {
-            // getting parent category entity
             parentCategory = retrieveCategoryByIdOrElseThrow(UUID.fromString(dto.getParentSlug()));
         }
+
+        // preparing category entity to save
         CategoryEntity categoryToSave = CategoryEntity.builder()
                 .title(dto.getTitle())
+                .slug(slug)
                 .parent(parentCategory)
+                .status(CategoryStatus.ACTIVE)
                 .build();
+
+        // saving the category to DB
         try {
             categoryRepository.save(categoryToSave);
         } catch (Exception ex) {

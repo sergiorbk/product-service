@@ -5,6 +5,7 @@ import java.util.List;
 import com.sergosoft.productservice.featuretoggle.exception.FeatureNotAvailableException;
 import com.sergosoft.productservice.service.exception.*;
 import com.sergosoft.productservice.service.exception.category.CategoryInUseException;
+import com.sergosoft.productservice.service.exception.category.DuplicateCategorySlugException;
 import com.sergosoft.productservice.service.exception.order.OrderItemNotFoundException;
 import com.sergosoft.productservice.service.exception.order.OrderNotFoundException;
 import jakarta.persistence.PersistenceException;
@@ -20,6 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 import com.sergosoft.productservice.service.exception.category.CategoryNotFoundException;
 
 import static java.net.URI.create;
+import static org.springframework.http.HttpStatus.CONFLICT;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.ProblemDetail.forStatusAndDetail;
 
@@ -32,6 +34,15 @@ public class ExceptionTranslator extends ResponseEntityExceptionHandler {
         problemDetail.setType(URI.create("urn:problem-type:validation-error"));
         problemDetail.setTitle("Field Validation Exception");
         problemDetail.setProperty("invalidParams", validationResponse);
+        return problemDetail;
+    }
+
+    @ExceptionHandler(DuplicateCategorySlugException.class)
+    ProblemDetail handleDuplicateCategorySlugException(DuplicateCategorySlugException ex) {
+        log.error("Duplicate category slug exception raised");
+        ProblemDetail problemDetail = forStatusAndDetail(CONFLICT, ex.getMessage());
+        problemDetail.setType(URI.create("duplicate-category-slug"));
+        problemDetail.setTitle("Duplicate category slug exception");
         return problemDetail;
     }
 
