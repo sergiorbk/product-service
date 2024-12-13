@@ -5,8 +5,8 @@ import com.sergosoft.productservice.domain.product.ProductStatus;
 import com.sergosoft.productservice.dto.product.ProductCreateDto;
 import com.sergosoft.productservice.dto.product.ProductUpdateDto;
 import com.sergosoft.productservice.repository.ProductRepository;
+import com.sergosoft.productservice.repository.entity.CategoryEntity;
 import com.sergosoft.productservice.repository.entity.ProductEntity;
-import com.sergosoft.productservice.service.CategoryService;
 import com.sergosoft.productservice.service.ProductService;
 import com.sergosoft.productservice.service.exception.ProductNotFoundException;
 import com.sergosoft.productservice.service.mapper.ProductMapper;
@@ -22,7 +22,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashSet;
 import java.util.UUID;
 
 @Slf4j
@@ -31,7 +30,6 @@ import java.util.UUID;
 public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository productRepository;
-    private final CategoryService categoryService;
     private final ProductMapper productMapper;
 
     @Override
@@ -64,7 +62,8 @@ public class ProductServiceImpl implements ProductService {
                 .description(dto.getDescription())
                 .ownerReference(UUID.fromString(dto.getOwnerReference()))
                 .price(dto.getPrice())
-                .categories(new HashSet<>(categoryService.getCategoryEntitiesBySlugs(dto.getCategoryIds())))
+                .categories(dto.getCategoryIds()
+                        .stream().map(slug -> CategoryEntity.builder().slug(slug).build()).toList())
                 .build();
 
         // save created product to jpa and search repositories
@@ -83,8 +82,8 @@ public class ProductServiceImpl implements ProductService {
                 .slug(SlugGenerator.generateSlug(dto.getTitle()))
                 .description(dto.getDescription() == null ? productToUpdate.getDescription() : dto.getDescription())
                 .price(dto.getPrice() == null ? productToUpdate.getPrice() : dto.getPrice())
-                .categories(dto.getCategoryIds() == null ? productToUpdate.getCategories() :
-                        new HashSet<>(categoryService.getCategoryEntitiesBySlugs(dto.getCategoryIds())))
+                .categories(dto.getCategoryIds() == null ? productToUpdate.getCategories() : dto.getCategoryIds()
+                        .stream().map(slug -> CategoryEntity.builder().slug(slug).build()).toList())
                 .build();
         // save updated product
         ProductEntity savedProduct = saveProductOrElseThrow(productToUpdate);

@@ -1,5 +1,6 @@
 package com.sergosoft.productservice.web;
 
+import com.sergosoft.productservice.IntegrationTest;
 import com.sergosoft.productservice.domain.category.CategoryDetails;
 import com.sergosoft.productservice.dto.category.CategoryCreateDto;
 import com.sergosoft.productservice.dto.category.CategoryUpdateDto;
@@ -28,7 +29,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @SpringBootTest
 @AutoConfigureMockMvc
 @DisplayName("Category Controller CRUD Tests")
-class CategoryControllerIT {
+class CategoryControllerIT extends IntegrationTest {
 
     private final CategoryCreateDto CATEGORY_CREATE_DTO = buildCreateCategoryDto(List.of());
     private CategoryDetails createdCategory;
@@ -104,6 +105,7 @@ class CategoryControllerIT {
         return CategoryCreateDto.builder()
                 .title(RandomStringUtils.randomAlphabetic(10))
                 .parentSlug(null)
+                .imageUrl("https://cdn-icons-png.flaticon.com/512/4838/4838856.png")
                 .build();
     }
 }

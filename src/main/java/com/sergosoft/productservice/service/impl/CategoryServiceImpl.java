@@ -41,21 +41,6 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    @Transactional(readOnly = true)
-    public List<CategoryEntity> getCategoryEntitiesBySlugs(List<String> slugs) {
-        log.debug("Retrieving categories by ids: {}", slugs);
-        List<CategoryEntity> retrievedCategories;
-        try {
-            retrievedCategories = categoryRepository.findBySlugIn(slugs);
-        } catch (Exception ex) {
-            log.error("Exception occurred while retrieving categories by slugs: {}", ex.getMessage());
-            throw new PersistenceException(ex);
-        }
-        log.info("Retrieved categories list by ids: {}", slugs);
-        return retrievedCategories;
-    }
-
-    @Override
     public List<CategoryDetails> getRootCategories() {
         log.debug("Retrieving root categories");
         List<CategoryEntity> rootCategories = categoryRepository.findByParentNull();

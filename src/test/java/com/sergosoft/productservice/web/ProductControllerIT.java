@@ -92,7 +92,7 @@ class ProductControllerIT extends IntegrationTest {
                         .content(objectMapper.writeValueAsString(productCreateDto)))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.title").value(productCreateDto.getTitle()))
-                .andExpect(jsonPath("$.price").value(productCreateDto.getPrice().toString()));
+                .andExpect(jsonPath("$.price").value(productCreateDto.getPrice().stripTrailingZeros()));
     }
 
     @Test

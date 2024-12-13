@@ -11,8 +11,7 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 import java.util.UUID;
 
 @Data
@@ -44,7 +43,7 @@ public class ProductEntity {
     private String slug;
 
     @ManyToMany(mappedBy = "relatedProducts")
-    private Set<CategoryEntity> categories = new HashSet<>();
+    private List<CategoryEntity> categories;
 
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal price;
