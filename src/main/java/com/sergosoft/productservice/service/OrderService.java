@@ -1,15 +1,12 @@
 package com.sergosoft.productservice.service;
 
-import com.sergosoft.productservice.domain.order.OrderDetails;
-import com.sergosoft.productservice.dto.order.OrderCreateDto;
-
-import java.util.UUID;
+import com.sergosoft.productservice.domain.order.Order;
+import com.sergosoft.productservice.dto.order.OrderCreationDto;
 
 public interface OrderService {
 
-    OrderDetails getOrderById(UUID id);
-    OrderDetails createOrder(OrderCreateDto dto);
-    OrderDetails updateOrder(UUID id, OrderCreateDto dto);
-    void deleteOrderById(UUID id);
-
+    Order getOrderById(Long id);
+    Order createOrder(OrderCreationDto dto);
+    Order updateOrder(Long id, OrderCreationDto dto);
+    void deleteOrderById(Long id);
 }

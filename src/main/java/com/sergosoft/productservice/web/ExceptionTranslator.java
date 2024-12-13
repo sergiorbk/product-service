@@ -2,13 +2,9 @@ package com.sergosoft.productservice.web;
 
 import java.net.URI;
 import java.util.List;
+
 import com.sergosoft.productservice.featuretoggle.exception.FeatureNotAvailableException;
 import com.sergosoft.productservice.service.exception.*;
-import com.sergosoft.productservice.service.exception.category.CategoryInUseException;
-import com.sergosoft.productservice.service.exception.category.DuplicateCategorySlugException;
-import com.sergosoft.productservice.service.exception.order.OrderItemNotFoundException;
-import com.sergosoft.productservice.service.exception.order.OrderNotFoundException;
-import jakarta.persistence.PersistenceException;
 import lombok.NonNull;
 import org.springframework.http.*;
 import org.springframework.validation.FieldError;
@@ -17,13 +13,11 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
-import lombok.extern.slf4j.Slf4j;
-import com.sergosoft.productservice.service.exception.category.CategoryNotFoundException;
 
-import static java.net.URI.create;
-import static org.springframework.http.HttpStatus.CONFLICT;
-import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
-import static org.springframework.http.ProblemDetail.forStatusAndDetail;
+import lombok.extern.slf4j.Slf4j;
+
+import com.sergosoft.productservice.service.exception.category.CategoryNotFoundException;
+import com.sergosoft.productservice.service.exception.category.ParentCategoryNotFoundException;
 
 @ControllerAdvice
 @Slf4j
@@ -37,24 +31,6 @@ public class ExceptionTranslator extends ResponseEntityExceptionHandler {
         return problemDetail;
     }
 
-    @ExceptionHandler(DuplicateCategorySlugException.class)
-    ProblemDetail handleDuplicateCategorySlugException(DuplicateCategorySlugException ex) {
-        log.error("Duplicate category slug exception raised");
-        ProblemDetail problemDetail = forStatusAndDetail(CONFLICT, ex.getMessage());
-        problemDetail.setType(URI.create("duplicate-category-slug"));
-        problemDetail.setTitle("Duplicate category slug exception");
-        return problemDetail;
-    }
-
-    @ExceptionHandler(PersistenceException.class)
-    ProblemDetail handlePersistenceException(PersistenceException ex) {
-        log.error("Persistence exception raised");
-        ProblemDetail problemDetail = forStatusAndDetail(INTERNAL_SERVER_ERROR, ex.getMessage());
-        problemDetail.setType(create("persistence-exception"));
-        problemDetail.setTitle("Persistence exception");
-        return problemDetail;
-    }
-
     @ExceptionHandler(CategoryNotFoundException.class)
     ProblemDetail handleCategoryNotFoundException(CategoryNotFoundException ex) {
         log.info("Category Not Found exception raised.");
@@ -64,12 +40,12 @@ public class ExceptionTranslator extends ResponseEntityExceptionHandler {
         return problemDetail;
     }
 
-    @ExceptionHandler(CategoryInUseException.class)
-    ProblemDetail handleCategoryInUseException(CategoryInUseException ex) {
-        log.info("Category In Use exception raised.");
-        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, ex.getMessage());
-        problemDetail.setType(URI.create("category-in-use"));
-        problemDetail.setTitle("Category In Use");
+    @ExceptionHandler(ParentCategoryNotFoundException.class)
+    ProblemDetail handleParentCategoryNotFoundException(ParentCategoryNotFoundException ex) {
+        log.info("Parent Category Not Found exception raised.");
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, ex.getMessage());
+        problemDetail.setType(URI.create("parent-category-not-found"));
+        problemDetail.setTitle("Parent Category Not Found");
         return problemDetail;
     }
 
