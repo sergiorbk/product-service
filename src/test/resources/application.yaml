@@ -10,13 +10,13 @@ spring:
 
   liquibase:
     enabled: true
-    change-log: liquibase/changelog.yaml
+    change-log: classpath:liquibase/changelog.yaml
 
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: "jdbc:postgresql://localhost:5432/jwproductservicedb"
+    url: "jdbc:postgresql://localhost:5432/testdb"
     username: postgres
-    password: secret
+    password: postgres
 
   jpa:
     hibernate:
