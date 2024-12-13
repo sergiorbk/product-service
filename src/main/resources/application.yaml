@@ -6,7 +6,7 @@ spring:
     name: product-service
 
   profiles:
-    active: no-auth
+    active: dev
 
   security:
     oauth2:
