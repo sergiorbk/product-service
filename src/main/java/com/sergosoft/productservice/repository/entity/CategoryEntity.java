@@ -8,7 +8,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.NaturalId;
 
-import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
@@ -46,8 +45,11 @@ public class CategoryEntity {
     @JoinColumn(name = "parent_id")
     private CategoryEntity parent;
 
+    @Column(nullable = false)
+    private String imageUrl;
+
     @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL)
-    private Set<CategoryEntity> subcategories = new HashSet<>();
+    private Set<CategoryEntity> subcategories;
 
     @ManyToMany
     @JoinTable(
@@ -55,6 +57,6 @@ public class CategoryEntity {
             joinColumns = @JoinColumn(name = "category_id"),
             inverseJoinColumns = @JoinColumn(name = "product_id")
     )
-    private Set<ProductEntity> relatedProducts = new HashSet<>();
+    private Set<ProductEntity> relatedProducts;
 
 }

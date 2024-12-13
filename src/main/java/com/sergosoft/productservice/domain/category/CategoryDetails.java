@@ -19,6 +19,8 @@ public class CategoryDetails {
 
     String slug;
     String title;
-    String parentSlug;
     CategoryStatus status;
+    String parentSlug;
+    String imageUrl;
+
 }

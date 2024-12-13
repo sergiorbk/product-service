@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Value;
 import lombok.Builder;
 import lombok.extern.jackson.Jacksonized;
+import org.hibernate.validator.constraints.URL;
 
 /**
  * Data Transfer Object for creating a new category of product.
@@ -20,10 +21,13 @@ import lombok.extern.jackson.Jacksonized;
 @Jacksonized
 public class CategoryCreateDto {
 
-    @NotNull(message = "Category is mandatory")
     @NotBlank(message = "Category title is mandatory.")
     String title;
 
-//    @NotEmpty(message = "Category parent slug cannot be an empty string.")
     String parentSlug;
+
+    @NotNull(message = "Category image URL is mandatory.")
+    @URL(message = "Invalid format of the image URL.")
+    String imageUrl;
+
 }

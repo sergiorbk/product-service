@@ -43,13 +43,13 @@ public class CategoryController {
     @GetMapping("/root")
     public ResponseEntity<CategoryListDto> getRootCategories() {
         List<CategoryDetails> rootCategories = categoryService.getRootCategories();
-        return ResponseEntity.ok(categoryMapper.toCategorySetDto(rootCategories));
+        return ResponseEntity.ok(categoryMapper.toCategoryListDto(rootCategories));
     }
 
     @GetMapping("/{parentSlug}/subcategories")
     public ResponseEntity<CategoryListDto> getSubcategoriesByParentSlug(@PathVariable String parentSlug) {
         List<CategoryDetails> subcategories = categoryService.getSubCategoriesByParentSlug(parentSlug);
-        return ResponseEntity.ok(categoryMapper.toCategorySetDto(subcategories));
+        return ResponseEntity.ok(categoryMapper.toCategoryListDto(subcategories));
     }
 
     @PostMapping

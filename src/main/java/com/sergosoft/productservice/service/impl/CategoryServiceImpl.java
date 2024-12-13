@@ -100,6 +100,7 @@ public class CategoryServiceImpl implements CategoryService {
                 .slug(slug)
                 .parent(parentCategory)
                 .status(CategoryStatus.ACTIVE)
+                .imageUrl(dto.getImageUrl())
                 .build();
 
         // saving the category to DB
@@ -124,8 +125,11 @@ public class CategoryServiceImpl implements CategoryService {
                 .parent(dto.getParentSlug() == null ? categoryToUpdate.getParent() :
                         retrieveCategoryBySlugOrElseThrow(dto.getParentSlug()))
                 .status(dto.getStatus() == null ? categoryToUpdate.getStatus() : dto.getStatus())
+                .imageUrl(dto.getImageUrl() == null ? categoryToUpdate.getImageUrl() : dto.getImageUrl())
                 .build();
-        CategoryEntity updatedCategory = categoryRepository.save(categoryToUpdate);
+
+        // saving the updated category to DB
+        CategoryEntity updatedCategory = saveCategoryOrElseThrow(categoryToUpdate);
         CategoryDetails categoryDetails = categoryMapper.toCategoryDetails(updatedCategory);
         log.info("Updated category: {}", categoryDetails);
         return categoryDetails;

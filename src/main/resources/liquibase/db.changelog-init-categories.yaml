@@ -1,6 +1,6 @@
 databaseChangeLog:
   - changeSet:
-      id: lab-3-1
+      id: 001-categories-create
       author: "sergiorbk"
       changes:
         - createTable:
@@ -32,6 +32,11 @@ databaseChangeLog:
               - column:
                   name: "parent_id"
                   type: "UUID"
+              - column:
+                  name: "image_url"
+                  type: "VARCHAR(255)"
+                  constraints:
+                    nullable: false
 
         - createTable:
             tableName: "product_category"

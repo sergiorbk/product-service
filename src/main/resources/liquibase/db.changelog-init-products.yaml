@@ -1,6 +1,6 @@
 databaseChangeLog:
   - changeSet:
-      id: lab-3-4
+      id: 001-products-create
       author: "sergiorbk"
       changes:
         - createTable:
