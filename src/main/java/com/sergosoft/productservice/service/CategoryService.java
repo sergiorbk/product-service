@@ -1,12 +1,18 @@
 package com.sergosoft.productservice.service;
 
-import com.sergosoft.productservice.domain.Category;
-import com.sergosoft.productservice.dto.category.CategoryCreationDto;
+import com.sergosoft.productservice.domain.category.CategoryDetails;
+import com.sergosoft.productservice.dto.category.CategoryCreateDto;
+import com.sergosoft.productservice.dto.category.CategoryUpdateDto;
+
+import java.util.List;
 
 public interface CategoryService {
 
-    Category getCategoryById(Integer id);
-    Category createCategory(CategoryCreationDto dto);
-    Category updateCategory(Integer id, CategoryCreationDto dto);
-    void deleteCategoryById(Integer categoryId);
+    CategoryDetails getCategoryBySlug(String slug);
+    List<CategoryDetails> getRootCategories();
+    List<CategoryDetails> getSubCategoriesByParentSlug(String parentSlug);
+    CategoryDetails createCategory(CategoryCreateDto dto);
+    CategoryDetails updateCategory(String slug, CategoryUpdateDto dto);
+    void archiveCategoryBySlug(String slug);
+    void deleteCategoryBySlug(String slug);
 }

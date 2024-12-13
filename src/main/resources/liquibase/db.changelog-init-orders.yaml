@@ -1,0 +1,48 @@
+databaseChangeLog:
+  - changeSet:
+      id: 001-orders-create
+      author: "sergiorbk"
+      changes:
+        - createTable:
+            tableName: "orders"
+            columns:
+              - column:
+                  name: "id"
+                  type: "UUID"
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: "seller_reference"
+                  type: "UUID"
+                  constraints:
+                    nullable: false
+              - column:
+                  name: "buyer_reference"
+                  type: "UUID"
+                  constraints:
+                    nullable: false
+              - column:
+                  name: "total_price"
+                  type: "DECIMAL(10,2)"
+                  constraints:
+                    nullable: false
+              - column:
+                  name: "created_at"
+                  type: "TIMESTAMP"
+                  constraints:
+                    nullable: false
+
+        - createIndex:
+            tableName: "orders"
+            indexName: "idx_order_seller_reference"
+            columns:
+              - column:
+                  name: "seller_reference"
+
+        - createIndex:
+            tableName: "orders"
+            indexName: "idx_order_buyer_reference"
+            columns:
+              - column:
+                  name: "buyer_reference"
