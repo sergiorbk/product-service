@@ -20,7 +20,7 @@ public class CategoryDetails {
     String slug;
     String title;
     CategoryStatus status;
-    String parentSlug;
+    CategoryDetails parent;
     String imageUrl;
 
 }

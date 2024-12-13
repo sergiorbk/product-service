@@ -76,7 +76,7 @@ public class CategoryServiceImpl implements CategoryService {
         // retrieving parent category by slug if present
         CategoryEntity parentCategory = null;
         if(dto.getParentSlug() != null) {
-            parentCategory = retrieveCategoryByIdOrElseThrow(UUID.fromString(dto.getParentSlug()));
+            parentCategory = retrieveCategoryBySlugOrElseThrow(dto.getParentSlug());
         }
 
         // preparing category entity to save
