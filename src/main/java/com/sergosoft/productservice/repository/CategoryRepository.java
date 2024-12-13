@@ -1,18 +1,8 @@
 package com.sergosoft.productservice.repository;
 
-import com.sergosoft.productservice.repository.entity.CategoryEntity;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.stereotype.Repository;
+import com.sergosoft.productservice.domain.Category;
+import com.sergosoft.productservice.repository.faker.FakeCrudRepository;
 
-import java.util.List;
-import java.util.UUID;
-
-@Repository
-public interface CategoryRepository extends NaturalIdRepository<CategoryEntity, UUID, String> {
-
-    @Cacheable("rootCategories")
-    List<CategoryEntity> findByParentNull();
-
-    List<CategoryEntity> findBySlugIn(List<String> slugList);
-
+public interface CategoryRepository extends FakeCrudRepository<Category, Integer> {
+    // todo implement as a JPA repository
 }

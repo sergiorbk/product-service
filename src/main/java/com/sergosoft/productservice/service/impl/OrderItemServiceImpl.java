@@ -1,48 +1,97 @@
 package com.sergosoft.productservice.service.impl;
 
-import com.sergosoft.productservice.repository.OrderItemRepository;
-import com.sergosoft.productservice.repository.entity.OrderEntity;
-import com.sergosoft.productservice.repository.entity.OrderItemEntity;
-import com.sergosoft.productservice.service.OrderItemService;
-import jakarta.persistence.PersistenceException;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
-import java.util.UUID;
+import java.math.BigDecimal;
 
-@Slf4j
+import org.springframework.stereotype.Service;
+
+import lombok.extern.slf4j.Slf4j;
+import lombok.RequiredArgsConstructor;
+
+import com.sergosoft.productservice.domain.Product;
+import com.sergosoft.productservice.domain.order.Order;
+import com.sergosoft.productservice.domain.order.OrderItem;
+import com.sergosoft.productservice.service.ProductService;
+import com.sergosoft.productservice.service.OrderItemService;
+import com.sergosoft.productservice.repository.OrderItemRepository;
+import com.sergosoft.productservice.dto.order.item.OrderItemCreationDto;
+import com.sergosoft.productservice.service.exception.OrderItemNotFoundException;
+
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class OrderItemServiceImpl implements OrderItemService {
 
-    private final OrderItemRepository orderItemRepository;
+    private final OrderItemRepository itemRepository;
+    private final ProductService productService;
 
-    @Transactional
-    public void delete(OrderItemEntity orderItemEntity) {
-        log.debug("Deleting order item with id: {}", orderItemEntity.getId());
-        try {
-            orderItemRepository.delete(orderItemEntity);
-            log.info("Deleted order item with id: {}", orderItemEntity.getId());
-        } catch (Exception ex) {
-            log.error("Exception occurred while deleting order item: {}", ex.getMessage());
-            throw new PersistenceException(ex.getMessage());
-        }
+    @Override
+    public OrderItem getOrderItemById(Long id) {
+        log.info("Fetching order item with ID: {}", id);
+        return itemRepository.findById(id)
+                .orElseThrow(() -> {
+                    log.error("Order item with ID: {} not found", id);
+                    return new OrderItemNotFoundException(id);
+                });
     }
 
-    @Transactional
-    public void deleteOrderItems(OrderEntity order) {
-        List<String> orderItemsIds = order.getItems().stream().map(OrderItemEntity::getId).map(UUID::toString).toList();
-        log.debug("Delete order items with id: {}", orderItemsIds);
-        try {
-            orderItemRepository.deleteAllByOrder(order);
-            log.info("Deleted order items: {}", orderItemsIds);
-        } catch (Exception e) {
-            log.error("Exception occurred while deleting order items of the defined order with id {}: {}", order.getId(), e.getMessage());
-            throw new RuntimeException(e.getMessage());
-        }
+    @Override
+    public List<OrderItem> createOrderItems(Order order, List<OrderItemCreationDto> dtoList) {
+        log.info("Creating order items for order ID: {}", order.getId());
+        List<OrderItem> orderItems = dtoList.stream()
+                .map(dto -> createOrderItem(order, dto))
+                .toList();
+        log.info("Created {} order items for order ID: {}", orderItems.size(), order.getId());
+        return orderItems;
     }
 
+    @Override
+    public OrderItem createOrderItem(Order order, OrderItemCreationDto dto) {
+        log.info("Creating order item for product ID: {} with quantity: {}", dto.getProductId(), dto.getQuantity());
+        Product product = productService.getProductById(dto.getProductId());
+        BigDecimal totalPrice = product.getPrice().multiply(BigDecimal.valueOf(dto.getQuantity()));
+
+        OrderItem orderItem = OrderItem.builder()
+                .order(order)
+                .product(product)
+                .quantity(dto.getQuantity())
+                .price(totalPrice)
+                .build();
+
+        OrderItem savedOrderItem = itemRepository.save(orderItem);
+        log.info("Order item created with ID: {} and total price: {}", savedOrderItem.getId(), totalPrice);
+        return savedOrderItem;
+    }
+
+    @Override
+    public OrderItem updateOrderItem(Long id, OrderItemCreationDto dto) {
+        log.info("Updating order item with ID: {}", id);
+        OrderItem existingOrderItem = getOrderItemById(id);
+
+        Product product = productService.getProductById(dto.getProductId());
+        BigDecimal totalPrice = product.getPrice().multiply(BigDecimal.valueOf(dto.getQuantity()));
+
+        OrderItem updatedOrderItem = existingOrderItem.toBuilder()
+                .product(product)
+                .quantity(dto.getQuantity())
+                .price(totalPrice)
+                .build();
+
+        OrderItem savedOrderItem = itemRepository.save(updatedOrderItem);
+        log.info("Order item updated with ID: {} and new total price: {}", savedOrderItem.getId(), totalPrice);
+        return savedOrderItem;
+    }
+
+    @Override
+    public void deleteAllByOrderId(Long orderId) {
+        log.info("Deleting all items for order ID: {}", orderId);
+        List<OrderItem> orderItems = itemRepository.findByOrderId(orderId);
+
+        if (!orderItems.isEmpty()) {
+            itemRepository.deleteAll(orderItems);
+            log.info("Deleted {} items for order ID: {}", orderItems.size(), orderId);
+        } else {
+            log.warn("No items found for order ID: {}", orderId);
+        }
+    }
 }

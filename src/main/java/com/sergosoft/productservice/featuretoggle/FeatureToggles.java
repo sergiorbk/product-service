@@ -1,7 +1,8 @@
 package com.sergosoft.productservice.featuretoggle;
 
 public enum FeatureToggles {
-    EXAMPLE_TOGGLE("exampleToggle");
+    COSMO_CATS("cosmoCats"),
+    KITTY_PRODUCTS("kittyProducts");
 
     private final String toggleName;
 

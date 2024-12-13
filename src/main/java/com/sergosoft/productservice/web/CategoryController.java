@@ -1,11 +1,7 @@
 package com.sergosoft.productservice.web;
 
 import java.net.URI;
-import java.util.List;
 
-import com.sergosoft.productservice.dto.category.CategoryListDto;
-import com.sergosoft.productservice.dto.category.CategoryUpdateDto;
-import com.sergosoft.productservice.service.mapper.CategoryMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -14,9 +10,10 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import jakarta.validation.Valid;
 
-import com.sergosoft.productservice.domain.category.CategoryDetails;
+import com.sergosoft.productservice.domain.Category;
 import com.sergosoft.productservice.service.CategoryService;
-import com.sergosoft.productservice.dto.category.CategoryCreateDto;
+import com.sergosoft.productservice.service.mapper.CategoryMapper;
+import com.sergosoft.productservice.dto.category.CategoryCreationDto;
 import com.sergosoft.productservice.dto.category.CategoryResponseDto;
 
 @Slf4j
@@ -33,53 +30,35 @@ public class CategoryController {
         this.categoryMapper = categoryMapper;
     }
 
-    @GetMapping("/{slug}")
-    public ResponseEntity<CategoryResponseDto> getCategoryBySlug(@PathVariable String slug) {
-        CategoryDetails retrievedCategoryDetails = categoryService.getCategoryBySlug(slug);
-        CategoryResponseDto categoryResponseDto = categoryMapper.toCategoryResponseDto(retrievedCategoryDetails);
+    @GetMapping("/{id}")
+    public ResponseEntity<CategoryResponseDto> getCategoryById(@PathVariable Integer id) {
+        Category retrievedCategory = categoryService.getCategoryById(id);
+        CategoryResponseDto categoryResponseDto = categoryMapper.toDto(retrievedCategory);
         return ResponseEntity.ok(categoryResponseDto);
     }
 
-    @GetMapping("/root")
-    public ResponseEntity<CategoryListDto> getRootCategories() {
-        List<CategoryDetails> rootCategories = categoryService.getRootCategories();
-        return ResponseEntity.ok(categoryMapper.toCategoryListDto(rootCategories));
-    }
-
-    @GetMapping("/{parentSlug}/subcategories")
-    public ResponseEntity<CategoryListDto> getSubcategoriesByParentSlug(@PathVariable String parentSlug) {
-        List<CategoryDetails> subcategories = categoryService.getSubCategoriesByParentSlug(parentSlug);
-        return ResponseEntity.ok(categoryMapper.toCategoryListDto(subcategories));
-    }
-
     @PostMapping
-    public ResponseEntity<CategoryResponseDto> createCategory(@RequestBody @Valid CategoryCreateDto categoryDto) {
-        CategoryDetails createdCategoryDetails = categoryService.createCategory(categoryDto);
-        CategoryResponseDto createdCategoryResponseDto = categoryMapper.toCategoryResponseDto(createdCategoryDetails);
+    public ResponseEntity<CategoryResponseDto> createCategory(@RequestBody @Valid CategoryCreationDto categoryDto) {
+        Category createdCategory = categoryService.createCategory(categoryDto);
+        CategoryResponseDto createdCategoryResponseDto = categoryMapper.toDto(createdCategory);
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()
                 .path("/{id}")
-                .buildAndExpand(createdCategoryResponseDto.getSlug())
+                .buildAndExpand(createdCategoryResponseDto.getId())
                 .toUri();
         return ResponseEntity.created(location).body(createdCategoryResponseDto);
     }
 
-    @PutMapping("/{categorySlug}")
-    public ResponseEntity<CategoryResponseDto> updateCategory(@PathVariable String categorySlug,
-                                                              @RequestBody @Valid CategoryUpdateDto categoryDto) {
-        CategoryDetails updatedCategoryDetails = categoryService.updateCategory(categorySlug, categoryDto);
-        return ResponseEntity.ok(categoryMapper.toCategoryResponseDto(updatedCategoryDetails));
+    @PutMapping("/{categoryId}")
+    public ResponseEntity<CategoryResponseDto> updateCategory(@PathVariable Integer categoryId,
+                                                              @RequestBody @Valid CategoryCreationDto categoryDto) {
+        Category updatedCategory = categoryService.updateCategory(categoryId, categoryDto);
+        return ResponseEntity.ok(categoryMapper.toDto(updatedCategory));
     }
 
-    @PutMapping("/{categorySlug}/archive")
-    public ResponseEntity<Void> archiveCategory(@PathVariable String categorySlug) {
-        categoryService.archiveCategoryBySlug(categorySlug);
-        return ResponseEntity.noContent().build();
-    }
-
-    @DeleteMapping("/{categorySlug}")
-    public ResponseEntity<Void> deleteCategory(@PathVariable String categorySlug) {
-        categoryService.deleteCategoryBySlug(categorySlug);
+    @DeleteMapping("/{categoryId}")
+    public ResponseEntity<Void> deleteCategory(@PathVariable Integer categoryId) {
+        categoryService.deleteCategoryById(categoryId);
         return ResponseEntity.noContent().build();
     }
 }
