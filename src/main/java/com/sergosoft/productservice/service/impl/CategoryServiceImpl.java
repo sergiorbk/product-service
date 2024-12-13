@@ -19,7 +19,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 
 @Slf4j
@@ -55,7 +54,7 @@ public class CategoryServiceImpl implements CategoryService {
     public List<CategoryDetails> getSubCategoriesByParentSlug(String parentSlug) {
         log.debug("Retrieving subcategories by parent category with slug: {}", parentSlug);
         CategoryEntity parentCategory = retrieveCategoryBySlugOrElseThrow(parentSlug);
-        Set<CategoryEntity> subcategories = parentCategory.getSubcategories();
+        List<CategoryEntity> subcategories = parentCategory.getSubcategories();
         List<CategoryDetails> subcategoriesDetails = subcategories.stream()
                 .map(categoryMapper::toCategoryDetails).toList();
         log.info("Retrieved {} subcategories by parent category with slug {}", subcategoriesDetails.size(), parentSlug);
