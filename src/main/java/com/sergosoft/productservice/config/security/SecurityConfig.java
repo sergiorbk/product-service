@@ -22,7 +22,7 @@ import java.util.stream.Stream;
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity(securedEnabled = true, jsr250Enabled = true)
-public class SecurityConfiguration {
+public class SecurityConfig {
 
     private final String API_V1_PRODUCTS = "/api/v1/products/**";
     private final String API_V1_CATEGORIES = "/api/v1/categories/**";
@@ -32,7 +32,6 @@ public class SecurityConfiguration {
     @Order(1)
     public SecurityFilterChain filterChainProducts(HttpSecurity http) throws Exception {
         http.securityMatcher(API_V1_PRODUCTS)
-                .cors(Customizer.withDefaults())
                 .csrf(CsrfConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize ->
@@ -50,7 +49,6 @@ public class SecurityConfiguration {
     @Order(2)
     public SecurityFilterChain filterChainCategories(HttpSecurity http) throws Exception {
         http.securityMatcher(API_V1_CATEGORIES)
-                .cors(Customizer.withDefaults())
                 .csrf(CsrfConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize ->
@@ -68,7 +66,6 @@ public class SecurityConfiguration {
     public SecurityFilterChain filterChainOrders(HttpSecurity http) throws Exception {
         http.securityMatcher(API_V1_ORDERS)
                 .csrf(CsrfConfigurer::disable)
-                .cors(Customizer.withDefaults())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize ->
                         authorize

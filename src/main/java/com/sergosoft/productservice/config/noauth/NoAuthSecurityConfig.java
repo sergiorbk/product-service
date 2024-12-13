@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.CorsConfigurer;
 import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -29,16 +30,15 @@ import java.util.Map;
 @Configuration
 @EnableWebSecurity
 @EnableConfigurationProperties(NoAuthProperties.class)
-public class NoAuthSecurityConfiguration {
+public class NoAuthSecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         log.warn("All requests are permitted in no-auth profile");
-
-        // Disable CSRF and permit all requests
-        http.csrf(CsrfConfigurer::disable)
-                .authorizeHttpRequests(authorize -> authorize.anyRequest().permitAll());  // Allow all endpoints without authentication
-
+        http
+                .cors(CorsConfigurer::disable)
+                .csrf(CsrfConfigurer::disable)
+                .authorizeHttpRequests(authorize -> authorize.anyRequest().permitAll());
         return http.build();
     }
 
