@@ -1,4 +1,4 @@
-package com.sergosoft.productservice.dto.category;
+package com.sergosoft.productservice.dto.category.response;
 
 import lombok.Value;
 import lombok.Builder;
@@ -7,7 +7,7 @@ import lombok.extern.jackson.Jacksonized;
 @Value
 @Builder
 @Jacksonized
-public class CategoryResponseDto {
+public class CategorySlimDto {
 
     String slug;
     String title;

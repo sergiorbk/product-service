@@ -44,6 +44,7 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-validation")
 	implementation("org.springframework.boot:spring-boot-starter-aop")
 
+//	implementation("org.springframework.boot:spring-boot-starter-data-redis:3.4.0")
 	implementation("org.elasticsearch.client:elasticsearch-rest-high-level-client:7.17.25")
 	implementation("org.projectlombok:lombok-mapstruct-binding:0.2.0")
 	implementation("org.mapstruct:mapstruct:1.6.2")

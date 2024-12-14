@@ -2,6 +2,7 @@ package com.sergosoft.productservice.service.impl;
 
 import com.sergosoft.productservice.domain.category.CategoryDetails;
 import com.sergosoft.productservice.domain.category.CategoryStatus;
+import com.sergosoft.productservice.domain.category.CategoryTree;
 import com.sergosoft.productservice.dto.category.CategoryCreateDto;
 import com.sergosoft.productservice.dto.category.CategoryUpdateDto;
 import com.sergosoft.productservice.repository.CategoryRepository;
@@ -40,6 +41,22 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public List<CategoryTree> getAllCategoriesTree() {
+        log.debug("Retrieving all categories");
+        List<CategoryEntity> retrievedCategories;
+        try {
+            retrievedCategories = categoryRepository.findByParentNull();
+        } catch (Exception ex) {
+            log.error("Exception occurred while retrieving all categories: {}", ex.getMessage());
+            throw new PersistenceException(ex);
+        }
+        log.info("Retrieved {} categories", retrievedCategories.size());
+        return retrievedCategories.stream().map(categoryMapper::toCategoryTree).toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public List<CategoryDetails> getRootCategories() {
         log.debug("Retrieving root categories");
         List<CategoryEntity> rootCategories = categoryRepository.findByParentNull();

@@ -1,4 +1,4 @@
-package com.sergosoft.productservice.dto.category;
+package com.sergosoft.productservice.dto.category.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,7 +11,8 @@ import java.util.List;
 @Builder
 @Jacksonized
 @AllArgsConstructor
-public class CategoryListDto {
+public class CategorySlimDtoList {
 
-    List<CategoryResponseDto> categories;
+    List<CategorySlimDto> categories;
+
 }
