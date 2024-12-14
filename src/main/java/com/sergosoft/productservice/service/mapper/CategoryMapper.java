@@ -12,9 +12,9 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface CategoryMapper {
 
-    @Mapping(source = "parent.slug", target = "parentSlug")
     CategoryDetails toCategoryDetails(CategoryEntity categoryEntity);
 
+    @Mapping(source = "parent.slug", target = "parentSlug")
     CategoryResponseDto toCategoryResponseDto(CategoryDetails categoryDetails);
 
     default CategoryListDto toCategoryListDto(List<CategoryDetails> categoryDetails) {

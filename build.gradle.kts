@@ -1,6 +1,6 @@
 plugins {
 	java
-	id("org.springframework.boot") version "3.3.5"
+	id("org.springframework.boot") version "3.4.0"
 	id("io.spring.dependency-management") version "1.1.6"
 	id ("org.barfuin.gradle.jacocolog") version "3.1.0"
 	id("jacoco")
@@ -48,6 +48,7 @@ dependencies {
 	implementation("org.projectlombok:lombok-mapstruct-binding:0.2.0")
 	implementation("org.mapstruct:mapstruct:1.6.2")
 	implementation("org.liquibase:liquibase-core:4.30.0")
+	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.7.0")
 	implementation("com.ibm.icu:icu4j:76.1")
 
 	compileOnly("org.projectlombok:lombok")

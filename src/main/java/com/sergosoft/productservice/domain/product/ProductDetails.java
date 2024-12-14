@@ -8,11 +8,9 @@ import java.util.UUID;
 import com.sergosoft.productservice.domain.category.CategoryDetails;
 import lombok.Value;
 import lombok.Builder;
-import lombok.AllArgsConstructor;
 
 @Value
 @Builder
-@AllArgsConstructor
 public class ProductDetails {
 
     String id;
@@ -24,4 +22,5 @@ public class ProductDetails {
     ProductStatus status;
     Set<CategoryDetails> categories;
     LocalDateTime createdAt;
+
 }
