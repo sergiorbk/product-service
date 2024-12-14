@@ -4,6 +4,7 @@ import com.sergosoft.productservice.domain.product.ProductDetails;
 import com.sergosoft.productservice.domain.product.ProductStatus;
 import com.sergosoft.productservice.dto.product.ProductCreateDto;
 import com.sergosoft.productservice.dto.product.ProductUpdateDto;
+import com.sergosoft.productservice.elasticsearch.service.ProductSearchService;
 import com.sergosoft.productservice.repository.ProductRepository;
 import com.sergosoft.productservice.repository.entity.CategoryEntity;
 import com.sergosoft.productservice.repository.entity.ProductEntity;
@@ -31,6 +32,7 @@ public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository productRepository;
     private final ProductMapper productMapper;
+    private final ProductSearchService productSearchService;
 
     @Override
     @Transactional(readOnly = true)
@@ -68,6 +70,8 @@ public class ProductServiceImpl implements ProductService {
 
         // save created product to jpa and search repositories
         ProductEntity savedProduct = saveProductOrElseThrow(productToSave);
+        productSearchService.createProductDocument(productMapper.toProductSearchDocument(savedProduct));
+
         // return saved product details
         return productMapper.toProductDetails(savedProduct);
     }
@@ -85,8 +89,12 @@ public class ProductServiceImpl implements ProductService {
                 .categories(dto.getCategoryIds() == null ? productToUpdate.getCategories() : dto.getCategoryIds()
                         .stream().map(slug -> CategoryEntity.builder().slug(slug).build()).toList())
                 .build();
-        // save updated product
+
+        // save updated product to JPA and Elastic repositories
         ProductEntity savedProduct = saveProductOrElseThrow(productToUpdate);
+        // todo implement saving to elastic repository
+
+        // return saved product
         ProductDetails savedProductDetails = productMapper.toProductDetails(savedProduct);
         log.info("Updated product details {}", savedProductDetails);
         return savedProductDetails;
@@ -99,11 +107,13 @@ public class ProductServiceImpl implements ProductService {
         ProductEntity productToActivate = retrieveProductByIdFromJpaOrElseThrow(id);
         if(productToActivate.getStatus() != ProductStatus.ACTIVE) {
             productToActivate.setStatus(ProductStatus.ACTIVE);
+            // save changes to JPA and Elastic repositories
             saveProductOrElseThrow(productToActivate);
+            // todo implement saving to elastic repository
             log.info("Product with id {} was activated", id);
             return;
         }
-        log.warn("Product with id {} was already activated", id);
+        log.warn("Product with id {} is already activated", id);
     }
 
     /**
@@ -121,6 +131,7 @@ public class ProductServiceImpl implements ProductService {
             } catch (Exception e) {
                 log.error("Exception occurred wile archiving product: {}", e.getMessage());
             }
+            // todo implement saving to elastic repository
             log.info("Product with id {} was archived", id);
             return;
         }
@@ -139,6 +150,7 @@ public class ProductServiceImpl implements ProductService {
             } catch (Exception e) {
                 log.error("Exception occurred wile banning product: {}", e.getMessage());
             }
+            // todo implement removing from elastic repository
             log.info("Product with id {} was banned", id);
         }
     }
@@ -156,6 +168,7 @@ public class ProductServiceImpl implements ProductService {
         } catch (Exception ex) {
             log.error("Exception occurred while hard deleting product with id {}: {}", id, ex.getMessage());
         }
+        // todo implement removing from elastic repository
         productRepository.deleteById(id);
     }
 
