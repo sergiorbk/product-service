@@ -3,23 +3,26 @@ package com.sergosoft.productservice.dto.product;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Value;
+import lombok.extern.jackson.Jacksonized;
 
 import java.math.BigDecimal;
-import java.time.Instant;
-import java.util.List;
-import java.util.UUID;
+import java.time.OffsetDateTime;
+import java.util.Set;
 
 @Value
 @Builder
+@Jacksonized
 @AllArgsConstructor
 public class ProductResponseDto {
 
-    UUID productId;
-    UUID ownerId;
+    String id;
     String title;
     String description;
-    List<Integer> categoriesIds;
+    String ownerReference;
+    String slug;
     BigDecimal price;
-    Instant createdAt;
-//    String currencyCode;
+    String status;
+    Set<String> categoriesIds;
+    OffsetDateTime createdAt;
+
 }

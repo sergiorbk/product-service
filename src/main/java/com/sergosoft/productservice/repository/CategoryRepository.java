@@ -1,8 +1,14 @@
 package com.sergosoft.productservice.repository;
 
-import com.sergosoft.productservice.domain.Category;
-import com.sergosoft.productservice.repository.faker.FakeCrudRepository;
+import com.sergosoft.productservice.repository.entity.CategoryEntity;
+import org.springframework.stereotype.Repository;
 
-public interface CategoryRepository extends FakeCrudRepository<Category, Integer> {
-    // todo implement as a JPA repository
+import java.util.Set;
+import java.util.UUID;
+
+@Repository
+public interface CategoryRepository extends NaturalIdRepository<CategoryEntity, UUID, String> {
+
+    Set<CategoryEntity> findByParentNull();
+
 }
