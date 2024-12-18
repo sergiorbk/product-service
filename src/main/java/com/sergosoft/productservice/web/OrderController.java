@@ -8,6 +8,7 @@ import com.sergosoft.productservice.service.mapper.OrderMapper;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -44,6 +45,7 @@ public class OrderController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('MODERATOR')")
     public ResponseEntity<OrderResponseDto> updateOrder(
             @PathVariable UUID id,
             @Valid @RequestBody OrderCreateDto orderCreateDto) {

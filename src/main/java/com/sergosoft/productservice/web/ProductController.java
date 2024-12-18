@@ -6,7 +6,11 @@ import com.sergosoft.productservice.dto.product.ProductResponseDto;
 import com.sergosoft.productservice.dto.product.ProductUpdateDto;
 import com.sergosoft.productservice.service.mapper.ProductMapper;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,6 +18,7 @@ import com.sergosoft.productservice.service.ProductService;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -36,6 +41,19 @@ public class ProductController {
         return ResponseEntity.ok(productResponseDto);
     }
 
+    @GetMapping
+    public ResponseEntity<List<ProductResponseDto>> getProductPageByOwnerId(
+            @RequestParam(value = "owner") UUID ownerReference,
+            @RequestParam(defaultValue = "0", required = false) int page,
+            @RequestParam(defaultValue = "10", required = false) int size
+    ) {
+        Pageable pageable = PageRequest.of(page == 0 ? 0 : page-1, size);
+
+        Page<ProductDetails> productDetailsPage = productService.getProductsPageByOwnerReference(ownerReference, pageable);
+        Page<ProductResponseDto> productResponseDtoPage = productDetailsPage.map(productMapper::toProductResponseDto);
+        return ResponseEntity.ok(productResponseDtoPage.stream().toList());
+    }
+
     @PostMapping
     public ResponseEntity<ProductResponseDto> createProduct(@RequestBody @Valid ProductCreateDto categoryDto) {
         ProductDetails createdProduct = productService.createProduct(categoryDto);
@@ -56,6 +74,7 @@ public class ProductController {
     }
 
     @PutMapping("/{id}/activate")
+    @PreAuthorize("hasRole('MODERATOR')")
     public ResponseEntity<Void> activateProduct(@PathVariable UUID id) {
         productService.activateProduct(id);
         return ResponseEntity.noContent().build();

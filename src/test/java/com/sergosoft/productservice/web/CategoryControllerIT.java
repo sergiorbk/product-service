@@ -14,6 +14,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.testcontainers.shaded.org.apache.commons.lang3.RandomStringUtils;
@@ -50,13 +51,22 @@ class CategoryControllerIT extends IntegrationTest {
 
     @Test
     void shouldGetCategoryById() throws Exception {
-        mockMvc.perform(get("/api/v1/categories/{id}", createdCategory.getId()))
+        mockMvc.perform(get("/api/v1/categories/{id}", createdCategory.getSlug()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.slug").exists())
                 .andExpect(jsonPath("$.slug").value(createdCategory.getSlug()));
     }
 
     @Test
+    void shouldGetCategoryBySlug() throws Exception {
+        mockMvc.perform(get("/api/v1/categories/{slug}", createdCategory.getSlug()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.slug").exists())
+                .andExpect(jsonPath("$.slug").value(createdCategory.getSlug()));
+    }
+
+    @Test
+    @WithMockUser(roles = {"MODERATOR"})
     void shouldCreateCategory() throws Exception {
         CategoryCreateDto createCategoryDto = buildCreateCategoryDto(List.of());
         mockMvc.perform(post("/api/v1/categories")
@@ -69,20 +79,13 @@ class CategoryControllerIT extends IntegrationTest {
     }
 
     @Test
-    void shouldGetCategoryBySlug() throws Exception {
-        mockMvc.perform(get("/api/v1/categories/slug/{slug}", createdCategory.getSlug()))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.slug").exists())
-                .andExpect(jsonPath("$.slug").value(createdCategory.getSlug()));
-    }
-
-    @Test
+    @WithMockUser(roles = {"MODERATOR"})
     void shouldUpdateCategory() throws Exception {
         CategoryUpdateDto categoryToUpdateDto = CategoryUpdateDto.builder()
                 .title(RandomStringUtils.randomAlphabetic(10))
                 .build();
 
-        mockMvc.perform(put("/api/v1/categories/{categoryId}", createdCategory.getId())
+        mockMvc.perform(put("/api/v1/categories/{categoryId}", createdCategory.getSlug())
                         .contentType(APPLICATION_JSON_VALUE)
                         .accept(APPLICATION_JSON_VALUE)
                         .content(objectMapper.writeValueAsString(categoryToUpdateDto)))
@@ -92,15 +95,17 @@ class CategoryControllerIT extends IntegrationTest {
     }
 
     @Test
+    @WithMockUser(roles = {"MODERATOR"})
     void shouldDeleteCategory() throws Exception {
-        mockMvc.perform(delete("/api/v1/categories/{categoryId}", createdCategory.getId()))
+        mockMvc.perform(delete("/api/v1/categories/{categoryId}", createdCategory.getSlug()))
                 .andExpect(status().isNoContent());
     }
 
-    public static CategoryCreateDto buildCreateCategoryDto(List<String> parentIds) {
+    public static CategoryCreateDto buildCreateCategoryDto(List<String> parentsSlugList) {
         return CategoryCreateDto.builder()
                 .title(RandomStringUtils.randomAlphabetic(10))
-                .parentId(null)
+                .parentSlug(null)
+                .imageUrl("https://cdn-icons-png.flaticon.com/512/4838/4838856.png")
                 .build();
     }
 }

@@ -9,18 +9,17 @@ import com.sergosoft.productservice.repository.entity.CategoryEntity;
 import com.sergosoft.productservice.service.CategoryService;
 import com.sergosoft.productservice.service.exception.category.CategoryInUseException;
 import com.sergosoft.productservice.service.exception.category.CategoryNotFoundException;
+import com.sergosoft.productservice.service.exception.category.DuplicateCategorySlugException;
 import com.sergosoft.productservice.service.mapper.CategoryMapper;
+import com.sergosoft.productservice.util.SlugGenerator;
 import jakarta.persistence.PersistenceException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -32,71 +31,33 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     @Transactional(readOnly = true)
-    public CategoryDetails getCategoryById(UUID id) {
-        log.debug("Retrieving category by id: {}", id);
-        CategoryEntity retrievedCategory = categoryRepository.findById(id).orElseThrow(() -> {
-            log.error("Exception occurred while retrieving category by id: {}", id);
-            return new CategoryNotFoundException(id);
-        });
-        CategoryDetails categoryDetails = categoryMapper.toCategoryDetails(retrievedCategory);
-        log.info("Retrieved category: {} : {}", categoryDetails, categoryDetails);
-        return categoryDetails;
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<CategoryDetails> getCategoriesByIds(List<UUID> ids) {
-        List<CategoryEntity> retrievedCategories = getCategoryEntitiesByIds(ids);
-        List<CategoryDetails> retrievedCategoriesDetails = retrievedCategories.stream().map(categoryMapper::toCategoryDetails).toList();
-        log.info("Retrieved mapped category details list: {}", retrievedCategoriesDetails);
-        return retrievedCategoriesDetails;
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<CategoryEntity> getCategoryEntitiesByIds(List<UUID> ids) {
-        log.debug("Retrieving categories by ids: {}", ids);
-        List<CategoryEntity> retrievedCategories = new ArrayList<>();
-        for(UUID id : ids) {
-            retrievedCategories.add(retrieveCategoryByIdOrElseThrow(id));
-            log.debug("Retrieved category with id {} was added to categories list.", id);
-        }
-        log.info("Retrieved categories list by ids: {}", ids);
-        return retrievedCategories;
-    }
-
-    @Override
-    @Transactional(readOnly = true)
     public CategoryDetails getCategoryBySlug(String slug) {
         log.debug("Retrieving category by slug: {}", slug);
-        CategoryEntity retrievedCategory = categoryRepository.findByNaturalId(slug).orElseThrow(() -> {
-            log.error("Exception occurred while retrieving category by slug: {}", slug);
-            return new CategoryNotFoundException(slug);
-        });
+        CategoryEntity retrievedCategory = retrieveCategoryBySlugOrElseThrow(slug);
         CategoryDetails categoryDetails = categoryMapper.toCategoryDetails(retrievedCategory);
         log.info("Retrieved category by slug {}: {}", slug, categoryDetails);
         return categoryDetails;
     }
 
     @Override
-    public Set<CategoryDetails> getRootCategories() {
+    public List<CategoryDetails> getRootCategories() {
         log.debug("Retrieving root categories");
-        Set<CategoryEntity> rootCategories = categoryRepository.findByParentNull();
-        Set<CategoryDetails> rootCategoriesDetails = rootCategories.stream()
-                .map(categoryMapper::toCategoryDetails).collect(Collectors.toSet());
+        List<CategoryEntity> rootCategories = categoryRepository.findByParentNull();
+        List<CategoryDetails> rootCategoriesDetails = rootCategories.stream()
+                .map(categoryMapper::toCategoryDetails).toList();
         log.info("Retrieved {} root categories.", rootCategories.size());
         return rootCategoriesDetails;
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Set<CategoryDetails> getSubCategories(UUID parentId) {
-        log.debug("Retrieving subcategories by parent category parentId: {}", parentId);
-        CategoryEntity parentCategory = retrieveCategoryByIdOrElseThrow(parentId);
-        Set<CategoryEntity> subcategories = parentCategory.getSubcategories();
-        Set<CategoryDetails> subcategoriesDetails = subcategories.stream()
-                .map(categoryMapper::toCategoryDetails).collect(Collectors.toSet());
-        log.info("Retrieved {} subcategories by parent category with parentId {}", subcategoriesDetails.size(), parentId);
+    public List<CategoryDetails> getSubCategoriesByParentSlug(String parentSlug) {
+        log.debug("Retrieving subcategories by parent category with slug: {}", parentSlug);
+        CategoryEntity parentCategory = retrieveCategoryBySlugOrElseThrow(parentSlug);
+        List<CategoryEntity> subcategories = parentCategory.getSubcategories();
+        List<CategoryDetails> subcategoriesDetails = subcategories.stream()
+                .map(categoryMapper::toCategoryDetails).toList();
+        log.info("Retrieved {} subcategories by parent category with slug {}", subcategoriesDetails.size(), parentSlug);
         return subcategoriesDetails;
     }
 
@@ -104,16 +65,29 @@ public class CategoryServiceImpl implements CategoryService {
     @Transactional
     public CategoryDetails createCategory(CategoryCreateDto dto) {
         log.debug("Creating category: {}", dto);
-        // retrieving parent category by id
-        CategoryEntity parentCategory = null;
-        if(dto.getParentId() != null) {
-            // getting parent category entity
-            parentCategory = retrieveCategoryByIdOrElseThrow(UUID.fromString(dto.getParentId()));
+        // generate slug by title and check if the slug is unique
+        String slug = SlugGenerator.generateSlug(dto.getTitle());
+        if(categoryRepository.existsByNaturalId(slug)) {
+            log.error("Category with title {} already exists", dto.getTitle());
+            throw new DuplicateCategorySlugException(slug);
         }
+
+        // retrieving parent category by slug if present
+        CategoryEntity parentCategory = null;
+        if(dto.getParentSlug() != null) {
+            parentCategory = retrieveCategoryBySlugOrElseThrow(dto.getParentSlug());
+        }
+
+        // preparing category entity to save
         CategoryEntity categoryToSave = CategoryEntity.builder()
                 .title(dto.getTitle())
+                .slug(slug)
                 .parent(parentCategory)
+                .status(CategoryStatus.ACTIVE)
+                .imageUrl(dto.getImageUrl())
                 .build();
+
+        // saving the category to DB
         try {
             categoryRepository.save(categoryToSave);
         } catch (Exception ex) {
@@ -127,19 +101,19 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     @Transactional
-    public CategoryDetails updateCategory(UUID id, CategoryUpdateDto dto) {
+    public CategoryDetails updateCategory(String parentSlug, CategoryUpdateDto dto) {
         log.debug("Updating category: {}", dto);
-        CategoryEntity categoryToUpdate = retrieveCategoryByIdOrElseThrow(id);
+        CategoryEntity categoryToUpdate = retrieveCategoryBySlugOrElseThrow(parentSlug);
         categoryToUpdate = categoryToUpdate.toBuilder()
                 .title(dto.getTitle() == null ? categoryToUpdate.getTitle() : dto.getTitle())
-                .parent(dto.getParentId() == null ? categoryToUpdate.getParent() :
-                        categoryRepository.findById(UUID.fromString(dto.getParentId())).orElseThrow(() -> {
-                            log.error("Exception occurred while retrieving parent category by id: {}", id);
-                            return new CategoryNotFoundException(id);})
-                )
-                .status(dto.getStatus() == null ? categoryToUpdate.getStatus() : CategoryStatus.valueOf(dto.getStatus()))
+                .parent(dto.getParentSlug() == null ? categoryToUpdate.getParent() :
+                        retrieveCategoryBySlugOrElseThrow(dto.getParentSlug()))
+                .status(dto.getStatus() == null ? categoryToUpdate.getStatus() : dto.getStatus())
+                .imageUrl(dto.getImageUrl() == null ? categoryToUpdate.getImageUrl() : dto.getImageUrl())
                 .build();
-        CategoryEntity updatedCategory = categoryRepository.save(categoryToUpdate);
+
+        // saving the updated category to DB
+        CategoryEntity updatedCategory = saveCategoryOrElseThrow(categoryToUpdate);
         CategoryDetails categoryDetails = categoryMapper.toCategoryDetails(updatedCategory);
         log.info("Updated category: {}", categoryDetails);
         return categoryDetails;
@@ -147,42 +121,42 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     @Transactional
-    public void archiveCategoryById(UUID id) {
-        log.debug("Archiving category by id: {}", id);
-        CategoryEntity categoryToArchive = retrieveCategoryByIdOrElseThrow(id);
+    public void archiveCategoryBySlug(String slug) {
+        log.debug("Archiving category by slug: {}", slug);
+        CategoryEntity categoryToArchive = retrieveCategoryBySlugOrElseThrow(slug);
         if(categoryToArchive.getStatus() == CategoryStatus.ARCHIVED) {
-            log.error("Category with id {} is already archived", id);
-            throw new IllegalArgumentException("Category with id " + id + " is already archived");
+            log.error("Category with slug {} is already archived", slug);
+            throw new IllegalArgumentException("Category with slug " + slug + " is already archived");
         }
         categoryToArchive.setStatus(CategoryStatus.ARCHIVED);
         CategoryEntity updatedCategory = saveCategoryOrElseThrow(categoryToArchive);
-        log.info("Archived category with id {}", updatedCategory.getId());
+        log.info("Archived category with slug {}", updatedCategory.getId());
     }
 
     @Override
     @Transactional
-    public void deleteCategoryById(UUID categoryId) {
-        log.debug("Deleting category: {}", categoryId);
+    public void deleteCategoryBySlug(String slug) {
+        log.debug("Deleting category: {}", slug);
         // check if category with such id exists
-        CategoryEntity categoryToDelete = retrieveCategoryByIdOrElseThrow(categoryId);
+        CategoryEntity categoryToDelete = retrieveCategoryBySlugOrElseThrow(slug);
         // check if category has no subcategories
         if(!categoryToDelete.getSubcategories().isEmpty()) {
             log.error("Unable to delete category that has subcategories: {}", categoryToDelete.getSubcategories());
-            throw  new CategoryInUseException(categoryId);
+            throw new CategoryInUseException(slug);
         }
         // check if category has no related products
         if(!categoryToDelete.getRelatedProducts().isEmpty()) {
             log.error("Unable to delete category that has products: {}", categoryToDelete.getRelatedProducts());
-            throw new CategoryInUseException(categoryId);
+            throw new CategoryInUseException(slug);
         }
         // try to delete the category
         try {
-            categoryRepository.deleteById(categoryId);
+            categoryRepository.deleteByNaturalId(slug);
         } catch (Exception ex) {
             log.error("Exception occurred while deleting category: {}", ex.getMessage());
             throw new PersistenceException(ex.getMessage());
         }
-        log.info("Deleted category: {}", categoryId);
+        log.info("Deleted category: {}", slug);
     }
 
     @Transactional(readOnly = true)
@@ -190,6 +164,14 @@ public class CategoryServiceImpl implements CategoryService {
         return categoryRepository.findById(id).orElseThrow(() -> {
             log.error("Exception occurred while retrieving category by id: {}", id);
             return new CategoryNotFoundException(id);
+        });
+    }
+
+    @Transactional(readOnly = true)
+    public CategoryEntity retrieveCategoryBySlugOrElseThrow(String slug) {
+        return categoryRepository.findByNaturalId(slug).orElseThrow(() -> {
+            log.error("Exception occurred while retrieving category by slug: {}", slug);
+            return new CategoryNotFoundException(slug);
         });
     }
 

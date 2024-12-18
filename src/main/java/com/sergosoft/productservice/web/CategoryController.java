@@ -1,10 +1,9 @@
 package com.sergosoft.productservice.web;
 
 import java.net.URI;
-import java.util.Set;
-import java.util.UUID;
+import java.util.List;
 
-import com.sergosoft.productservice.dto.category.CategorySetDto;
+import com.sergosoft.productservice.dto.category.CategoryListDto;
 import com.sergosoft.productservice.dto.category.CategoryUpdateDto;
 import com.sergosoft.productservice.service.mapper.CategoryMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -34,14 +33,7 @@ public class CategoryController {
         this.categoryMapper = categoryMapper;
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<CategoryResponseDto> getCategoryById(@PathVariable UUID id) {
-        CategoryDetails retrievedCategoryDetails = categoryService.getCategoryById(id);
-        CategoryResponseDto categoryResponseDto = categoryMapper.toCategoryResponseDto(retrievedCategoryDetails);
-        return ResponseEntity.ok(categoryResponseDto);
-    }
-
-    @GetMapping("/slug/{slug}")
+    @GetMapping("/{slug}")
     public ResponseEntity<CategoryResponseDto> getCategoryBySlug(@PathVariable String slug) {
         CategoryDetails retrievedCategoryDetails = categoryService.getCategoryBySlug(slug);
         CategoryResponseDto categoryResponseDto = categoryMapper.toCategoryResponseDto(retrievedCategoryDetails);
@@ -49,15 +41,15 @@ public class CategoryController {
     }
 
     @GetMapping("/root")
-    public ResponseEntity<CategorySetDto> getRootCategories() {
-        Set<CategoryDetails> rootCategories = categoryService.getRootCategories();
-        return ResponseEntity.ok(categoryMapper.toCategorySetDto(rootCategories));
+    public ResponseEntity<CategoryListDto> getRootCategories() {
+        List<CategoryDetails> rootCategories = categoryService.getRootCategories();
+        return ResponseEntity.ok(categoryMapper.toCategoryListDto(rootCategories));
     }
 
-    @GetMapping("/{parentId}/subcategories")
-    public ResponseEntity<CategorySetDto> getSubcategoriesByParentId(@PathVariable UUID parentId) {
-        Set<CategoryDetails> subcategories = categoryService.getSubCategories(parentId);
-        return ResponseEntity.ok(categoryMapper.toCategorySetDto(subcategories));
+    @GetMapping("/{parentSlug}/subcategories")
+    public ResponseEntity<CategoryListDto> getSubcategoriesByParentSlug(@PathVariable String parentSlug) {
+        List<CategoryDetails> subcategories = categoryService.getSubCategoriesByParentSlug(parentSlug);
+        return ResponseEntity.ok(categoryMapper.toCategoryListDto(subcategories));
     }
 
     @PostMapping
@@ -67,27 +59,27 @@ public class CategoryController {
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()
                 .path("/{id}")
-                .buildAndExpand(createdCategoryResponseDto.getId())
+                .buildAndExpand(createdCategoryResponseDto.getSlug())
                 .toUri();
         return ResponseEntity.created(location).body(createdCategoryResponseDto);
     }
 
-    @PutMapping("/{categoryId}")
-    public ResponseEntity<CategoryResponseDto> updateCategory(@PathVariable UUID categoryId,
+    @PutMapping("/{categorySlug}")
+    public ResponseEntity<CategoryResponseDto> updateCategory(@PathVariable String categorySlug,
                                                               @RequestBody @Valid CategoryUpdateDto categoryDto) {
-        CategoryDetails updatedCategoryDetails = categoryService.updateCategory(categoryId, categoryDto);
+        CategoryDetails updatedCategoryDetails = categoryService.updateCategory(categorySlug, categoryDto);
         return ResponseEntity.ok(categoryMapper.toCategoryResponseDto(updatedCategoryDetails));
     }
 
-    @PutMapping("/{categoryId}/archive")
-    public ResponseEntity<Void> archiveCategory(@PathVariable UUID categoryId) {
-        categoryService.archiveCategoryById(categoryId);
+    @PutMapping("/{categorySlug}/archive")
+    public ResponseEntity<Void> archiveCategory(@PathVariable String categorySlug) {
+        categoryService.archiveCategoryBySlug(categorySlug);
         return ResponseEntity.noContent().build();
     }
 
-    @DeleteMapping("/{categoryId}")
-    public ResponseEntity<Void> deleteCategory(@PathVariable UUID categoryId) {
-        categoryService.deleteCategoryById(categoryId);
+    @DeleteMapping("/{categorySlug}")
+    public ResponseEntity<Void> deleteCategory(@PathVariable String categorySlug) {
+        categoryService.deleteCategoryBySlug(categorySlug);
         return ResponseEntity.noContent().build();
     }
 }

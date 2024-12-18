@@ -1,7 +1,6 @@
 package com.sergosoft.productservice.repository.entity;
 
 import com.sergosoft.productservice.domain.category.CategoryStatus;
-import com.sergosoft.productservice.util.SlugGenerator;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,7 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.NaturalId;
 
-import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -47,8 +46,11 @@ public class CategoryEntity {
     @JoinColumn(name = "parent_id")
     private CategoryEntity parent;
 
-    @OneToMany(mappedBy = "parent")
-    private Set<CategoryEntity> subcategories = new HashSet<>();
+    @Column(nullable = false)
+    private String imageUrl;
+
+    @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL)
+    private List<CategoryEntity> subcategories;
 
     @ManyToMany
     @JoinTable(
@@ -56,11 +58,6 @@ public class CategoryEntity {
             joinColumns = @JoinColumn(name = "category_id"),
             inverseJoinColumns = @JoinColumn(name = "product_id")
     )
-    private Set<ProductEntity> relatedProducts = new HashSet<>();
+    private Set<ProductEntity> relatedProducts;
 
-    @PrePersist
-    private void generateSlug() {
-        this.status = CategoryStatus.ARCHIVED;
-        this.slug = SlugGenerator.generateSlug(this.title);
-    }
 }

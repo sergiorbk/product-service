@@ -8,6 +8,28 @@ spring:
   profiles:
     active: dev
 
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: http://localhost:8080/realms/targul/protocol/openid-connect/certs
+      client:
+        registration:
+          github:
+            clientId: ${GITHUB_CLIENT_ID}
+            clientSecret: ${GITHUB_CLIENT_SECRET}
+            scope: user:email
+            redirect-uri: "http://localhost:8081/login/oauth2/code/github"
+            client-name: GitHub
+            authorization-grant-type: authorization_code
+            provider: github
+        provider:
+          github:
+            authorization-uri: https://github.com/login/oauth/authorize
+            token-uri: https://github.com/login/oauth/access_token
+            user-info-uri: https://api.github.com/user
+            user-name-attribute: login
+
   liquibase:
     enabled: true
     change-log: liquibase/changelog.yaml

@@ -9,8 +9,9 @@ import lombok.extern.jackson.Jacksonized;
 @Jacksonized
 public class CategoryResponseDto {
 
-    String id;
-    String title;
     String slug;
-    String parentId;
+    String title;
+    String parentSlug;
+    String imageUrl;
+
 }

@@ -18,6 +18,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.testcontainers.shaded.org.apache.commons.lang3.RandomStringUtils;
 
@@ -38,7 +39,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class ProductControllerIT extends IntegrationTest {
 
     private CategoryDetails testCategoryDetails;
-    private List<String> categoryIds;
+    private List<String> categorySlugs;
     private ProductDetails testProductDetails;
 
     @Autowired
@@ -57,8 +58,8 @@ class ProductControllerIT extends IntegrationTest {
     void setUp() {
         reset(productService, categoryService);
         testCategoryDetails = categoryService.createCategory(CategoryControllerIT.buildCreateCategoryDto(List.of()));
-        categoryIds = List.of(testCategoryDetails.getId().toString());
-        testProductDetails = productService.createProduct(buildProductCreateDto(categoryIds));
+        categorySlugs = List.of(testCategoryDetails.getSlug());
+        testProductDetails = productService.createProduct(buildProductCreateDto(categorySlugs));
     }
 
     @Test
@@ -81,8 +82,9 @@ class ProductControllerIT extends IntegrationTest {
     }
 
     @Test
+    @WithMockUser
     void shouldCreateProduct() throws Exception {
-        ProductCreateDto productCreateDto = buildProductCreateDto(categoryIds);
+        ProductCreateDto productCreateDto = buildProductCreateDto(categorySlugs);
 
         mockMvc.perform(post("/api/v1/products")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -90,10 +92,11 @@ class ProductControllerIT extends IntegrationTest {
                         .content(objectMapper.writeValueAsString(productCreateDto)))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.title").value(productCreateDto.getTitle()))
-                .andExpect(jsonPath("$.price").value(productCreateDto.getPrice()));
+                .andExpect(jsonPath("$.price").value(productCreateDto.getPrice().stripTrailingZeros()));
     }
 
     @Test
+    @WithMockUser
     void shouldUpdateProduct() throws Exception {
         ProductUpdateDto productUpdateDto = ProductUpdateDto.builder()
                 .title(RandomStringUtils.randomAlphabetic(5))
@@ -113,8 +116,9 @@ class ProductControllerIT extends IntegrationTest {
     }
 
     @Test
+    @WithMockUser
     void shouldReturnBadRequestIfTitleIsMissing() throws Exception {
-        ProductCreateDto productCreateDto = buildProductCreateDto(categoryIds).toBuilder()
+        ProductCreateDto productCreateDto = buildProductCreateDto(categorySlugs).toBuilder()
                 .title("")
                 .build();
 
@@ -126,6 +130,7 @@ class ProductControllerIT extends IntegrationTest {
     }
 
     @Test
+    @WithMockUser(roles = {"MODERATOR"})
     void shouldDeleteProductById() throws Exception {
         mockMvc.perform(get("/api/v1/products/{id}", testProductDetails.getId()))
                 .andExpect(status().isOk());
@@ -138,6 +143,7 @@ class ProductControllerIT extends IntegrationTest {
     }
 
     @Test
+    @WithMockUser(roles = {"MODERATOR"})
     void shouldActivateProductById() throws Exception {
         // create new product to activate
         ProductCreateDto productCreateDto = buildProductCreateDto(List.of());
@@ -157,6 +163,7 @@ class ProductControllerIT extends IntegrationTest {
     }
 
     @Test
+    @WithMockUser
     void shouldArchiveProductById() throws Exception {
         // create new product to archive
         ProductCreateDto productCreateDto = buildProductCreateDto(List.of());

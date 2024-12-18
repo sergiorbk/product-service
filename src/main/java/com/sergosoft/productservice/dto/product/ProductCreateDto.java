@@ -31,8 +31,7 @@ public class ProductCreateDto {
     String ownerReference;
 
     @NotEmpty(message = "Categories ids list must contain at least 1 category id.")
-    List<@NotNull(message = "Category id cannot be null")
-         @UUID(message = "Invalid format of category id") String> categoryIds;
+    List<@NotBlank(message = "Category id cannot be blank.") String> categoryIds;
 
     @Positive(message = "Price must be a positive number.")
     BigDecimal price;

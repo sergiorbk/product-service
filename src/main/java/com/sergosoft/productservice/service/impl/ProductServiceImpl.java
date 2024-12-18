@@ -5,8 +5,8 @@ import com.sergosoft.productservice.domain.product.ProductStatus;
 import com.sergosoft.productservice.dto.product.ProductCreateDto;
 import com.sergosoft.productservice.dto.product.ProductUpdateDto;
 import com.sergosoft.productservice.repository.ProductRepository;
+import com.sergosoft.productservice.repository.entity.CategoryEntity;
 import com.sergosoft.productservice.repository.entity.ProductEntity;
-import com.sergosoft.productservice.service.CategoryService;
 import com.sergosoft.productservice.service.ProductService;
 import com.sergosoft.productservice.service.exception.ProductNotFoundException;
 import com.sergosoft.productservice.service.mapper.ProductMapper;
@@ -16,10 +16,11 @@ import jakarta.persistence.PersistenceException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashSet;
 import java.util.UUID;
 
 @Slf4j
@@ -28,13 +29,27 @@ import java.util.UUID;
 public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository productRepository;
-    private final CategoryService categoryService;
     private final ProductMapper productMapper;
 
     @Override
     @Transactional(readOnly = true)
     public ProductDetails getProductById(UUID id) {
         return productMapper.toProductDetails(retrieveProductByIdFromJpaOrElseThrow(id));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<ProductDetails> getProductsPageByOwnerReference(UUID ownerReference, Pageable pageable) {
+        log.debug("Retrieving products page: {} by ownerReference: {}", pageable.getPageNumber(), ownerReference);
+        Page<ProductEntity> productEntityPage;
+        try {
+            productEntityPage = productRepository.findAllByOwnerReference(pageable, ownerReference);
+        } catch (Exception ex) {
+            log.error("Exception occurred while retrieving a product page: {}", ex.getMessage());
+            throw new ProductNotFoundException(ex.getMessage());
+        }
+        log.info("Retrieved products page number: {} by userReference: {}", pageable.getPageNumber(), ownerReference);
+        return productEntityPage.map(productMapper::toProductDetails);
     }
 
     @Override
@@ -46,7 +61,8 @@ public class ProductServiceImpl implements ProductService {
                 .description(dto.getDescription())
                 .ownerReference(UUID.fromString(dto.getOwnerReference()))
                 .price(dto.getPrice())
-                .categories(new HashSet<>(categoryService.getCategoryEntitiesByIds(dto.getCategoryIds().stream().map(UUID::fromString).toList())))
+                .categories(dto.getCategoryIds()
+                        .stream().map(slug -> CategoryEntity.builder().slug(slug).build()).toList())
                 .build();
 
         // save created product to jpa and search repositories

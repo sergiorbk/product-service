@@ -11,9 +11,8 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.time.OffsetDateTime;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.UUID;
 
 @Data
@@ -45,7 +44,7 @@ public class ProductEntity {
     private String slug;
 
     @ManyToMany(mappedBy = "relatedProducts")
-    private Set<CategoryEntity> categories = new HashSet<>();
+    private List<CategoryEntity> categories;
 
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal price;
