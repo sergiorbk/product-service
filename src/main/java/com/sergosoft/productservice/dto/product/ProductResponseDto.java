@@ -6,7 +6,7 @@ import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.Set;
 
 @Value
@@ -23,6 +23,6 @@ public class ProductResponseDto {
     BigDecimal price;
     String status;
     Set<String> categoriesIds;
-    LocalDateTime createdAt;
+    OffsetDateTime createdAt;
 
 }

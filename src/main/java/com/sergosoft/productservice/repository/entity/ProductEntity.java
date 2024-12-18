@@ -8,10 +8,11 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.List;
+import java.time.OffsetDateTime;
 import java.util.UUID;
 
 @Data
@@ -52,13 +53,13 @@ public class ProductEntity {
     @Enumerated(EnumType.STRING)
     private ProductStatus status;
 
+    @CreationTimestamp
     @Column(nullable = false, updatable = false)
-    private LocalDateTime createdAt;
+    private OffsetDateTime createdAt;
 
     @PrePersist
     private void prePersist() {
         this.status = ProductStatus.PENDING;
         this.slug = SlugGenerator.generateSlug(this.title);
-        this.createdAt = LocalDateTime.now();
     }
 }

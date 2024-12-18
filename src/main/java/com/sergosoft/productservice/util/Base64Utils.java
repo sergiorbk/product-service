@@ -1,7 +1,10 @@
 package com.sergosoft.productservice.util;
 
+import lombok.experimental.UtilityClass;
+
 import java.util.Base64;
 
+@UtilityClass
 public class Base64Utils {
 
     public static String encode(String input) {

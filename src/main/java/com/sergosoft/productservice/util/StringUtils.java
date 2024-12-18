@@ -1,8 +1,10 @@
 package com.sergosoft.productservice.util;
 
+import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
+@UtilityClass
 public class StringUtils {
 
     public static String clearExtraSpaces(String str) {

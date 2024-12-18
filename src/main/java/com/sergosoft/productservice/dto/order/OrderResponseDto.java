@@ -6,7 +6,7 @@ import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.List;
 
 @Value
@@ -19,6 +19,6 @@ public class OrderResponseDto {
     String sellerReference;
     String buyerReference;
     BigDecimal totalPrice;
-    LocalDateTime createdAt;
+    OffsetDateTime createdAt;
 
 }
