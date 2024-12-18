@@ -47,7 +47,7 @@ public class CategoryEntity {
     @JoinColumn(name = "parent_id")
     private CategoryEntity parent;
 
-    @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "parent")
     private Set<CategoryEntity> subcategories = new HashSet<>();
 
     @ManyToMany

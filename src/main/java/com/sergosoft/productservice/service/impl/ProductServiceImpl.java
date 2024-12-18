@@ -10,7 +10,6 @@ import com.sergosoft.productservice.service.CategoryService;
 import com.sergosoft.productservice.service.ProductService;
 import com.sergosoft.productservice.service.exception.ProductNotFoundException;
 import com.sergosoft.productservice.service.mapper.ProductMapper;
-import com.sergosoft.productservice.util.SlugGenerator;
 
 import jakarta.persistence.PersistenceException;
 
@@ -61,17 +60,7 @@ public class ProductServiceImpl implements ProductService {
     public ProductDetails updateProduct(UUID id, ProductUpdateDto dto) {
         log.debug("Updating product with id {} with data: {}", id, dto);
         ProductEntity productToUpdate = retrieveProductByIdFromJpaOrElseThrow(id);
-        productToUpdate = productToUpdate.toBuilder()
-                .title(dto.getTitle() == null ? productToUpdate.getTitle() : dto.getTitle())
-                .slug(SlugGenerator.generateSlug(dto.getTitle()))
-                .description(dto.getDescription() == null ? productToUpdate.getDescription() : dto.getDescription())
-                .price(dto.getPrice() == null ? productToUpdate.getPrice() : dto.getPrice())
-                .categories(dto.getCategoryIds() == null ? productToUpdate.getCategories() :
-                        new HashSet<>(categoryService.getCategoryEntitiesByIds(
-                                dto.getCategoryIds().stream().map(UUID::fromString).toList())
-                        )
-                )
-                .build();
+        productMapper.updateProductFromDto(dto, productToUpdate);
         // save updated product
         ProductEntity savedProduct = saveProductOrElseThrow(productToUpdate);
         ProductDetails savedProductDetails = productMapper.toProductDetails(savedProduct);

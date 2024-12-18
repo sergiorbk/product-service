@@ -6,7 +6,7 @@ import lombok.Builder;
 import lombok.Value;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -20,5 +20,5 @@ public class OrderDetails {
     UUID sellerReference;
     UUID buyerReference;
     BigDecimal totalPrice;
-    LocalDateTime createdAt;
+    OffsetDateTime createdAt;
 }

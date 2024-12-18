@@ -1,9 +1,11 @@
 package com.sergosoft.productservice.util;
 
 import com.ibm.icu.text.Transliterator;
+import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
+@UtilityClass
 public class SlugGenerator {
 
     private static final String LATIN_TO_ASCII = "Any-Latin; Latin-ASCII";

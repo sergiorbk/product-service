@@ -19,7 +19,7 @@ public class OrderItemEntity {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne
     @JoinColumn(name = "order_id", nullable = false)
     @ToString.Exclude
     private OrderEntity order;

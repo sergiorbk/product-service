@@ -1,7 +1,7 @@
 package com.sergosoft.productservice.domain.product;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.Set;
 import java.util.UUID;
 
@@ -23,5 +23,5 @@ public class ProductDetails {
     BigDecimal price;
     ProductStatus status;
     Set<CategoryDetails> categories;
-    LocalDateTime createdAt;
+    OffsetDateTime createdAt;
 }
